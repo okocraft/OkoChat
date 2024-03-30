@@ -3,7 +3,7 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2020
  */
-package net.okocraft.okochat.core.bungee.event;
+package net.okocraft.okochat.core.event;
 
 import net.md_5.bungee.api.plugin.Cancellable;
 

@@ -3,19 +3,20 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2020
  */
-package net.okocraft.okochat.core.bukkit.event;
+package net.okocraft.okochat.core.event.channel;
 
 import com.github.ucchyocean.lc3.member.ChannelMember;
+import net.okocraft.okochat.core.event.LunaChatBungeeBaseCancellableEvent;
 
 /**
  * チャンネル削除イベント
  * @author ucchy
  */
-public class LunaChatBukkitChannelRemoveEvent extends LunaChatBukkitBaseCancellableEvent {
+public class LunaChatBungeeChannelRemoveEvent extends LunaChatBungeeBaseCancellableEvent {
 
     private ChannelMember member;
 
-    public LunaChatBukkitChannelRemoveEvent(String channelName, ChannelMember member) {
+    public LunaChatBungeeChannelRemoveEvent(String channelName, ChannelMember member) {
         super(channelName);
         this.member = member;
     }

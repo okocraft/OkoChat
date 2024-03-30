@@ -3,9 +3,10 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2020
  */
-package net.okocraft.okochat.core.bukkit.event;
+package net.okocraft.okochat.core.event.channel;
 
 import com.github.ucchyocean.lc3.member.ChannelMember;
+import net.okocraft.okochat.core.event.LunaChatBungeeBaseCancellableEvent;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * メンバー変更イベント
  * @author ucchy
  */
-public class LunaChatBukkitChannelMemberChangedEvent extends LunaChatBukkitBaseCancellableEvent {
+public class LunaChatBungeeChannelMemberChangedEvent extends LunaChatBungeeBaseCancellableEvent {
 
     private List<ChannelMember> before;
     private List<ChannelMember> after;
@@ -24,7 +25,7 @@ public class LunaChatBukkitChannelMemberChangedEvent extends LunaChatBukkitBaseC
      * @param before 変更前のメンバー
      * @param after 変更後のメンバー
      */
-    public LunaChatBukkitChannelMemberChangedEvent(
+    public LunaChatBungeeChannelMemberChangedEvent(
             String channelName, List<ChannelMember> before, List<ChannelMember> after) {
         super(channelName);
         this.before = before;

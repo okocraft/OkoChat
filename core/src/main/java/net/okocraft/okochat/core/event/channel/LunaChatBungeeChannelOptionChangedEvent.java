@@ -3,9 +3,10 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2020
  */
-package net.okocraft.okochat.core.bukkit.event;
+package net.okocraft.okochat.core.event.channel;
 
 import com.github.ucchyocean.lc3.member.ChannelMember;
+import net.okocraft.okochat.core.event.LunaChatBungeeBaseCancellableEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,12 +15,12 @@ import java.util.Map;
  * オプション変更イベント
  * @author ucchy
  */
-public class LunaChatBukkitChannelOptionChangedEvent extends LunaChatBukkitBaseCancellableEvent {
+public class LunaChatBungeeChannelOptionChangedEvent extends LunaChatBungeeBaseCancellableEvent {
 
     private ChannelMember member;
     private Map<String, String> options;
 
-    public LunaChatBukkitChannelOptionChangedEvent(String channelName,
+    public LunaChatBungeeChannelOptionChangedEvent(String channelName,
             ChannelMember member, Map<String, String> options) {
         super(channelName);
         this.member = member;
