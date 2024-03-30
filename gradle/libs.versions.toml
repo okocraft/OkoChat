@@ -5,7 +5,7 @@ annotations = "24.1.0"
 slf4j = "2.0.11"
 
 # for testing
-junit = "5.10.1"
+junit = "5.10.2"
 mockito = "5.10.0"
 
 [libraries]
