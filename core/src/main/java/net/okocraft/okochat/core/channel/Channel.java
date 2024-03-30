@@ -34,7 +34,6 @@ import net.okocraft.okochat.core.japanize.JapanizeType;
 import org.jetbrains.annotations.Nullable;
 
 import net.okocraft.okochat.core.bridge.DynmapBridge;
-import net.okocraft.okochat.core.event.EventResult;
 import net.okocraft.okochat.core.member.ChannelMember;
 import net.okocraft.okochat.core.member.ChannelMemberOther;
 import net.okocraft.okochat.core.util.ChatColor;
@@ -277,14 +276,7 @@ public abstract class Channel {
             maskedMessage = Utility.stripColorCode(maskedMessage);
         }
 
-        // LunaChatChannelChatEvent イベントコール
-        EventResult result = LunaChat.getEventSender().sendLunaChatChannelChatEvent(
-                getName(), player, message, maskedMessage, cf.toLegacyText());
-        if ( result.isCancelled() ) {
-            return;
-        }
-//        msgFormat = result.getMessageFormat();
-        maskedMessage = result.getNgMaskedMessage();
+        // LunaChatChannelChatEvent イベントコール // TODO: replace by PreChannelChatEvent/PrePrivateChatEvent
 
         // 2byteコードを含むか、半角カタカナのみなら、Japanize変換は行わない
         String kanaTemp = Utility.stripColorCode(maskedMessage);
@@ -322,6 +314,7 @@ public abstract class Channel {
         }
 
         if ( isIncludeSyncChat ) {
+            // TODO: PostChannelChatEvent/PostPrivateChatEvent?
             // メッセージの送信
             sendMessage(player, maskedMessage, cf, true);
         }
@@ -484,12 +477,6 @@ public abstract class Channel {
         ArrayList<ChannelMember> after = new ArrayList<ChannelMember>(members);
         after.add(player);
 
-        // LunaChatChannelMemberChangedEvent イベントコール
-        EventResult result = LunaChat.getEventSender().sendLunaChatChannelMemberChangedEvent(name, members, after);
-        if ( result.isCancelled() ) {
-            return;
-        }
-
         // メンバー更新
         if ( members.size() == 0 && moderator.size() == 0 ) {
             moderator.add(player);
@@ -517,12 +504,6 @@ public abstract class Channel {
         // 変更後のメンバーリストを作成
         ArrayList<ChannelMember> after = new ArrayList<ChannelMember>(members);
         after.remove(player);
-
-        // LunaChatChannelMemberChangedEvent イベントコール
-        EventResult result = LunaChat.getEventSender().sendLunaChatChannelMemberChangedEvent(name, members, after);
-        if ( result.isCancelled() ) {
-            return;
-        }
 
         // デフォルト発言先が退出するチャンネルと一致する場合、
         // デフォルト発言先を削除する

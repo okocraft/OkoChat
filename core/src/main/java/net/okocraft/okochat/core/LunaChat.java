@@ -7,7 +7,7 @@ package net.okocraft.okochat.core;
 
 import java.io.File;
 
-import net.okocraft.okochat.core.event.EventSenderInterface;
+import net.okocraft.okochat.core.event.LunaChatEventService;
 
 /**
  * LunaChat
@@ -20,7 +20,6 @@ public class LunaChat {
 
     private static PluginInterface instance;
     private static LunaChatMode mode;
-    private static EventSenderInterface esender;
 
     // LunaChatに実行元プラグインクラスを設定する
     static void setPlugin(PluginInterface plugin) {
@@ -48,17 +47,8 @@ public class LunaChat {
         return mode;
     }
 
-    // LunaChatのイベント実行クラスを取得する
-    static void setEventSender(EventSenderInterface eventSender) {
-        esender = eventSender;
-    }
-
-    /**
-     * LunaChatのイベント実行クラスを取得する
-     * @return イベント実行クラス
-     */
-    public static EventSenderInterface getEventSender() {
-        return esender;
+    public static LunaChatEventService getEventService() { // FIXME: this should be here? For now, as an alternative to #getEventSender.
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**

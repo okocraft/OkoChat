@@ -22,7 +22,6 @@ import net.okocraft.okochat.core.LunaChatMode;
 import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.LunaChatBukkit;
 import net.okocraft.okochat.core.LunaChatBungee;
-import net.okocraft.okochat.core.event.EventResult;
 import net.okocraft.okochat.core.japanize.JapanizeType;
 import net.okocraft.okochat.core.japanize.Japanizer;
 import net.okocraft.okochat.core.member.ChannelMember;
@@ -456,24 +455,16 @@ public class ChannelManager implements LunaChatAPI {
      */
     @Override
     public Channel createChannel(String channelName, ChannelMember member) {
-
-        // LunaChatChannelCreateEvent イベントコール
-        EventResult result = LunaChat.getEventSender().sendLunaChatChannelCreateEvent(channelName, member);
-        if ( result.isCancelled() ) {
-            return null;
-        }
-        String name = result.getChannelName();
-
         Channel channel = null;
         if ( LunaChat.getMode() == LunaChatMode.BUKKIT ) {
-            channel = new BukkitChannel(name);
+            channel = new BukkitChannel(channelName);
         } else if ( LunaChat.getMode() == LunaChatMode.BUNGEE ) {
-            channel = new BungeeChannel(name);
+            channel = new BungeeChannel(channelName);
         } else {
-            channel = new StandaloneChannel(name);
+            channel = new StandaloneChannel(channelName);
         }
 
-        channels.put(name.toLowerCase(), channel);
+        channels.put(channelName.toLowerCase(), channel);
         channel.save();
         return channel;
     }
@@ -498,15 +489,7 @@ public class ChannelManager implements LunaChatAPI {
      */
     @Override
     public boolean removeChannel(String channelName, ChannelMember member) {
-
         channelName = channelName.toLowerCase();
-
-        // LunaChatChannelRemoveEvent イベントコール
-        EventResult result = LunaChat.getEventSender().sendLunaChatChannelRemoveEvent(channelName, member);
-        if ( result.isCancelled() ) {
-            return false;
-        }
-        channelName = result.getChannelName();
 
         Channel channel = getChannel(channelName);
         if ( channel != null ) {

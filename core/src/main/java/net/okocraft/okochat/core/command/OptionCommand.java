@@ -12,7 +12,6 @@ import java.util.Map;
 import net.okocraft.okochat.core.LunaChat;
 import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.channel.Channel;
-import net.okocraft.okochat.core.event.EventResult;
 import net.okocraft.okochat.core.japanize.JapanizeType;
 import net.okocraft.okochat.core.member.ChannelMember;
 import net.okocraft.okochat.core.util.Utility;
@@ -131,14 +130,6 @@ public class OptionCommand extends LunaChatSubCommand {
             }
             options.put(t.substring(0, index), t.substring(index + 1));
         }
-
-        // LunaChatChannelOptionChangedEvent イベントコール
-        EventResult result = LunaChat.getEventSender().sendLunaChatChannelOptionChangedEvent(
-                cname, sender, options);
-        if ( result.isCancelled() ) {
-            return true;
-        }
-        options = result.getOptions();
 
         // 設定する
         boolean setOption = false;

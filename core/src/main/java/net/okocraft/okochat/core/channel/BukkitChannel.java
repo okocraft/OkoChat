@@ -20,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import net.okocraft.okochat.core.bridge.DynmapBridge;
-import net.okocraft.okochat.core.event.EventResult;
 import net.okocraft.okochat.core.member.ChannelMember;
 import net.okocraft.okochat.core.member.ChannelMemberBukkit;
 import net.okocraft.okochat.core.util.ClickableFormat;
@@ -145,10 +144,6 @@ public class BukkitChannel extends Channel {
 
         // LunaChatChannelMessageEvent イベントコール
         String name = (player != null) ? player.getDisplayName() : "<null>";
-        EventResult result = LunaChat.getEventSender().sendLunaChatChannelMessageEvent(
-                getName(), player, message, recipients, name, originalMessage);
-        message = result.getMessage();
-        recipients = result.getRecipients();
 
         // 通常ブロードキャストなら、設定に応じてdynmapへ送信する
         DynmapBridge dynmap = LunaChatBukkit.getInstance().getDynmap();

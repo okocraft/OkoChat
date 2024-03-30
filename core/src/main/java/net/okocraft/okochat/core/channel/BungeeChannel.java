@@ -14,7 +14,6 @@ import net.okocraft.okochat.core.LunaChatBungee;
 import net.okocraft.okochat.core.LunaChatConfig;
 import org.jetbrains.annotations.Nullable;
 
-import net.okocraft.okochat.core.event.EventResult;
 import net.okocraft.okochat.core.member.ChannelMember;
 import net.okocraft.okochat.core.util.ClickableFormat;
 
@@ -102,10 +101,6 @@ public class BungeeChannel extends Channel {
 
         // LunaChatChannelMessageEvent イベントコール
         String name = (player != null) ? player.getDisplayName() : "<null>";
-        EventResult result = LunaChat.getEventSender().sendLunaChatChannelMessageEvent(
-                getName(), player, message, recipients, name, originalMessage);
-        message = result.getMessage();
-        recipients = result.getRecipients();
 
         // 送信する
         if ( format != null ) {

@@ -15,6 +15,7 @@ dependencies {
     implementation(libs.configapi.format.yaml) {
         exclude("org.yaml", "snakeyaml")
     }
+    implementation(libs.event4j)
 
     compileOnlyApi(libs.adventure)
     compileOnlyApi(libs.adventure.text.minimessage)

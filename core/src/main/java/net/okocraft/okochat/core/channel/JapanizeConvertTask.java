@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.okocraft.okochat.core.LunaChat;
-import net.okocraft.okochat.core.event.EventResult;
+import net.okocraft.okochat.core.event.japanize.PostJapanizeEvent;
 import net.okocraft.okochat.core.japanize.JapanizeType;
 import net.okocraft.okochat.core.japanize.Japanizer;
 import net.okocraft.okochat.core.member.ChannelMember;
@@ -115,13 +115,7 @@ public class JapanizeConvertTask {
         }
 
         // LunaChatPostJapanizeEvent イベントコール
-        String channelName = (channel == null) ? "" : channel.getName();
-        EventResult event = LunaChat.getEventSender().sendLunaChatPostJapanizeEvent(
-                channelName, player, org, japanized);
-        if ( event.isCancelled() ) {
-            return false;
-        }
-        japanized = event.getJapanized();
+        LunaChat.getEventService().call(new PostJapanizeEvent(this.player, this.org, japanized));
 
         // フォーマットする
         result = format.replace("%msg", org);
