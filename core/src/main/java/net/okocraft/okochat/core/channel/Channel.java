@@ -17,6 +17,8 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.siroshun09.configapi.core.node.MapNode;
+import com.github.siroshun09.configapi.format.yaml.YamlFormat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -38,7 +40,6 @@ import net.okocraft.okochat.core.member.ChannelMemberOther;
 import net.okocraft.okochat.core.util.ChatColor;
 import net.okocraft.okochat.core.util.ClickableFormat;
 import net.okocraft.okochat.core.util.Utility;
-import net.okocraft.okochat.core.util.YamlConfig;
 
 /**
  * チャンネル
@@ -1191,7 +1192,7 @@ public abstract class Channel {
         File file = new File(folder, name + ".yml");
 
         // ファイルへ保存する
-        YamlConfig conf = new YamlConfig();
+        MapNode conf = MapNode.create();
         Map<String, Object> data = this.serialize();
         for ( String key : data.keySet() ) {
             conf.set(key, data.get(key));
@@ -1203,7 +1204,7 @@ public abstract class Channel {
         }
         // okocraft end
         try {
-            conf.save(file);
+            YamlFormat.DEFAULT.save(conf, file.toPath());
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -1211,9 +1212,9 @@ public abstract class Channel {
         }
     }
     // okocraft start - Make file saving async
-    private synchronized void save(File file, YamlConfig data) {
+    private synchronized void save(File file, MapNode data) {
         try {
-            data.save(file);
+            YamlFormat.DEFAULT.save(data, file.toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1264,10 +1265,15 @@ public abstract class Channel {
 
         HashMap<String, Channel> result = new HashMap<String, Channel>();
         for ( File file : files ) {
-            YamlConfig config = YamlConfig.load(file);
             Map<String, Object> data = new HashMap<String, Object>();
-            for ( String key : config.getKeys(false) ) {
-                data.put(key, config.get(key));
+            try {
+                MapNode config = YamlFormat.DEFAULT.load(file.toPath());
+                for (Object key : config.value().keySet()) {
+                    data.put(String.valueOf(key), config.get(key));
+                }
+            } catch (IOException e) {
+                e.printStackTrace(); // TODO: logging
+                continue;
             }
             Channel channel = deserialize(data);
             result.put(channel.name.toLowerCase(), channel);

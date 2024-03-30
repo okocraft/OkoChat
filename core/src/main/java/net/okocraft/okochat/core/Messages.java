@@ -10,11 +10,12 @@ import java.io.IOException;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import com.github.siroshun09.configapi.core.node.MapNode;
+import com.github.siroshun09.configapi.format.yaml.YamlFormat;
 import net.kyori.adventure.text.Component;
 import net.okocraft.okochat.core.util.ClickableFormat;
 import net.okocraft.okochat.core.util.KeywordReplacer;
 import net.okocraft.okochat.core.util.Utility;
-import net.okocraft.okochat.core.util.YamlConfig;
 
 
 /**
@@ -23,7 +24,7 @@ import net.okocraft.okochat.core.util.YamlConfig;
  */
 public class Messages {
 
-    private static YamlConfig resources;
+    private static MapNode resources;
     private static File _messageFolder;
     private static File _jar;
 
@@ -52,7 +53,7 @@ public class Messages {
         }
 
         // デフォルトメッセージを、jarファイル内からロードする
-        YamlConfig defaultMessages = null;
+        MapNode defaultMessages = null;
         if ( _jar != null ) {
             try (JarFile jarFile = new JarFile(_jar)) {
 
@@ -61,7 +62,7 @@ public class Messages {
                     zipEntry = jarFile.getEntry("messages_en.yml");
                 }
 
-                defaultMessages = YamlConfig.load(jarFile.getInputStream(zipEntry));
+                defaultMessages = YamlFormat.DEFAULT.load(jarFile.getInputStream(zipEntry));
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -74,8 +75,17 @@ public class Messages {
             file = new File(_messageFolder, "messages_en.yml");
         }
 
-        resources = YamlConfig.load(file);
-        resources.addDefaults(defaultMessages);
+        try {
+            resources = YamlFormat.DEFAULT.load(file.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (defaultMessages != null) {
+            for (var entry : defaultMessages.value().entrySet()) {
+                resources.setIfAbsent(entry.getKey(), entry.getValue());
+            }
+        }
     }
 
     /**
@@ -94,7 +104,7 @@ public class Messages {
      * チャンネル %channel% はグローバルチャンネルなので、BANできません。
      */
     public static String errmsgCannotBANGlobal(Object channel) {
-        String msg = resources.getString("errmsgCannotBANGlobal");
+        String msg = resources.getStringOrNull("errmsgCannotBANGlobal");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -105,7 +115,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんをチャンネルからBANしました。
      */
     public static Component banMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("banMessage");
+        String msg = resources.getStringOrNull("banMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -118,7 +128,7 @@ public class Messages {
      * 必須キーワード %key% が指定されていません。
      */
     public static String errmsgFormatConstraint(Object key) {
-        String msg = resources.getString("errmsgFormatConstraint");
+        String msg = resources.getStringOrNull("errmsgFormatConstraint");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%key%", key.toString());
@@ -129,7 +139,7 @@ public class Messages {
      * &6/%label% remove [channel] &7- チャンネルを削除します。
      */
     public static String usageRemove(Object label) {
-        String msg = resources.getString("usageRemove");
+        String msg = resources.getStringOrNull("usageRemove");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -140,7 +150,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんを期限 %minutes% 分でチャンネルからBANしました。
      */
     public static Component banWithExpireMessage(Object color, Object channel, Object player, Object minutes) {
-        String msg = resources.getString("banWithExpireMessage");
+        String msg = resources.getStringOrNull("banWithExpireMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -154,7 +164,7 @@ public class Messages {
      * &7| &cブロードキャストチャンネル
      */
     public static String channelInfoBroadcast() {
-        String msg = resources.getString("channelInfoBroadcast");
+        String msg = resources.getStringOrNull("channelInfoBroadcast");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -164,7 +174,7 @@ public class Messages {
      * デフォルトの発言先を %channel% に設定しました。
      */
     public static String cmdmsgSet(Object channel) {
-        String msg = resources.getString("cmdmsgSet");
+        String msg = resources.getStringOrNull("cmdmsgSet");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -175,7 +185,7 @@ public class Messages {
      * %key% は true/false で指定してください。
      */
     public static String errmsgInvalidBooleanOption(Object key) {
-        String msg = resources.getString("errmsgInvalidBooleanOption");
+        String msg = resources.getStringOrNull("errmsgInvalidBooleanOption");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%key%", key.toString());
@@ -186,7 +196,7 @@ public class Messages {
      * チャンネル %channel% は強制参加チャンネルなので、退出できません。
      */
     public static String errmsgCannotLeaveForceJoin(Object channel) {
-        String msg = resources.getString("errmsgCannotLeaveForceJoin");
+        String msg = resources.getStringOrNull("errmsgCannotLeaveForceJoin");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -197,7 +207,7 @@ public class Messages {
      * &6/%label% reload &7- config.ymlの再読み込みをします。
      */
     public static String usageReload(Object label) {
-        String msg = resources.getString("usageReload");
+        String msg = resources.getStringOrNull("usageReload");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -208,7 +218,7 @@ public class Messages {
      * &6/%label% mute (name) [minutes] &7- 指定したプレイヤーを指定した分の間、発言権剥奪します。
      */
     public static String usageMute2(Object label) {
-        String msg = resources.getString("usageMute2");
+        String msg = resources.getStringOrNull("usageMute2");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -219,7 +229,7 @@ public class Messages {
      * &6/%label% mod [channel] (player) &7- チャンネルのモデレーターを指定したプレイヤーに設定します。
      */
     public static String usageMod(Object label) {
-        String msg = resources.getString("usageMod");
+        String msg = resources.getStringOrNull("usageMod");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -230,7 +240,7 @@ public class Messages {
      * &6/%label% ban (name) &7- 指定したプレイヤーをチャンネルチャットからBANします。
      */
     public static String usageBan(Object label) {
-        String msg = resources.getString("usageBan");
+        String msg = resources.getStringOrNull("usageBan");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -241,7 +251,7 @@ public class Messages {
      * パスワードは %max% 文字以下にしてください。
      */
     public static String errmsgToolongPassword(Object max) {
-        String msg = resources.getString("errmsgToolongPassword");
+        String msg = resources.getStringOrNull("errmsgToolongPassword");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%max%", max.toString());
@@ -252,7 +262,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんの期限付きBANが解除されました。
      */
     public static Component expiredBanMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("expiredBanMessage");
+        String msg = resources.getStringOrNull("expiredBanMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -265,7 +275,7 @@ public class Messages {
      * このチャンネルは既に非表示になっています。
      */
     public static String errmsgAlreadyHided() {
-        String msg = resources.getString("errmsgAlreadyHided");
+        String msg = resources.getStringOrNull("errmsgAlreadyHided");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -275,7 +285,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんのBANが解除されました。
      */
     public static Component pardonMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("pardonMessage");
+        String msg = resources.getStringOrNull("pardonMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -288,7 +298,7 @@ public class Messages {
      * &6/%label% unmute (name) &7- 指定したプレイヤーのチャンネルでの発言権剥奪を解除します。
      */
     public static String usageUnmute(Object label) {
-        String msg = resources.getString("usageUnmute");
+        String msg = resources.getStringOrNull("usageUnmute");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -299,7 +309,7 @@ public class Messages {
      * &6/%label% moderator [channel] (player) &7- チャンネルのモデレーターを指定したプレイヤーに設定します。
      */
     public static String usageModerator(Object label) {
-        String msg = resources.getString("usageModerator");
+        String msg = resources.getStringOrNull("usageModerator");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -310,7 +320,7 @@ public class Messages {
      * 権限がありません&7(%permission%)
      */
     public static String errmsgNotPermission(Object permission) {
-        String msg = resources.getString("errmsgNotPermission");
+        String msg = resources.getStringOrNull("errmsgNotPermission");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%permission%", permission.toString());
@@ -321,7 +331,7 @@ public class Messages {
      * あなたはこのチャンネルからMuteされているため、発言できません。
      */
     public static String errmsgMuted() {
-        String msg = resources.getString("errmsgMuted");
+        String msg = resources.getStringOrNull("errmsgMuted");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -331,7 +341,7 @@ public class Messages {
      * チャンネル %channel% はグローバルチャンネルなので、退出できません。
      */
     public static String errmsgCannotLeaveGlobal(Object channel) {
-        String msg = resources.getString("errmsgCannotLeaveGlobal");
+        String msg = resources.getStringOrNull("errmsgCannotLeaveGlobal");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -342,7 +352,7 @@ public class Messages {
      * このプレイヤーは既に非表示になっています。
      */
     public static String errmsgAlreadyHidedPlayer() {
-        String msg = resources.getString("errmsgAlreadyHidedPlayer");
+        String msg = resources.getStringOrNull("errmsgAlreadyHidedPlayer");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -352,7 +362,7 @@ public class Messages {
      * &7| &cグローバルチャンネル
      */
     public static String channelInfoGlobal() {
-        String msg = resources.getString("channelInfoGlobal");
+        String msg = resources.getStringOrNull("channelInfoGlobal");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -362,7 +372,7 @@ public class Messages {
      * 指定されたチャンネル名が既に存在します。
      */
     public static String errmsgExist() {
-        String msg = resources.getString("errmsgExist");
+        String msg = resources.getStringOrNull("errmsgExist");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -372,7 +382,7 @@ public class Messages {
      * %key% を %value% と覚えました。
      */
     public static String cmdmsgDictionaryAdd(Object key, Object value) {
-        String msg = resources.getString("cmdmsgDictionaryAdd");
+        String msg = resources.getStringOrNull("cmdmsgDictionaryAdd");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%key%", key.toString());
@@ -384,7 +394,7 @@ public class Messages {
      * 指定されたプレイヤー %player% が見つかりません。
      */
     public static String errmsgNotfoundPlayer(Object player) {
-        String msg = resources.getString("errmsgNotfoundPlayer");
+        String msg = resources.getStringOrNull("errmsgNotfoundPlayer");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -395,7 +405,7 @@ public class Messages {
      * チャンネル %channel% はグローバルチャンネルなので、キックできません。
      */
     public static String errmsgCannotKickGlobal(Object channel) {
-        String msg = resources.getString("errmsgCannotKickGlobal");
+        String msg = resources.getStringOrNull("errmsgCannotKickGlobal");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -406,7 +416,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7NGワード発言により、%player% さんをチャンネルから自動キックしました。
      */
     public static Component kickNGWordMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("kickNGWordMessage");
+        String msg = resources.getStringOrNull("kickNGWordMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -419,7 +429,7 @@ public class Messages {
      * &6/%label% hide (player) &7- 指定したプレイヤーの発言内容を非表示にします。
      */
     public static String usageHidePlayer(Object label) {
-        String msg = resources.getString("usageHidePlayer");
+        String msg = resources.getStringOrNull("usageHidePlayer");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -430,7 +440,7 @@ public class Messages {
      * &7----- &b参加中のチャット &7-----
      */
     public static String motdFirstLine() {
-        String msg = resources.getString("motdFirstLine");
+        String msg = resources.getStringOrNull("motdFirstLine");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -440,7 +450,7 @@ public class Messages {
      * チャンネル %channel% から退出しました。
      */
     public static String cmdmsgLeave(Object channel) {
-        String msg = resources.getString("cmdmsgLeave");
+        String msg = resources.getStringOrNull("cmdmsgLeave");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -451,7 +461,7 @@ public class Messages {
      * &f[&cLC&f]
      */
     public static String errorPrefix() {
-        String msg = resources.getString("errorPrefix");
+        String msg = resources.getStringOrNull("errorPrefix");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -461,7 +471,7 @@ public class Messages {
      * チャンネル %channel% を表示に設定しました。
      */
     public static String cmdmsgUnhided(Object channel) {
-        String msg = resources.getString("cmdmsgUnhided");
+        String msg = resources.getStringOrNull("cmdmsgUnhided");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -472,7 +482,7 @@ public class Messages {
      * チャンネル %channel% を非表示に設定しました。
      */
     public static String cmdmsgHided(Object channel) {
-        String msg = resources.getString("cmdmsgHided");
+        String msg = resources.getStringOrNull("cmdmsgHided");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -483,7 +493,7 @@ public class Messages {
      * %player%にプライベートメッセージを送る
      */
     public static String hoverPlayerName(Object player) {
-        String msg = resources.getString("hoverPlayerName");
+        String msg = resources.getStringOrNull("hoverPlayerName");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -494,7 +504,7 @@ public class Messages {
      * チャンネル %channel% を削除しました。
      */
     public static String cmdmsgRemove(Object channel) {
-        String msg = resources.getString("cmdmsgRemove");
+        String msg = resources.getStringOrNull("cmdmsgRemove");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -505,7 +515,7 @@ public class Messages {
      * チャンネルが無くなってしまったため、参加できませんでした。
      */
     public static String errmsgNotfoundChannel() {
-        String msg = resources.getString("errmsgNotfoundChannel");
+        String msg = resources.getStringOrNull("errmsgNotfoundChannel");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -515,7 +525,7 @@ public class Messages {
      * &6/%label% check remove &7- /ch check で一覧されたチャンネルを全て削除します。
      */
     public static String usageCheck2(Object label) {
-        String msg = resources.getString("usageCheck2");
+        String msg = resources.getStringOrNull("usageCheck2");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -526,7 +536,7 @@ public class Messages {
      * このサーバーでは、チャンネルチャットは動作しません。
      */
     public static String errmsgChannelChatDisabled() {
-        String msg = resources.getString("errmsgChannelChatDisabled");
+        String msg = resources.getStringOrNull("errmsgChannelChatDisabled");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -536,7 +546,7 @@ public class Messages {
      * &6/%label% check &7- モデレーターがいないチャンネルを一覧します。
      */
     public static String usageCheck1(Object label) {
-        String msg = resources.getString("usageCheck1");
+        String msg = resources.getStringOrNull("usageCheck1");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -547,7 +557,7 @@ public class Messages {
      * &7----------------------------------
      */
     public static String listEndLine() {
-        String msg = resources.getString("listEndLine");
+        String msg = resources.getStringOrNull("listEndLine");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -557,7 +567,7 @@ public class Messages {
      * %channel% は短すぎてチャンネル名に使用できません。%min% 文字以上にしてください。
      */
     public static String errmsgCannotUseForChannelTooShort(Object channel, Object min) {
-        String msg = resources.getString("errmsgCannotUseForChannelTooShort");
+        String msg = resources.getStringOrNull("errmsgCannotUseForChannelTooShort");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -569,7 +579,7 @@ public class Messages {
      * 招待を拒否しました。
      */
     public static String cmdmsgDeny() {
-        String msg = resources.getString("cmdmsgDeny");
+        String msg = resources.getStringOrNull("cmdmsgDeny");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("infoPrefix", "") + kr.toString());
@@ -579,7 +589,7 @@ public class Messages {
      * このプレイヤーは非表示になっていません。
      */
     public static String errmsgAlreadyUnhidedPlayer() {
-        String msg = resources.getString("errmsgAlreadyUnhidedPlayer");
+        String msg = resources.getStringOrNull("errmsgAlreadyUnhidedPlayer");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -589,7 +599,7 @@ public class Messages {
      * 現在チャンネルに参加していません。
      */
     public static String errmsgNoJoin() {
-        String msg = resources.getString("errmsgNoJoin");
+        String msg = resources.getStringOrNull("errmsgNoJoin");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -599,7 +609,7 @@ public class Messages {
      * テンプレート番号は、0から9までの数字を指定してください。
      */
     public static String errmsgInvalidTemplateNumber() {
-        String msg = resources.getString("errmsgInvalidTemplateNumber");
+        String msg = resources.getStringOrNull("errmsgInvalidTemplateNumber");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -609,7 +619,7 @@ public class Messages {
      * 指定されたチャンネルが存在しません。
      */
     public static String errmsgNotExist() {
-        String msg = resources.getString("errmsgNotExist");
+        String msg = resources.getStringOrNull("errmsgNotExist");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -619,7 +629,7 @@ public class Messages {
      * &7| &cフォーマット設定：
      */
     public static String channelInfoFormat() {
-        String msg = resources.getString("channelInfoFormat");
+        String msg = resources.getStringOrNull("channelInfoFormat");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -629,7 +639,7 @@ public class Messages {
      * %player% さんを、チャンネル %channel% からBANしました。
      */
     public static String cmdmsgBan(Object player, Object channel) {
-        String msg = resources.getString("cmdmsgBan");
+        String msg = resources.getStringOrNull("cmdmsgBan");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -641,7 +651,7 @@ public class Messages {
      * &e----- &6LunaChat %type% command (&c%num%&6/&c%max%&6) &e-----
      */
     public static String usageTop(Object type, Object num, Object max) {
-        String msg = resources.getString("usageTop");
+        String msg = resources.getStringOrNull("usageTop");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%type%", type.toString());
@@ -654,7 +664,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんをチャンネルからMuteしました。
      */
     public static Component muteMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("muteMessage");
+        String msg = resources.getStringOrNull("muteMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -667,7 +677,7 @@ public class Messages {
      * チャンネル %channel% に参加しました。
      */
     public static String cmdmsgJoin(Object channel) {
-        String msg = resources.getString("cmdmsgJoin");
+        String msg = resources.getStringOrNull("cmdmsgJoin");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -678,7 +688,7 @@ public class Messages {
      * &7---------- &bチャンネルリスト &7----------
      */
     public static String listFirstLine() {
-        String msg = resources.getString("listFirstLine");
+        String msg = resources.getStringOrNull("listFirstLine");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -688,7 +698,7 @@ public class Messages {
      * %key% を忘れました。
      */
     public static String cmdmsgDictionaryRemove(Object key) {
-        String msg = resources.getString("cmdmsgDictionaryRemove");
+        String msg = resources.getStringOrNull("cmdmsgDictionaryRemove");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%key%", key.toString());
@@ -699,7 +709,7 @@ public class Messages {
      * &6/%label% join (channel) &7- チャンネルに参加します。
      */
     public static String usageJoin(Object label) {
-        String msg = resources.getString("usageJoin");
+        String msg = resources.getStringOrNull("usageJoin");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -710,7 +720,7 @@ public class Messages {
      * &7| &c%date%&7, &f%player%&7: &f%message%
      */
     public static String logDisplayFormat(Object date, Object player, Object message) {
-        String msg = resources.getString("logDisplayFormat");
+        String msg = resources.getStringOrNull("logDisplayFormat");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%date%", date.toString());
@@ -723,7 +733,7 @@ public class Messages {
      * チャンネル別名は %max% 文字以下にしてください。
      */
     public static String errmsgToolongAlias(Object max) {
-        String msg = resources.getString("errmsgToolongAlias");
+        String msg = resources.getStringOrNull("errmsgToolongAlias");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%max%", max.toString());
@@ -734,7 +744,7 @@ public class Messages {
      * テンプレート %index% を、%value% に設定しました。
      */
     public static String cmdmsgTemplate(Object index, Object value) {
-        String msg = resources.getString("cmdmsgTemplate");
+        String msg = resources.getStringOrNull("cmdmsgTemplate");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%index%", index.toString());
@@ -746,7 +756,7 @@ public class Messages {
      * %word% はグローバルチャンネル名に使用できない文字を含んでいます。
      */
     public static String errmsgCannotUseForGlobal(Object word) {
-        String msg = resources.getString("errmsgCannotUseForGlobal");
+        String msg = resources.getStringOrNull("errmsgCannotUseForGlobal");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%word%", word.toString());
@@ -757,7 +767,7 @@ public class Messages {
      * 既にチャンネルに参加しています。
      */
     public static String errmsgInvitedAlreadyJoin() {
-        String msg = resources.getString("errmsgInvitedAlreadyJoin");
+        String msg = resources.getStringOrNull("errmsgInvitedAlreadyJoin");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -767,7 +777,7 @@ public class Messages {
      * &6/%label% deny &7- 招待を拒否します。
      */
     public static String usageDeny(Object label) {
-        String msg = resources.getString("usageDeny");
+        String msg = resources.getStringOrNull("usageDeny");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -778,7 +788,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんのMuteが解除されました。
      */
     public static Component unmuteMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("unmuteMessage");
+        String msg = resources.getStringOrNull("unmuteMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -791,7 +801,7 @@ public class Messages {
      * チャンネル %channel% からMuteされました。
      */
     public static String cmdmsgMuted(Object channel) {
-        String msg = resources.getString("cmdmsgMuted");
+        String msg = resources.getStringOrNull("cmdmsgMuted");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -802,7 +812,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7チャンネルが削除されました。
      */
     public static String breakupMessage(Object color, Object channel) {
-        String msg = resources.getString("breakupMessage");
+        String msg = resources.getStringOrNull("breakupMessage");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%color%", color.toString());
@@ -814,7 +824,7 @@ public class Messages {
      * &7----- &b非表示にしているチャット &7-----
      */
     public static String hideChannelFirstLine() {
-        String msg = resources.getString("hideChannelFirstLine");
+        String msg = resources.getStringOrNull("hideChannelFirstLine");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -824,7 +834,7 @@ public class Messages {
      * %player% さんを、チャンネル %channel% でMuteしました。
      */
     public static String cmdmsgMute(Object player, Object channel) {
-        String msg = resources.getString("cmdmsgMute");
+        String msg = resources.getStringOrNull("cmdmsgMute");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -836,7 +846,7 @@ public class Messages {
      * &6/%label% log [channel] [p=player] [f=filter] [d=date] [r] &7- チャンネルの発言ログを表示します。
      */
     public static String usageLog(Object label) {
-        String msg = resources.getString("usageLog");
+        String msg = resources.getStringOrNull("usageLog");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -847,7 +857,7 @@ public class Messages {
      * %player% さんの、チャンネル %channel% のBANを解除しました。
      */
     public static String cmdmsgPardon(Object player, Object channel) {
-        String msg = resources.getString("cmdmsgPardon");
+        String msg = resources.getStringOrNull("cmdmsgPardon");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -859,7 +869,7 @@ public class Messages {
      * &6/%label% create (channel) [description] &7- チャンネルを作成します。
      */
     public static String usageCreate(Object label) {
-        String msg = resources.getString("usageCreate");
+        String msg = resources.getStringOrNull("usageCreate");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -870,7 +880,7 @@ public class Messages {
      * &7| &cワールドチャット
      */
     public static String channelInfoWorldChat() {
-        String msg = resources.getString("channelInfoWorldChat");
+        String msg = resources.getStringOrNull("channelInfoWorldChat");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -880,7 +890,7 @@ public class Messages {
      * &6/%label% ban (name) [minutes] &7- 指定したプレイヤーを指定した分の間、BANします。
      */
     public static String usageBan2(Object label) {
-        String msg = resources.getString("usageBan2");
+        String msg = resources.getStringOrNull("usageBan2");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -891,7 +901,7 @@ public class Messages {
      * &7|
      */
     public static String channelInfoPrefix() {
-        String msg = resources.getString("channelInfoPrefix");
+        String msg = resources.getStringOrNull("channelInfoPrefix");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -901,7 +911,7 @@ public class Messages {
      * &6/%label% format [channel] (format...) &7- チャンネルのメッセージフォーマットを設定します。
      */
     public static String usageFormat(Object label) {
-        String msg = resources.getString("usageFormat");
+        String msg = resources.getStringOrNull("usageFormat");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -912,7 +922,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんがチャンネルのモデレーターになりました。
      */
     public static Component addModeratorMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("addModeratorMessage");
+        String msg = resources.getStringOrNull("addModeratorMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -925,7 +935,7 @@ public class Messages {
      * &7----- &b%channel%の発言ログ &7-----
      */
     public static String logDisplayFirstLine(Object channel) {
-        String msg = resources.getString("logDisplayFirstLine");
+        String msg = resources.getStringOrNull("logDisplayFirstLine");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -936,7 +946,7 @@ public class Messages {
      * 指定されたプレイヤーは既にBANリストに含まれています。
      */
     public static String errmsgAlreadyBanned() {
-        String msg = resources.getString("errmsgAlreadyBanned");
+        String msg = resources.getStringOrNull("errmsgAlreadyBanned");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -946,7 +956,7 @@ public class Messages {
      * トピック: &a%topic%
      */
     public static String cmdmsgSetTopic(Object topic) {
-        String msg = resources.getString("cmdmsgSetTopic");
+        String msg = resources.getStringOrNull("cmdmsgSetTopic");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%topic%", topic.toString());
@@ -957,7 +967,7 @@ public class Messages {
      * テンプレート %index% を削除しました。
      */
     public static String cmdmsgTemplateRemove(Object index) {
-        String msg = resources.getString("cmdmsgTemplateRemove");
+        String msg = resources.getStringOrNull("cmdmsgTemplateRemove");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%index%", index.toString());
@@ -968,7 +978,7 @@ public class Messages {
      * %player% さんのJapanize変換を %value% にしました。
      */
     public static String cmdmsgPlayerJapanizeOther(Object player, Object value) {
-        String msg = resources.getString("cmdmsgPlayerJapanizeOther");
+        String msg = resources.getStringOrNull("cmdmsgPlayerJapanizeOther");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -980,7 +990,7 @@ public class Messages {
      * &6/%label% accept &7- 招待を受けてチャンネルチャットに入室します。
      */
     public static String usageAccept(Object label) {
-        String msg = resources.getString("usageAccept");
+        String msg = resources.getStringOrNull("usageAccept");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -991,7 +1001,7 @@ public class Messages {
      * &6/%label% (name) [message] &7- 指定したプレイヤーとの個人チャットを開始します。
      */
     public static String usageMessage(Object label) {
-        String msg = resources.getString("usageMessage");
+        String msg = resources.getStringOrNull("usageMessage");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1002,7 +1012,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんの期限付きMuteが解除されました。
      */
     public static Component expiredMuteMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("expiredMuteMessage");
+        String msg = resources.getStringOrNull("expiredMuteMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -1015,7 +1025,7 @@ public class Messages {
      * 入室するには /ch accept、拒否するには /ch deny を実行してください。
      */
     public static String cmdmsgInvited2() {
-        String msg = resources.getString("cmdmsgInvited2");
+        String msg = resources.getStringOrNull("cmdmsgInvited2");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("infoPrefix", "") + kr.toString());
@@ -1025,7 +1035,7 @@ public class Messages {
      * 指定されたプレイヤーは既にMuteリストに含まれています。
      */
     public static String errmsgAlreadyMuted() {
-        String msg = resources.getString("errmsgAlreadyMuted");
+        String msg = resources.getStringOrNull("errmsgAlreadyMuted");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1035,7 +1045,7 @@ public class Messages {
      * %player% さんから、チャンネル %channel% に招待されました。
      */
     public static String cmdmsgInvited1(Object player, Object channel) {
-        String msg = resources.getString("cmdmsgInvited1");
+        String msg = resources.getStringOrNull("cmdmsgInvited1");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -1047,7 +1057,7 @@ public class Messages {
      * 有効なオプション指定が1つもありませんでした。
      */
     public static String errmsgInvalidOptions() {
-        String msg = resources.getString("errmsgInvalidOptions");
+        String msg = resources.getStringOrNull("errmsgInvalidOptions");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1057,7 +1067,7 @@ public class Messages {
      * &6/%label% leave &7- 参加しているチャンネルから退出します。
      */
     public static String usageLeave(Object label) {
-        String msg = resources.getString("usageLeave");
+        String msg = resources.getStringOrNull("usageLeave");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1068,7 +1078,7 @@ public class Messages {
      * 指定されたチャンネルが存在しないか、チャンネルが指定されませんでした。
      */
     public static String errmsgNotExistOrNotSpecified() {
-        String msg = resources.getString("errmsgNotExistOrNotSpecified");
+        String msg = resources.getStringOrNull("errmsgNotExistOrNotSpecified");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1078,7 +1088,7 @@ public class Messages {
      * 権限 "%permission%" が無いため、実行できません。
      */
     public static String errmsgPermission(Object permission) {
-        String msg = resources.getString("errmsgPermission");
+        String msg = resources.getStringOrNull("errmsgPermission");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%permission%", permission.toString());
@@ -1089,7 +1099,7 @@ public class Messages {
      * &6/%label% set default (player) [channel] &7- 指定したプレイヤーの発言先チャンネルを、指定したチャンネルに設定します。
      */
     public static String usageSet1(Object label) {
-        String msg = resources.getString("usageSet1");
+        String msg = resources.getStringOrNull("usageSet1");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1100,7 +1110,7 @@ public class Messages {
      * %player% さんを、チャンネル %channel% に招待しました。
      */
     public static String cmdmsgInvite(Object player, Object channel) {
-        String msg = resources.getString("cmdmsgInvite");
+        String msg = resources.getStringOrNull("cmdmsgInvite");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -1112,7 +1122,7 @@ public class Messages {
      * &6/%label% unhide [channel] &7- 指定したチャンネルの発言内容を非表示から表示に戻します。
      */
     public static String usageUnhide(Object label) {
-        String msg = resources.getString("usageUnhide");
+        String msg = resources.getStringOrNull("usageUnhide");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1123,7 +1133,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんがチャンネルから退出しました。
      */
     public static Component quitMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("quitMessage");
+        String msg = resources.getStringOrNull("quitMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -1136,7 +1146,7 @@ public class Messages {
      * &7| &f%channel%&7(&c%online%&7/&c%total%&7) &a%topic%
      */
     public static Component listFormat(Object channel, Object online, Object total, Object topic) {
-        String msg = resources.getString("listFormat");
+        String msg = resources.getStringOrNull("listFormat");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%channel%", channel.toString());
@@ -1150,7 +1160,7 @@ public class Messages {
      * <注意> 現在このチャンネルを非表示に設定しています。
      */
     public static String cmdmsgSetHide() {
-        String msg = resources.getString("cmdmsgSetHide");
+        String msg = resources.getStringOrNull("cmdmsgSetHide");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("infoPrefix", "") + kr.toString());
@@ -1160,7 +1170,7 @@ public class Messages {
      * &6/%label% option [channel] (key=value...) &7- チャンネルのオプションを設定します。
      */
     public static String usageOption(Object label) {
-        String msg = resources.getString("usageOption");
+        String msg = resources.getStringOrNull("usageOption");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1171,7 +1181,7 @@ public class Messages {
      * 発言先を%channel%にする
      */
     public static String hoverChannelName(Object channel) {
-        String msg = resources.getString("hoverChannelName");
+        String msg = resources.getStringOrNull("hoverChannelName");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -1182,7 +1192,7 @@ public class Messages {
      * &6/%label% mute (name) &7- 指定したプレイヤーのチャンネルでの発言権を剥奪します。
      */
     public static String usageMute(Object label) {
-        String msg = resources.getString("usageMute");
+        String msg = resources.getStringOrNull("usageMute");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1193,7 +1203,7 @@ public class Messages {
      * %player% さんを、チャンネル %channel% からキックしました。
      */
     public static String cmdmsgKick(Object player, Object channel) {
-        String msg = resources.getString("cmdmsgKick");
+        String msg = resources.getStringOrNull("cmdmsgKick");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -1205,7 +1215,7 @@ public class Messages {
      * チャンネル %channel% はグローバルチャンネルなので、モデレーターを設定できません。
      */
     public static String errmsgCannotModeratorGlobal(Object channel) {
-        String msg = resources.getString("errmsgCannotModeratorGlobal");
+        String msg = resources.getStringOrNull("errmsgCannotModeratorGlobal");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -1216,7 +1226,7 @@ public class Messages {
      * &6/%label% (player) on|off &7- Turn on/off the Japanize conversion of other player's chat.
      */
     public static String usageJapanizeOther(Object label) {
-        String msg = resources.getString("usageJapanizeOther");
+        String msg = resources.getStringOrNull("usageJapanizeOther");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1227,7 +1237,7 @@ public class Messages {
      * プレイヤー %player% を非表示に設定しました。
      */
     public static String cmdmsgHidedPlayer(Object player) {
-        String msg = resources.getString("cmdmsgHidedPlayer");
+        String msg = resources.getStringOrNull("cmdmsgHidedPlayer");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -1238,7 +1248,7 @@ public class Messages {
      * %key% を %value% に設定しました。
      */
     public static String cmdmsgOption(Object key, Object value) {
-        String msg = resources.getString("cmdmsgOption");
+        String msg = resources.getStringOrNull("cmdmsgOption");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%key%", key.toString());
@@ -1250,7 +1260,7 @@ public class Messages {
      * あなたはこのチャンネルからBANされています。
      */
     public static String errmsgBanned() {
-        String msg = resources.getString("errmsgBanned");
+        String msg = resources.getStringOrNull("errmsgBanned");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1260,7 +1270,7 @@ public class Messages {
      * 招待を受けたプレイヤーではありません。
      */
     public static String errmsgNotInvited() {
-        String msg = resources.getString("errmsgNotInvited");
+        String msg = resources.getStringOrNull("errmsgNotInvited");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1270,7 +1280,7 @@ public class Messages {
      * &6/%label% [message] &7- 受信した個人チャットに返信します。
      */
     public static String usageReply(Object label) {
-        String msg = resources.getString("usageReply");
+        String msg = resources.getStringOrNull("usageReply");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1281,7 +1291,7 @@ public class Messages {
      * %player% さんをチャンネル %channel% のモデレーターから外しました。
      */
     public static String cmdmsgModeratorMinus(Object player, Object channel) {
-        String msg = resources.getString("cmdmsgModeratorMinus");
+        String msg = resources.getStringOrNull("cmdmsgModeratorMinus");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -1293,7 +1303,7 @@ public class Messages {
      * &7| &cパスワード設定あり
      */
     public static String channelInfoPassword() {
-        String msg = resources.getString("channelInfoPassword");
+        String msg = resources.getStringOrNull("channelInfoPassword");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -1303,7 +1313,7 @@ public class Messages {
      * &6/%label% unhide (player) &7- 指定したプレイヤーの発言内容を非表示から表示に戻します。
      */
     public static String usageUnhidePlayer(Object label) {
-        String msg = resources.getString("usageUnhidePlayer");
+        String msg = resources.getStringOrNull("usageUnhidePlayer");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1314,7 +1324,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんがチャンネルのモデレーターから外れました。
      */
     public static Component removeModeratorMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("removeModeratorMessage");
+        String msg = resources.getStringOrNull("removeModeratorMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -1327,7 +1337,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんをチャンネルからキックしました。
      */
     public static Component kickMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("kickMessage");
+        String msg = resources.getStringOrNull("kickMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -1340,7 +1350,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんを期限 %minutes% 分でチャンネルからMuteしました。
      */
     public static Component muteWithExpireMessage(Object color, Object channel, Object player, Object minutes) {
-        String msg = resources.getString("muteWithExpireMessage");
+        String msg = resources.getStringOrNull("muteWithExpireMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -1354,7 +1364,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7NGワード発言により、%player% さんをチャンネルから自動Muteしました。
      */
     public static Component muteNGWordMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("muteNGWordMessage");
+        String msg = resources.getStringOrNull("muteNGWordMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -1367,7 +1377,7 @@ public class Messages {
      * &7---------- &bチャンネル情報 &7----------
      */
     public static String channelInfoFirstLine() {
-        String msg = resources.getString("channelInfoFirstLine");
+        String msg = resources.getStringOrNull("channelInfoFirstLine");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -1377,7 +1387,7 @@ public class Messages {
      * あなたが受信したプライベートメッセージがありません。
      */
     public static String errmsgNotfoundPM() {
-        String msg = resources.getString("errmsgNotfoundPM");
+        String msg = resources.getStringOrNull("errmsgNotfoundPM");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1387,7 +1397,7 @@ public class Messages {
      * チャンネル %channel% を新規作成しました。
      */
     public static String cmdmsgCreate(Object channel) {
-        String msg = resources.getString("cmdmsgCreate");
+        String msg = resources.getStringOrNull("cmdmsgCreate");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -1398,7 +1408,7 @@ public class Messages {
      * %channel% はチャンネル名に使用できない文字を含んでいます。
      */
     public static String errmsgCannotUseForChannel(Object channel) {
-        String msg = resources.getString("errmsgCannotUseForChannel");
+        String msg = resources.getStringOrNull("errmsgCannotUseForChannel");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -1409,7 +1419,7 @@ public class Messages {
      * %key% に指定された %value% は、Japanize変換タイプとして正しくありません。
      */
     public static String errmsgInvalidJapanizeOption(Object key, Object value) {
-        String msg = resources.getString("errmsgInvalidJapanizeOption");
+        String msg = resources.getStringOrNull("errmsgInvalidJapanizeOption");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%key%", key.toString());
@@ -1421,7 +1431,7 @@ public class Messages {
      * &6/%label% hide [channel] &7- 指定したチャンネルの発言内容を非表示にします。
      */
     public static String usageHide(Object label) {
-        String msg = resources.getString("usageHide");
+        String msg = resources.getStringOrNull("usageHide");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1432,7 +1442,7 @@ public class Messages {
      * &6/%label% help [user|mod|admin] [page] &7- ヘルプを表示します。
      */
     public static String usageHelp(Object label) {
-        String msg = resources.getString("usageHelp");
+        String msg = resources.getStringOrNull("usageHelp");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1443,7 +1453,7 @@ public class Messages {
      * &7| &cBANリスト：
      */
     public static String channelInfoBanned() {
-        String msg = resources.getString("channelInfoBanned");
+        String msg = resources.getStringOrNull("channelInfoBanned");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -1453,7 +1463,7 @@ public class Messages {
      * Mute期限(分)の指定が正しくありません。1 から 43200 の間の数値を指定してください。
      */
     public static String errmsgInvalidMuteExpireParameter() {
-        String msg = resources.getString("errmsgInvalidMuteExpireParameter");
+        String msg = resources.getStringOrNull("errmsgInvalidMuteExpireParameter");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1463,7 +1473,7 @@ public class Messages {
      * プレイヤー %channel% を表示に設定しました。
      */
     public static String cmdmsgUnhidedPlayer(Object channel) {
-        String msg = resources.getString("cmdmsgUnhidedPlayer");
+        String msg = resources.getStringOrNull("cmdmsgUnhidedPlayer");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -1474,7 +1484,7 @@ public class Messages {
      * 指定されたプレイヤーはBANリストに含まれていません。
      */
     public static String errmsgNotBanned() {
-        String msg = resources.getString("errmsgNotBanned");
+        String msg = resources.getStringOrNull("errmsgNotBanned");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1484,7 +1494,7 @@ public class Messages {
      * 自分自身にプライベートメッセージを送ることはできません。
      */
     public static String errmsgCannotSendPMSelf() {
-        String msg = resources.getString("errmsgCannotSendPMSelf");
+        String msg = resources.getStringOrNull("errmsgCannotSendPMSelf");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1494,7 +1504,7 @@ public class Messages {
      * &6/%label% kick (name) &7- 指定したプレイヤーをチャンネルチャットからキックします。
      */
     public static String usageKick(Object label) {
-        String msg = resources.getString("usageKick");
+        String msg = resources.getStringOrNull("usageKick");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1505,7 +1515,7 @@ public class Messages {
      * メッセージフォーマットを %format% に設定しました。
      */
     public static String cmdmsgFormat(Object format) {
-        String msg = resources.getString("cmdmsgFormat");
+        String msg = resources.getStringOrNull("cmdmsgFormat");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%format%", format.toString());
@@ -1516,7 +1526,7 @@ public class Messages {
      * チャンネル %channel% はグローバルチャンネルなので、削除できません。
      */
     public static String errmsgCannotRemoveGlobal(Object channel) {
-        String msg = resources.getString("errmsgCannotRemoveGlobal");
+        String msg = resources.getStringOrNull("errmsgCannotRemoveGlobal");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -1527,7 +1537,7 @@ public class Messages {
      * このチャンネルはグローバルチャンネルのため、ブロードキャストをオフにできません。
      */
     public static String errmsgCannotOffGlobalBroadcast() {
-        String msg = resources.getString("errmsgCannotOffGlobalBroadcast");
+        String msg = resources.getStringOrNull("errmsgCannotOffGlobalBroadcast");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1537,7 +1547,7 @@ public class Messages {
      * &6/%label% dic (add (word) (value)|remove (word)) &7- Japanize変換辞書に新しいワードを登録したり、指定したワードを削除したりします。
      */
     public static String usageDic(Object label) {
-        String msg = resources.getString("usageDic");
+        String msg = resources.getStringOrNull("usageDic");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1548,7 +1558,7 @@ public class Messages {
      * &7---------- &bチャンネルリスト&7(&c%page%&7/&c%max%&7) ----------
      */
     public static String listFirstLinePaging(Object page, Object max) {
-        String msg = resources.getString("listFirstLinePaging");
+        String msg = resources.getStringOrNull("listFirstLinePaging");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%page%", page.toString());
@@ -1560,7 +1570,7 @@ public class Messages {
      * &6/%label% dictionary (add (word) (value)|remove (word)) &7- Japanize変換辞書に新しいワードを登録したり、指定したワードを削除したりします。
      */
     public static String usageDictionary(Object label) {
-        String msg = resources.getString("usageDictionary");
+        String msg = resources.getStringOrNull("usageDictionary");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1571,7 +1581,7 @@ public class Messages {
      * 説明文は %max% 文字以下にしてください。
      */
     public static String errmsgToolongDescription(Object max) {
-        String msg = resources.getString("errmsgToolongDescription");
+        String msg = resources.getStringOrNull("errmsgToolongDescription");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%max%", max.toString());
@@ -1582,7 +1592,7 @@ public class Messages {
      * &6/%label% on|off &7- Turn on/off the Japanize conversion of your chat.
      */
     public static String usageJapanize(Object label) {
-        String msg = resources.getString("usageJapanize");
+        String msg = resources.getStringOrNull("usageJapanize");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1593,7 +1603,7 @@ public class Messages {
      * コマンドの指定が正しくありません。
      */
     public static String errmsgCommand() {
-        String msg = resources.getString("errmsgCommand");
+        String msg = resources.getStringOrNull("errmsgCommand");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1603,7 +1613,7 @@ public class Messages {
      * &e-----------------------------------------
      */
     public static String usageFoot() {
-        String msg = resources.getString("usageFoot");
+        String msg = resources.getStringOrNull("usageFoot");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -1613,7 +1623,7 @@ public class Messages {
      * 個人チャットチャンネルには参加できません。
      */
     public static String errmsgCannotJoinPersonal() {
-        String msg = resources.getString("errmsgCannotJoinPersonal");
+        String msg = resources.getStringOrNull("errmsgCannotJoinPersonal");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1623,7 +1633,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7あなたの発言は、誰にも届きませんでした。
      */
     public static Component noRecipientMessage(Object color, Object channel) {
-        String msg = resources.getString("noRecipientMessage");
+        String msg = resources.getStringOrNull("noRecipientMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -1635,7 +1645,7 @@ public class Messages {
      * 指定されたチャンネルもプレイヤーも存在しません。
      */
     public static String errmsgNotExistChannelAndPlayer() {
-        String msg = resources.getString("errmsgNotExistChannelAndPlayer");
+        String msg = resources.getStringOrNull("errmsgNotExistChannelAndPlayer");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1645,7 +1655,7 @@ public class Messages {
      * 指定されたチャンネルに参加していません。
      */
     public static String errmsgNomember() {
-        String msg = resources.getString("errmsgNomember");
+        String msg = resources.getStringOrNull("errmsgNomember");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1655,7 +1665,7 @@ public class Messages {
      * BAN期限(分)の指定が正しくありません。1 から 43200 の間の数値を指定してください。
      */
     public static String errmsgInvalidBanExpireParameter() {
-        String msg = resources.getString("errmsgInvalidBanExpireParameter");
+        String msg = resources.getStringOrNull("errmsgInvalidBanExpireParameter");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1665,7 +1675,7 @@ public class Messages {
      * &6/%label% invite (name) &7- 指定したプレイヤーをチャンネルチャットに招待します。
      */
     public static String usageInvite(Object label) {
-        String msg = resources.getString("usageInvite");
+        String msg = resources.getStringOrNull("usageInvite");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1676,7 +1686,7 @@ public class Messages {
      * &7----- &b非表示にしているプレイヤー &7-----
      */
     public static String hidePlayerFirstLine() {
-        String msg = resources.getString("hidePlayerFirstLine");
+        String msg = resources.getStringOrNull("hidePlayerFirstLine");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -1686,7 +1696,7 @@ public class Messages {
      * このチャンネルは非表示になっていません。
      */
     public static String errmsgAlreadyUnhided() {
-        String msg = resources.getString("errmsgAlreadyUnhided");
+        String msg = resources.getStringOrNull("errmsgAlreadyUnhided");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1696,7 +1706,7 @@ public class Messages {
      * 指定されたチャンネル別名 %aliase% は、チャンネル %channel% と重複するので設定できません。
      */
     public static String errmsgDuplicatedAlias(Object aliase, Object channel) {
-        String msg = resources.getString("errmsgDuplicatedAlias");
+        String msg = resources.getStringOrNull("errmsgDuplicatedAlias");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%aliase%", aliase.toString());
@@ -1708,7 +1718,7 @@ public class Messages {
      * &6次のページを見るには、&c/%label% help %type% %next%&6 と実行してください。
      */
     public static String usageNoticeNextPage(Object label, Object type, Object next) {
-        String msg = resources.getString("usageNoticeNextPage");
+        String msg = resources.getStringOrNull("usageNoticeNextPage");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1721,7 +1731,7 @@ public class Messages {
      * &7----------------------------------
      */
     public static String logDisplayEndLine() {
-        String msg = resources.getString("logDisplayEndLine");
+        String msg = resources.getStringOrNull("logDisplayEndLine");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -1731,7 +1741,7 @@ public class Messages {
      * &7| &c範囲チャット：%block% ブロック
      */
     public static String channelInfoRangeChat(Object block) {
-        String msg = resources.getString("channelInfoRangeChat");
+        String msg = resources.getStringOrNull("channelInfoRangeChat");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%block%", block.toString());
@@ -1742,7 +1752,7 @@ public class Messages {
      * &6/%label% template (number) (template...) &7- メッセージフォーマットのテンプレートを登録します。
      */
     public static String usageTemplate(Object label) {
-        String msg = resources.getString("usageTemplate");
+        String msg = resources.getStringOrNull("usageTemplate");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1753,7 +1763,7 @@ public class Messages {
      * 指定されたプレイヤーはMuteリストに含まれていません。
      */
     public static String errmsgNotMuted() {
-        String msg = resources.getString("errmsgNotMuted");
+        String msg = resources.getStringOrNull("errmsgNotMuted");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1763,7 +1773,7 @@ public class Messages {
      * &7| &cMuteリスト：
      */
     public static String channelInfoMuted() {
-        String msg = resources.getString("channelInfoMuted");
+        String msg = resources.getStringOrNull("channelInfoMuted");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -1773,7 +1783,7 @@ public class Messages {
      * %player% さんの発言先を %channel% に設定しました。
      */
     public static String cmdmsgSetDefault(Object player, Object channel) {
-        String msg = resources.getString("cmdmsgSetDefault");
+        String msg = resources.getStringOrNull("cmdmsgSetDefault");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -1785,7 +1795,7 @@ public class Messages {
      * range に正しくない値が指定されました。
      */
     public static String errmsgInvalidRangeOption() {
-        String msg = resources.getString("errmsgInvalidRangeOption");
+        String msg = resources.getStringOrNull("errmsgInvalidRangeOption");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1795,7 +1805,7 @@ public class Messages {
      * %player% さんを、チャンネル %channel% から期限 %minutes% 分でMuteしました。
      */
     public static String cmdmsgMuteWithExpire(Object player, Object channel, Object minutes) {
-        String msg = resources.getString("cmdmsgMuteWithExpire");
+        String msg = resources.getStringOrNull("cmdmsgMuteWithExpire");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -1808,7 +1818,7 @@ public class Messages {
      * 指定されたプレイヤーはチャンネルに参加していません。
      */
     public static String errmsgNomemberOther() {
-        String msg = resources.getString("errmsgNomemberOther");
+        String msg = resources.getStringOrNull("errmsgNomemberOther");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1818,7 +1828,7 @@ public class Messages {
      * Your chat's Japanize conversion was turned %value%.
      */
     public static String cmdmsgPlayerJapanize(Object value) {
-        String msg = resources.getString("cmdmsgPlayerJapanize");
+        String msg = resources.getStringOrNull("cmdmsgPlayerJapanize");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%value%", value.toString());
@@ -1829,7 +1839,7 @@ public class Messages {
      * 招待された %player% さんは、既にチャンネルに参加しています。
      */
     public static String errmsgInvitedAlreadyExist(Object player) {
-        String msg = resources.getString("errmsgInvitedAlreadyExist");
+        String msg = resources.getStringOrNull("errmsgInvitedAlreadyExist");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -1840,7 +1850,7 @@ public class Messages {
      * チャンネル %channel% からBANされました。
      */
     public static String cmdmsgBanned(Object channel) {
-        String msg = resources.getString("cmdmsgBanned");
+        String msg = resources.getStringOrNull("cmdmsgBanned");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -1851,7 +1861,7 @@ public class Messages {
      * LunaChatの設定を再読み込みしました。
      */
     public static String cmdmsgReload() {
-        String msg = resources.getString("cmdmsgReload");
+        String msg = resources.getStringOrNull("cmdmsgReload");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("infoPrefix", "") + kr.toString());
@@ -1861,7 +1871,7 @@ public class Messages {
      * %value% はカラーコードとして正しくありません。
      */
     public static String errmsgInvalidColorCode(Object value) {
-        String msg = resources.getString("errmsgInvalidColorCode");
+        String msg = resources.getStringOrNull("errmsgInvalidColorCode");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%value%", value.toString());
@@ -1872,7 +1882,7 @@ public class Messages {
      * &7| &cチャンネル別名：&f
      */
     public static String channelInfoAlias() {
-        String msg = resources.getString("channelInfoAlias");
+        String msg = resources.getStringOrNull("channelInfoAlias");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -1882,7 +1892,7 @@ public class Messages {
      * パスワードを指定して、チャンネルに入ってください。
      */
     public static String errmsgPassword2() {
-        String msg = resources.getString("errmsgPassword2");
+        String msg = resources.getStringOrNull("errmsgPassword2");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1892,7 +1902,7 @@ public class Messages {
      * このチャンネルはパスワードが設定されているため入れません。
      */
     public static String errmsgPassword1() {
-        String msg = resources.getString("errmsgPassword1");
+        String msg = resources.getStringOrNull("errmsgPassword1");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1902,7 +1912,7 @@ public class Messages {
      * %channel% は長すぎてチャンネル名に使用できません。%max% 文字以下にしてください。
      */
     public static String errmsgCannotUseForChannelTooLong(Object channel, Object max) {
-        String msg = resources.getString("errmsgCannotUseForChannelTooLong");
+        String msg = resources.getStringOrNull("errmsgCannotUseForChannelTooLong");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -1914,7 +1924,7 @@ public class Messages {
      * %player% さんの、チャンネル %channel% のMuteを解除しました。
      */
     public static String cmdmsgUnmute(Object player, Object channel) {
-        String msg = resources.getString("cmdmsgUnmute");
+        String msg = resources.getStringOrNull("cmdmsgUnmute");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -1926,7 +1936,7 @@ public class Messages {
      * /ch (channel) (password)
      */
     public static String errmsgPassword3() {
-        String msg = resources.getString("errmsgPassword3");
+        String msg = resources.getStringOrNull("errmsgPassword3");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -1936,7 +1946,7 @@ public class Messages {
      * %player% さんをチャンネル %channel% のモデレーターに設定しました。
      */
     public static String cmdmsgModerator(Object player, Object channel) {
-        String msg = resources.getString("cmdmsgModerator");
+        String msg = resources.getStringOrNull("cmdmsgModerator");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -1948,7 +1958,7 @@ public class Messages {
      * &7| &cシークレットチャンネル
      */
     public static String channelInfoSecret() {
-        String msg = resources.getString("channelInfoSecret");
+        String msg = resources.getStringOrNull("channelInfoSecret");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -1958,7 +1968,7 @@ public class Messages {
      * %player% さんを、チャンネル %channel% から期限 %minutes% 分でBANしました。
      */
     public static String cmdmsgBanWithExpire(Object player, Object channel, Object minutes) {
-        String msg = resources.getString("cmdmsgBanWithExpire");
+        String msg = resources.getStringOrNull("cmdmsgBanWithExpire");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%player%", player.toString());
@@ -1971,7 +1981,7 @@ public class Messages {
      * &f[&aLC&f]
      */
     public static String infoPrefix() {
-        String msg = resources.getString("infoPrefix");
+        String msg = resources.getStringOrNull("infoPrefix");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -1981,7 +1991,7 @@ public class Messages {
      * &6/%label% pardon (name) &7- 指定したプレイヤーのBANを解除します。
      */
     public static String usagePardon(Object label) {
-        String msg = resources.getString("usagePardon");
+        String msg = resources.getStringOrNull("usagePardon");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -1992,7 +2002,7 @@ public class Messages {
      * チャンネル %channel% からキックされました。
      */
     public static String cmdmsgKicked(Object channel) {
-        String msg = resources.getString("cmdmsgKicked");
+        String msg = resources.getStringOrNull("cmdmsgKicked");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -2003,7 +2013,7 @@ public class Messages {
      * このコマンドはゲーム内からしか実行できません。
      */
     public static String errmsgIngame() {
-        String msg = resources.getString("errmsgIngame");
+        String msg = resources.getStringOrNull("errmsgIngame");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -2013,7 +2023,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7NGワード発言により、%player% さんをチャンネルから自動BANしました。
      */
     public static Component banNGWordMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("banNGWordMessage");
+        String msg = resources.getStringOrNull("banNGWordMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -2026,7 +2036,7 @@ public class Messages {
      * 招待が拒否されました。
      */
     public static String cmdmsgDenyed() {
-        String msg = resources.getString("cmdmsgDenyed");
+        String msg = resources.getStringOrNull("cmdmsgDenyed");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("infoPrefix", "") + kr.toString());
@@ -2036,7 +2046,7 @@ public class Messages {
      * %inviter%の現在の会話相手 : 相手がいません。
      */
     public static String cmdmsgReplyInviterNone(Object inviter) {
-        String msg = resources.getString("cmdmsgReplyInviterNone");
+        String msg = resources.getStringOrNull("cmdmsgReplyInviterNone");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%inviter%", inviter.toString());
@@ -2047,7 +2057,7 @@ public class Messages {
      * &6/%label% info [channel] &7- チャンネルの情報を表示します。
      */
     public static String usageInfo(Object label) {
-        String msg = resources.getString("usageInfo");
+        String msg = resources.getStringOrNull("usageInfo");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());
@@ -2058,7 +2068,7 @@ public class Messages {
      * チャンネル %channel% のMuteが解除されました。
      */
     public static String cmdmsgUnmuted(Object channel) {
-        String msg = resources.getString("cmdmsgUnmuted");
+        String msg = resources.getStringOrNull("cmdmsgUnmuted");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -2069,7 +2079,7 @@ public class Messages {
      * 自分の発言を非表示にすることはできません。
      */
     public static String errmsgCannotHideSelf() {
-        String msg = resources.getString("errmsgCannotHideSelf");
+        String msg = resources.getStringOrNull("errmsgCannotHideSelf");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -2079,7 +2089,7 @@ public class Messages {
      * &7|
      */
     public static String listPlainPrefix() {
-        String msg = resources.getString("listPlainPrefix");
+        String msg = resources.getStringOrNull("listPlainPrefix");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(kr.toString());
@@ -2089,7 +2099,7 @@ public class Messages {
      * パスワードが正しくないため、チャンネルに入れません。
      */
     public static String errmsgPasswordNotmatch() {
-        String msg = resources.getString("errmsgPasswordNotmatch");
+        String msg = resources.getStringOrNull("errmsgPasswordNotmatch");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -2099,7 +2109,7 @@ public class Messages {
      * チャンネル %channel% のBANが解除されました。
      */
     public static String cmdmsgPardoned(Object channel) {
-        String msg = resources.getString("cmdmsgPardoned");
+        String msg = resources.getStringOrNull("cmdmsgPardoned");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%channel%", channel.toString());
@@ -2110,7 +2120,7 @@ public class Messages {
      * %inviter%の現在の会話相手 : %invited%
      */
     public static String cmdmsgReplyInviter(Object inviter, Object invited) {
-        String msg = resources.getString("cmdmsgReplyInviter");
+        String msg = resources.getStringOrNull("cmdmsgReplyInviter");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%inviter%", inviter.toString());
@@ -2122,7 +2132,7 @@ public class Messages {
      * &f[%color%%channel%&f]&7%player% さんがチャンネルに参加しました。
      */
     public static Component joinMessage(Object color, Object channel, Object player) {
-        String msg = resources.getString("joinMessage");
+        String msg = resources.getStringOrNull("joinMessage");
         if ( msg == null ) return Component.empty();
         ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());
         cf.replace("%color%", color.toString());
@@ -2135,7 +2145,7 @@ public class Messages {
      * あなたはモデレーターではないため、そのコマンドを実行できません。
      */
     public static String errmsgNotModerator() {
-        String msg = resources.getString("errmsgNotModerator");
+        String msg = resources.getStringOrNull("errmsgNotModerator");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         return Utility.replaceColorCode(resources.getString("errorPrefix", "") + kr.toString());
@@ -2145,7 +2155,7 @@ public class Messages {
      * &6/%label% list &7- チャンネルのリストを表示します。
      */
     public static String usageList(Object label) {
-        String msg = resources.getString("usageList");
+        String msg = resources.getStringOrNull("usageList");
         if ( msg == null ) return "";
         KeywordReplacer kr = new KeywordReplacer(msg);
         kr.replace("%label%", label.toString());

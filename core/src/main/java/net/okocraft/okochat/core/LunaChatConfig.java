@@ -6,15 +6,17 @@
 package net.okocraft.okochat.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import com.github.siroshun09.configapi.core.node.MapNode;
+import com.github.siroshun09.configapi.format.yaml.YamlFormat;
 import net.okocraft.okochat.core.japanize.JapanizeType;
 import net.okocraft.okochat.core.util.EventPriority;
 import net.okocraft.okochat.core.util.Utility;
-import net.okocraft.okochat.core.util.YamlConfig;
 
 /**
  * LunaChatのコンフィグクラス
@@ -184,7 +186,13 @@ public class LunaChatConfig {
             }
         }
 
-        YamlConfig config = YamlConfig.load(configFile);
+        MapNode config ;
+
+        try {
+            config = YamlFormat.DEFAULT.load(configFile.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO: logging
+        }
 
         lang = config.getString("lang", "en");
         enableChannelChat = config.getBoolean("enableChannelChat", true);
@@ -209,13 +217,13 @@ public class LunaChatConfig {
         // チャンネルチャット有効のときだけ、forceJoinChannels設定を読み込む
         // (see issue #58)
         if ( enableChannelChat ) {
-            forceJoinChannels = config.getStringList("forceJoinChannels");
+            forceJoinChannels = config.getList("forceJoinChannels").asList(String.class);
         } else {
             forceJoinChannels = new ArrayList<String>();
         }
 
-        if ( config.contains("formatConstraint") ) {
-            formatConstraint = config.getStringList("formatConstraint");
+        if ( config.containsKey("formatConstraint") ) {
+            formatConstraint = config.getList("formatConstraint").asList(String.class);
         } else {
             formatConstraint = new ArrayList<String>();
             formatConstraint.add("%username");
@@ -230,8 +238,8 @@ public class LunaChatConfig {
 
         opListenAllChannel = config.getBoolean("opListenAllChannel", false);
 
-        minChannelNameLength = config.getInt("minChannelNameLength", 4);
-        maxChannelNameLength = config.getInt("maxChannelNameLength", 20);
+        minChannelNameLength = config.getInteger("minChannelNameLength", 4);
+        maxChannelNameLength = config.getInteger("maxChannelNameLength", 20);
 
         enableQuickChannelChat = config.getBoolean("enableQuickChannelChat", true);
         quickChannelChatSeparator = config.getString("quickChannelChatSeparator", ":");
@@ -241,7 +249,7 @@ public class LunaChatConfig {
         sendFormattedMessageToDynmap =
             config.getBoolean("sendFormattedMessageToDynmap", false);
         dynmapChannel = config.getString("dynmapChannel", "");
-        ngword = config.getStringList("ngword");
+        ngword = config.getList("ngword").asList(String.class);
         ngwordAction = NGWordAction.fromID(config.getString("ngwordAction", "mask"));
 
         ngwordCompiled = new ArrayList<Pattern>();
@@ -261,7 +269,7 @@ public class LunaChatConfig {
                 config.getBoolean("displayNormalChatOnConsole", true);
 
         japanizeType = JapanizeType.fromID(config.getString("japanizeType"), null);
-        japanizeDisplayLine = config.getInt("japanizeDisplayLine", 2);
+        japanizeDisplayLine = config.getInteger("japanizeDisplayLine", 2);
         if ( japanizeDisplayLine != 1 && japanizeDisplayLine != 2 ) {
             japanizeDisplayLine = 2;
         }
@@ -270,11 +278,11 @@ public class LunaChatConfig {
         japanizeIgnorePlayerName = config.getBoolean("japanizeIgnorePlayerName", true);
         noneJapanizeMarker = config.getString("noneJapanizeMarker", "$");
         japanizePlayerDefault = config.getBoolean("japanizePlayerDefault", true);
-        japanizeWait = config.getInt("japanizeWait", 1);
+        japanizeWait = config.getInteger("japanizeWait", 1);
 
         bungeePassThroughMode = config.getBoolean("bungeePassThroughMode", false);
-        List<String> temp = config.getStringList("bungeeCatcherEnabledServers");
-        bungeeCatcherEnabledServers = temp != null ? new java.util.HashSet<>(temp) : java.util.Collections.emptySet();
+        List<String> temp = config.getList("bungeeCatcherEnabledServers").asList(String.class);
+        bungeeCatcherEnabledServers = new java.util.HashSet<>(temp);
 
         // globalチャンネルが、使用可能なチャンネル名かどうかを調べる
         if ( globalChannel != null && !globalChannel.equals("") &&

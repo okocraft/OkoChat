@@ -12,6 +12,7 @@ val libs = extensions.getByType(org.gradle.accessors.dm.LibrariesForLibs::class)
 
 dependencies {
     implementation(libs.annotations)
+    implementation(libs.configapi.format.yaml)
 
     compileOnlyApi(libs.adventure)
     compileOnlyApi(libs.adventure.text.minimessage)

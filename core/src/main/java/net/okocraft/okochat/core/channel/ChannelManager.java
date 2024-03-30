@@ -11,7 +11,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.github.siroshun09.configapi.core.node.MapNode;
+import com.github.siroshun09.configapi.format.yaml.YamlFormat;
 import net.okocraft.okochat.core.LunaChat;
 import net.okocraft.okochat.core.LunaChatAPI;
 import net.okocraft.okochat.core.LunaChatMode;
@@ -22,7 +26,7 @@ import net.okocraft.okochat.core.event.EventResult;
 import net.okocraft.okochat.core.japanize.JapanizeType;
 import net.okocraft.okochat.core.japanize.Japanizer;
 import net.okocraft.okochat.core.member.ChannelMember;
-import net.okocraft.okochat.core.util.YamlConfig;
+import net.okocraft.okochat.core.util.DataFiles;
 
 /**
  * チャンネルマネージャー
@@ -68,13 +72,18 @@ public class ChannelManager implements LunaChatAPI {
             makeEmptyFile(fileDefaults);
         }
 
-        YamlConfig config = YamlConfig.load(fileDefaults);
+        MapNode config;
+        try {
+            config = YamlFormat.DEFAULT.load(fileDefaults.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO: error handling
+        }
 
         defaultChannels = new HashMap<String, String>();
-        for ( String key : config.getKeys(false) ) {
+        for ( Object key : config.value().keySet() ) {
             String value = config.getString(key);
             if ( value != null) {
-                defaultChannels.put(key, value.toLowerCase());
+                defaultChannels.put(String.valueOf(key), value.toLowerCase());
             }
         }
 
@@ -85,11 +94,16 @@ public class ChannelManager implements LunaChatAPI {
             makeEmptyFile(fileTemplates);
         }
 
-        YamlConfig configTemplates = YamlConfig.load(fileTemplates);
+        MapNode configTemplates;
+        try {
+            configTemplates = YamlFormat.DEFAULT.load(fileTemplates.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO: error handling
+        }
 
         templates = new HashMap<String, String>();
-        for ( String key : configTemplates.getKeys(false) ) {
-            templates.put(key, configTemplates.getString(key));
+        for ( Object key : configTemplates.value().keySet() ) {
+            templates.put(String.valueOf(key), configTemplates.getString(key));
         }
 
         // Japanize設定のロード
@@ -99,11 +113,16 @@ public class ChannelManager implements LunaChatAPI {
             makeEmptyFile(fileJapanize);
         }
 
-        YamlConfig configJapanize = YamlConfig.load(fileJapanize);
+        MapNode configJapanize;
+        try {
+            configJapanize = YamlFormat.DEFAULT.load(fileJapanize.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO: error handling
+        }
 
         japanize = new HashMap<String, Boolean>();
-        for ( String key : configJapanize.getKeys(false) ) {
-            japanize.put(key, configJapanize.getBoolean(key));
+        for ( Object key : configJapanize.value().keySet() ) {
+            japanize.put(String.valueOf(key), configJapanize.getBoolean(key));
         }
 
         // dictionaryのロード
@@ -113,11 +132,16 @@ public class ChannelManager implements LunaChatAPI {
             makeEmptyFile(fileDictionary);
         }
 
-        YamlConfig configDictionary = YamlConfig.load(fileDictionary);
+        MapNode configDictionary;
+        try {
+            configDictionary = YamlFormat.DEFAULT.load(fileDictionary.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO: error handling
+        }
 
         dictionary = new java.util.LinkedHashMap<>(); // okocraft - Ensure that longer words are replaced first
-        for ( String key : configDictionary.getKeys(false) ) {
-            dictionary.put(key, configDictionary.getString(key));
+        for ( Object key : configDictionary.value().keySet() ) {
+            dictionary.put(String.valueOf(key), configDictionary.getString(key));
         }
         Japanizer.sortDictionary(dictionary); // okocraft - Ensure that longer words are replaced first
 
@@ -128,13 +152,18 @@ public class ChannelManager implements LunaChatAPI {
             makeEmptyFile(fileHidelist);
         }
 
-        YamlConfig configHidelist = YamlConfig.load(fileHidelist);
+        MapNode configHidelist;
+        try {
+            configHidelist = YamlFormat.DEFAULT.load(fileHidelist.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO: error handling
+        }
 
         hidelist = new HashMap<String, List<ChannelMember>>();
-        for ( String key : configHidelist.getKeys(false) ) {
-            hidelist.put(key, new ArrayList<ChannelMember>());
-            for ( String id : configHidelist.getStringList(key) ) {
-                hidelist.get(key).add(ChannelMember.getChannelMember(id));
+        for ( Object key : configHidelist.value().keySet() ) {
+            hidelist.put(String.valueOf(key), new ArrayList<ChannelMember>());
+            for ( String id : configHidelist.getList(key).asList(String.class) ) {
+                hidelist.get(String.valueOf(key)).add(ChannelMember.getChannelMember(id));
             }
         }
 
@@ -166,7 +195,7 @@ public class ChannelManager implements LunaChatAPI {
     private boolean saveDefaults0() {
         // okocraft end
         try {
-            net.okocraft.lunachat.DataFiles.saveStringMap(fileDefaults.toPath(), java.util.Map.copyOf(defaultChannels)); // okocraft - Make file saving async
+            DataFiles.saveStringMap(fileDefaults.toPath(), java.util.Map.copyOf(defaultChannels)); // okocraft - Make file saving async
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -186,7 +215,7 @@ public class ChannelManager implements LunaChatAPI {
     private boolean saveTemplates0() {
         // okocraft end
         try {
-            net.okocraft.lunachat.DataFiles.saveStringMap(fileTemplates.toPath(), java.util.Map.copyOf(templates)); // okocraft - Make file saving async
+            DataFiles.saveStringMap(fileTemplates.toPath(), java.util.Map.copyOf(templates)); // okocraft - Make file saving async
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -206,7 +235,7 @@ public class ChannelManager implements LunaChatAPI {
     private boolean saveJapanize0() {
         // okocraft end
         try {
-            net.okocraft.lunachat.DataFiles.saveStringMap(fileJapanize.toPath(), com.google.common.collect.Maps.transformValues(java.util.Map.copyOf(japanize), bool -> Boolean.toString(bool))); // okocraft - Make file saving async
+            DataFiles.saveStringMap(fileJapanize.toPath(), japanize.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().toString()))); // okocraft - Make file saving async
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -226,7 +255,7 @@ public class ChannelManager implements LunaChatAPI {
     private boolean saveDictionary0() {
         // okocraft end
         try {
-            net.okocraft.lunachat.DataFiles.saveStringMap(fileDictionary.toPath(), java.util.Map.copyOf(dictionary)); // okocraft - Make file saving async
+            DataFiles.saveStringMap(fileDictionary.toPath(), java.util.Map.copyOf(dictionary)); // okocraft - Make file saving async
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -249,7 +278,7 @@ public class ChannelManager implements LunaChatAPI {
             // okocraft start - Make file saving async
             var data = new HashMap<String, List<String>>(hidelist.size(), 2.0f);
             hidelist.forEach((key, value) -> data.put(key, getIdList(value)));
-            net.okocraft.lunachat.DataFiles.saveHideList(fileHidelist.toPath(), data);
+            DataFiles.saveHideList(fileHidelist.toPath(), data);
             // okocraft end
             return true;
         } catch (IOException e) {
@@ -681,9 +710,8 @@ public class ChannelManager implements LunaChatAPI {
 //            e.printStackTrace();
 //        }
 
-        YamlConfig config = new YamlConfig();
         try {
-            config.save(file);
+            YamlFormat.DEFAULT.save(MapNode.empty(), file.toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
