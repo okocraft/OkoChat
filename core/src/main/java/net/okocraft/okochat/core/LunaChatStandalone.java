@@ -30,7 +30,6 @@ public class LunaChatStandalone implements PluginInterface {
     public void onEnable() {
 
         LunaChat.setPlugin(this);
-        LunaChat.setMode(LunaChatMode.STANDALONE);
 
         // 初期化
         manager = new ChannelManager();

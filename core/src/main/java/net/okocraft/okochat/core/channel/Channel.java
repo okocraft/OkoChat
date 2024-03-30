@@ -24,9 +24,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.okocraft.okochat.core.LunaChat;
 import net.okocraft.okochat.core.LunaChatAPI;
-import net.okocraft.okochat.core.LunaChatBukkit;
 import net.okocraft.okochat.core.LunaChatConfig;
-import net.okocraft.okochat.core.LunaChatMode;
 import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.NGWordAction;
 import net.okocraft.okochat.core.japanize.JapanizeType;
@@ -860,13 +858,13 @@ public abstract class Channel {
         }
 
         Channel channel = null;
-        if ( LunaChat.getMode() == LunaChatMode.BUKKIT ) {
+/*        if ( LunaChat.getMode() == LunaChatMode.BUKKIT ) { // FIXME
             channel = new BukkitChannel(name);
         } else if ( LunaChat.getMode() == LunaChatMode.BUNGEE ) {
             channel = new BungeeChannel(name);
         } else {
             channel = new StandaloneChannel(name);
-        }
+        }*/
 
         channel.alias = castWithDefault(data.get(KEY_ALIAS), "");
         channel.description = castWithDefault(data.get(KEY_DESC), "");

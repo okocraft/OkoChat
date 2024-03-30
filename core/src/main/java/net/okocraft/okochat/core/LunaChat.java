@@ -19,7 +19,6 @@ public class LunaChat {
     public static final String PMC_MESSAGE = "lunachat:message";
 
     private static PluginInterface instance;
-    private static LunaChatMode mode;
 
     // LunaChatに実行元プラグインクラスを設定する
     static void setPlugin(PluginInterface plugin) {
@@ -32,19 +31,6 @@ public class LunaChat {
      */
     public static PluginInterface getPlugin() {
         return instance;
-    }
-
-    // LunaChatの実行モードを設定する
-    static void setMode(LunaChatMode _mode) {
-        mode = _mode;
-    }
-
-    /**
-     * LunaChatの実行モードを取得する
-     * @return 実行モード（BUKKIT or BUNGEE）
-     */
-    public static LunaChatMode getMode() {
-        return mode;
     }
 
     public static LunaChatEventService getEventService() { // FIXME: this should be here? For now, as an alternative to #getEventSender.

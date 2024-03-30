@@ -19,17 +19,13 @@ import com.github.siroshun09.configapi.core.node.MapNode;
 import com.github.siroshun09.configapi.format.yaml.YamlFormat;
 import net.okocraft.okochat.core.LunaChat;
 import net.okocraft.okochat.core.LunaChatAPI;
-import net.okocraft.okochat.core.LunaChatMode;
 import net.okocraft.okochat.core.Messages;
-import net.okocraft.okochat.core.LunaChatBukkit;
-import net.okocraft.okochat.core.LunaChatBungee;
 import net.okocraft.okochat.core.japanize.JapanizeType;
 import net.okocraft.okochat.core.japanize.Japanizer;
 import net.okocraft.okochat.core.member.ChannelMember;
 import net.okocraft.okochat.core.platform.provider.ChannelMemberProvider;
 import net.okocraft.okochat.core.platform.provider.UserProvider;
 import net.okocraft.okochat.core.util.DataFiles;
-import net.okocraft.okochat.core.util.OkoChatLogger;
 import org.jetbrains.annotations.NotNull;
 
 import static net.okocraft.okochat.core.util.OkoChatLogger.logger;
@@ -316,6 +312,8 @@ public class ChannelManager implements LunaChatAPI {
     }
     // okocraft start - Set the default setting of japanize to false for those who do not use Japanese as a client language
     private boolean isUsingJapanese(String playerName) {
+        // FIXME
+        /*
         if (LunaChat.getMode() == LunaChatMode.BUKKIT) {
             return LunaChatBukkit.getInstance().isUsingJapanese(playerName);
         } else if (LunaChat.getMode() == LunaChatMode.BUNGEE) {
@@ -323,6 +321,8 @@ public class ChannelManager implements LunaChatAPI {
         } else {
             return false;
         }
+         */
+        return false;
     }
     // okocraft end
 
@@ -460,13 +460,14 @@ public class ChannelManager implements LunaChatAPI {
     @Override
     public Channel createChannel(String channelName, ChannelMember member) {
         Channel channel = null;
-        if ( LunaChat.getMode() == LunaChatMode.BUKKIT ) {
+        // FIXME
+/*        if ( LunaChat.getMode() == LunaChatMode.BUKKIT ) {
             channel = new BukkitChannel(channelName);
         } else if ( LunaChat.getMode() == LunaChatMode.BUNGEE ) {
             channel = new BungeeChannel(channelName);
         } else {
             channel = new StandaloneChannel(channelName);
-        }
+        }*/
 
         channels.put(channelName.toLowerCase(), channel);
         channel.save();
