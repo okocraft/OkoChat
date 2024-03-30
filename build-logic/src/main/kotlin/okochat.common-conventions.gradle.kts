@@ -15,6 +15,8 @@ dependencies {
 
     compileOnlyApi(libs.adventure)
     compileOnlyApi(libs.adventure.text.minimessage)
+    compileOnlyApi(libs.adventure.text.serializer.legacy)
+    compileOnlyApi(libs.adventure.text.serializer.plain)
     compileOnlyApi(libs.slf4j)
 
     testImplementation(platform(libs.junit.bom))

@@ -17,6 +17,9 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.okocraft.okochat.core.LunaChat;
 import net.okocraft.okochat.core.LunaChatAPI;
 import net.okocraft.okochat.core.LunaChatBukkit;
@@ -36,9 +39,6 @@ import net.okocraft.okochat.core.util.ChatColor;
 import net.okocraft.okochat.core.util.ClickableFormat;
 import net.okocraft.okochat.core.util.Utility;
 import net.okocraft.okochat.core.util.YamlConfig;
-
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * チャンネル
@@ -338,8 +338,8 @@ public abstract class Channel {
                 if ( !isGlobalChannel() ) {
                     getBanned().add(player);
                     removeMember(player);
-                    if ( Messages.banNGWordMessage("", "", "").length > 0 ) {
-                        BaseComponent[] m = Messages.banNGWordMessage(getColorCode(), getName(), player.getName());
+                    if ( Component.IS_NOT_EMPTY.test(Messages.banNGWordMessage("", "", "")) ) {
+                        Component m = Messages.banNGWordMessage(getColorCode(), getName(), player.getName());
                         player.sendMessage(m);
                         sendSystemMessage(m, true, "system");
                     }
@@ -350,8 +350,8 @@ public abstract class Channel {
 
                 if ( !isGlobalChannel() ) {
                     removeMember(player);
-                    if ( Messages.kickNGWordMessage("", "", "").length > 0 ) {
-                        BaseComponent[] m = Messages.kickNGWordMessage(getColorCode(), getName(), player.getName());
+                    if ( Component.IS_NOT_EMPTY.test(Messages.kickNGWordMessage("", "", "")) ) {
+                        Component m = Messages.kickNGWordMessage(getColorCode(), getName(), player.getName());
                         player.sendMessage(m);
                         sendSystemMessage(m, true, "system");
                     }
@@ -362,8 +362,8 @@ public abstract class Channel {
 
                 getMuted().add(player);
                 save();
-                if ( Messages.muteNGWordMessage("", "", "").length > 0 ) {
-                    BaseComponent[] m = Messages.muteNGWordMessage(getColorCode(), getName(), player.getName());
+                if ( Component.IS_NOT_EMPTY.test(Messages.muteNGWordMessage("", "", "")) ) {
+                    Component m = Messages.muteNGWordMessage(getColorCode(), getName(), player.getName());
                     player.sendMessage(m);
                     sendSystemMessage(m, true, "system");
                 }
@@ -419,7 +419,7 @@ public abstract class Channel {
      * @param name 発言者の表示名
      */
     public void sendSystemMessage(String message, boolean sendDynmap, String name) {
-        sendSystemMessage(TextComponent.fromLegacyText(message), sendDynmap, name);
+        sendSystemMessage(LegacyComponentSerializer.legacySection().deserialize(message), sendDynmap, name);
     }
 
     /**
@@ -428,7 +428,7 @@ public abstract class Channel {
      * @param sendDynmap Dynmapにも表示するかどうか
      * @param name 発言者の表示名
      */
-    public void sendSystemMessage(BaseComponent[] message, boolean sendDynmap, String name) {
+    public void sendSystemMessage(Component message, boolean sendDynmap, String name) {
 
         LunaChatConfig config = LunaChat.getConfig();
 
@@ -786,8 +786,8 @@ public abstract class Channel {
                     save();
 
                     // メッセージ通知を流す
-                    BaseComponent[] msg = Messages.expiredBanMessage(getColorCode(), getName(), cp.getName());
-                    if ( msg.length > 0 ) {
+                    Component msg = Messages.expiredBanMessage(getColorCode(), getName(), cp.getName());
+                    if ( Component.IS_NOT_EMPTY.test(msg) ) {
                         sendSystemMessage(msg, true, "system");
                     }
 
@@ -810,8 +810,8 @@ public abstract class Channel {
                     save();
 
                     // メッセージ通知を流す
-                    BaseComponent[] msg = Messages.expiredMuteMessage(getColorCode(), getName(), cp.getName());
-                    if ( msg.length > 0 ) {
+                    Component msg = Messages.expiredMuteMessage(getColorCode(), getName(), cp.getName());
+                    if ( Component.IS_NOT_EMPTY.test(msg) ) {
                         sendSystemMessage(msg, true, "system");
                     }
 
@@ -1401,19 +1401,11 @@ public abstract class Channel {
         return (Map<String, Long>)obj;
     }
 
-    private static String makeLegacyText(BaseComponent[] comps) {
-        StringBuilder builder = new StringBuilder();
-        for ( BaseComponent comp : comps ) {
-            builder.append(comp.toLegacyText());
-        }
-        return builder.toString();
+    private static String makeLegacyText(Component component) {
+        return LegacyComponentSerializer.legacySection().serialize(component);
     }
 
-    private static String makePlainText(BaseComponent[] comps) {
-        StringBuilder builder = new StringBuilder();
-        for ( BaseComponent comp : comps ) {
-            builder.append(comp.toPlainText());
-        }
-        return builder.toString();
+    private static String makePlainText(Component component) {
+        return PlainTextComponentSerializer.plainText().serialize(component);
     }
 }
