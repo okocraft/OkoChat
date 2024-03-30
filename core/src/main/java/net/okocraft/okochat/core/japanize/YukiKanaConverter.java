@@ -1,11 +1,10 @@
 package net.okocraft.okochat.core.japanize;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-
-//import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSortedMap;
 
 /**
  * 「ローマ字」から「かな文字」へ正確に変換するクラス
@@ -15,370 +14,500 @@ import com.google.common.collect.ImmutableSortedMap;
  */
 public class YukiKanaConverter {
 
-    private static final ImmutableMap<String, String> MAP;
-
-    private static final String[] ROMAJI_LIST;
-    private static final String[] HIRAGANA_LIST;
-
-    protected YukiKanaConverter() {
-    }
+    private static final Map<String, String> REPLACEMENT_MAP;
+    private static final int MAX_ROMAJI_LENGTH;
 
     static {
-        ImmutableSortedMap.Builder<String, String> builder = ImmutableSortedMap.reverseOrder();
+        REPLACEMENT_MAP = createMap();
+
+        int maxRomajiLength = 0;
+
+        for (var romaji : REPLACEMENT_MAP.keySet()) {
+            maxRomajiLength = Math.max(maxRomajiLength, romaji.length());
+        }
+
+        MAX_ROMAJI_LENGTH = maxRomajiLength;
+    }
+
+    private static @NotNull Map<String, String> createMap() {
+        var map = new HashMap<String, String>();
 
         // ひらがな
-        builder.put("a", "あ");
-        builder.put("i", "い").put("yi", "い");
-        builder.put("u", "う").put("wu", "う").put("whu", "う");
-        builder.put("e", "え");
-        builder.put("o", "お");
+        map.put("a", "あ");
+        map.put("i", "い");
+        map.put("yi", "い");
+        map.put("u", "う");
+        map.put("wu", "う");
+        map.put("whu", "う");
+        map.put("e", "え");
+        map.put("o", "お");
 
-        builder.put("wha", "うぁ");
-        builder.put("whi", "うぃ").put("wi", "うぃ");
+        map.put("wha", "うぁ");
+        map.put("whi", "うぃ");
+        map.put("wi", "うぃ");
         //
-        builder.put("whe", "うぇ").put("we", "うぇ");
-        builder.put("who", "うぉ");
-
-        //
-        builder.put("wyi", "ゐ");
-        //
-        builder.put("wye", "ゑ");
-        //
-
-        builder.put("la", "ぁ").put("xa", "ぁ");
-        builder.put("li", "ぃ").put("xi", "ぃ").put("lyi", "ぃ").put("xyi", "ぃ");
-        builder.put("lu", "ぅ").put("xu", "ぅ");
-        builder.put("le", "ぇ").put("xe", "ぇ").put("lye", "ぇ").put("xye", "ぇ");
-        builder.put("lo", "ぉ").put("xo", "ぉ");
+        map.put("whe", "うぇ");
+        map.put("we", "うぇ");
+        map.put("who", "うぉ");
 
         //
-        builder.put("ye", "いぇ");
+        map.put("wyi", "ゐ");
         //
-        //
-        //
-
-        builder.put("ka", "か").put("ca", "か");
-        builder.put("ki", "き");
-        builder.put("ku", "く").put("cu", "く").put("qu", "く");
-        builder.put("ke", "け");
-        builder.put("ko", "こ").put("co", "こ");
-
-        builder.put("kya", "きゃ");
-        builder.put("kyi", "きぃ");
-        builder.put("kyu", "きゅ");
-        builder.put("kye", "きぇ");
-        builder.put("kyo", "きょ");
-
-        builder.put("qya", "くゃ");
-        //
-        builder.put("qyu", "くゅ");
-        //
-        builder.put("qyo", "くょ");
-
-        builder.put("qwa", "くぁ").put("qa", "くぁ").put("kwa", "くぁ");
-        builder.put("qwi", "くぃ").put("qi", "くぃ").put("qyi", "くぃ");
-        builder.put("qwu", "くぅ");
-        builder.put("qwe", "くぇ").put("qe", "くぇ").put("qye", "くぇ");
-        builder.put("qwo", "くぉ").put("qo", "くぉ").put("kwo", "くぉ");
-
-        builder.put("ga", "が");
-        builder.put("gi", "ぎ");
-        builder.put("gu", "ぐ");
-        builder.put("ge", "げ");
-        builder.put("go", "ご");
-
-        builder.put("gya", "ぎゃ");
-        builder.put("gyi", "ぎぃ");
-        builder.put("gyu", "ぎゅ");
-        builder.put("gye", "ぎぇ");
-        builder.put("gyo", "ぎょ");
-
-        builder.put("gwa", "ぐぁ");
-        builder.put("gwi", "ぐぃ");
-        builder.put("gwu", "ぐぅ");
-        builder.put("gwe", "ぐぇ");
-        builder.put("gwo", "ぐぉ");
-
-        builder.put("lka", "ヵ").put("xka", "ヵ");
-        //
-        //
-        builder.put("lke", "ヶ").put("xke", "ヶ");
+        map.put("wye", "ゑ");
         //
 
-        builder.put("sa", "さ");
-        builder.put("si", "し").put("ci", "し").put("shi", "し");
-        builder.put("su", "す");
-        builder.put("se", "せ").put("ce", "せ");
-        builder.put("so", "そ");
-
-        builder.put("sya", "しゃ").put("sha", "しゃ");
-        builder.put("syi", "しぃ");
-        builder.put("syu", "しゅ").put("shu", "しゅ");
-        builder.put("sye", "しぇ").put("she", "しぇ");
-        builder.put("syo", "しょ").put("sho", "しょ");
-
-        builder.put("swa", "すぁ");
-        builder.put("swi", "すぃ");
-        builder.put("swu", "すぅ");
-        builder.put("swe", "すぇ");
-        builder.put("swo", "すぉ");
-
-        builder.put("za", "ざ");
-        builder.put("zi", "じ").put("ji", "じ");
-        builder.put("zu", "ず");
-        builder.put("ze", "ぜ");
-        builder.put("zo", "ぞ");
-
-        builder.put("zya", "じゃ").put("ja", "じゃ").put("jya", "じゃ");
-        builder.put("zyi", "じぃ")/*              */.put("jyi", "じぃ");
-        builder.put("zyu", "じゅ").put("ju", "じゅ").put("jyu", "じゅ");
-        builder.put("zye", "じぇ").put("je", "じぇ").put("jye", "じぇ");
-        builder.put("zyo", "じょ").put("jo", "じょ").put("jyo", "じょ");
-
-        builder.put("ta", "た");
-        builder.put("ti", "ち").put("chi", "ち");
-        builder.put("tu", "つ").put("tsu", "つ");
-        builder.put("te", "て");
-        builder.put("to", "と");
-
-        builder.put("tya", "ちゃ").put("cha", "ちゃ").put("cya", "ちゃ");
-        builder.put("tyi", "ちぃ")/*               */.put("cyi", "ちぃ");
-        builder.put("tyu", "ちゅ").put("chu", "ちゅ").put("cyu", "ちゅ");
-        builder.put("tye", "ちぇ").put("che", "ちぇ").put("cye", "ちぇ");
-        builder.put("tyo", "ちょ").put("cho", "ちょ").put("cyo", "ちょ");
-
-        builder.put("tsa", "つぁ");
-        builder.put("tsi", "つぃ");
-        //
-        builder.put("tse", "つぇ");
-        builder.put("tso", "つぉ");
-
-        builder.put("tha", "てゃ");
-        builder.put("thi", "てぃ");
-        builder.put("thu", "てゅ");
-        builder.put("the", "てぇ");
-        builder.put("tho", "てょ");
-
-        builder.put("twa", "とぁ");
-        builder.put("twi", "とぃ");
-        builder.put("twu", "とぅ");
-        builder.put("twe", "とぇ");
-        builder.put("two", "とぉ");
-
-        builder.put("da", "だ");
-        builder.put("di", "ぢ");
-        builder.put("du", "づ");
-        builder.put("de", "で");
-        builder.put("do", "ど");
-
-        builder.put("dya", "ぢゃ");
-        builder.put("dyi", "ぢぃ");
-        builder.put("dyu", "ぢゅ");
-        builder.put("dye", "ぢぇ");
-        builder.put("dyo", "ぢょ");
-
-        builder.put("dha", "でゃ");
-        builder.put("dhi", "でぃ");
-        builder.put("dhu", "でゅ");
-        builder.put("dhe", "でぇ");
-        builder.put("dho", "でょ");
-
-        builder.put("dwa", "どぁ");
-        builder.put("dwi", "どぃ");
-        builder.put("dwu", "どぅ");
-        builder.put("dwe", "どぇ");
-        builder.put("dwo", "どぉ");
+        map.put("la", "ぁ");
+        map.put("xa", "ぁ");
+        map.put("li", "ぃ");
+        map.put("xi", "ぃ");
+        map.put("lyi", "ぃ");
+        map.put("xyi", "ぃ");
+        map.put("lu", "ぅ");
+        map.put("xu", "ぅ");
+        map.put("le", "ぇ");
+        map.put("xe", "ぇ");
+        map.put("lye", "ぇ");
+        map.put("xye", "ぇ");
+        map.put("lo", "ぉ");
+        map.put("xo", "ぉ");
 
         //
-        //
-        builder.put("ltu", "っ").put("xtu", "っ").put("ltsu", "っ").put("xtsu", "っ");
-        //
-        //
-
-        builder.put("na", "な");
-        builder.put("ni", "に");
-        builder.put("nu", "ぬ");
-        builder.put("ne", "ね");
-        builder.put("no", "の");
-
-        builder.put("nya", "にゃ");
-        builder.put("nyi", "にぃ");
-        builder.put("nyu", "にゅ");
-        builder.put("nye", "にぇ");
-        builder.put("nyo", "にょ");
-
-        builder.put("ha", "は");
-        builder.put("hi", "ひ");
-        builder.put("hu", "ふ").put("fu", "ふ");
-        builder.put("he", "へ");
-        builder.put("ho", "ほ");
-
-        builder.put("hya", "ひゃ");
-        builder.put("hyi", "ひぃ");
-        builder.put("hyu", "ひゅ");
-        builder.put("hye", "ひぇ");
-        builder.put("hyo", "ひょ");
-
-        builder.put("fwa", "ふぁ").put("fa", "ふぁ");
-        builder.put("fwi", "ふぃ").put("fi", "ふぃ").put("fyi", "ふぃ");
-        builder.put("fwu", "ふぅ");
-        builder.put("fwe", "ふぇ").put("fe", "ふぇ").put("fye", "ふぇ");
-        builder.put("fwo", "ふぉ").put("fo", "ふぉ");
-
-        builder.put("fya", "ふゃ");
-        //
-        builder.put("fyu", "ふゅ");
-        //
-        builder.put("fyo", "ふょ");
-
-        builder.put("ba", "ば");
-        builder.put("bi", "び");
-        builder.put("bu", "ぶ");
-        builder.put("be", "べ");
-        builder.put("bo", "ぼ");
-
-        builder.put("bya", "びゃ");
-        builder.put("byi", "びぃ");
-        builder.put("byu", "びゅ");
-        builder.put("bye", "びぇ");
-        builder.put("byo", "びょ");
-
-        builder.put("va", "ヴぁ");
-        builder.put("vi", "ヴぃ");
-        builder.put("vu", "ヴ");
-        builder.put("ve", "ヴぇ");
-        builder.put("vo", "ヴぉ");
-
-        builder.put("vya", "ヴゃ");
-        builder.put("vyi", "ヴぃ");
-        builder.put("vyu", "ヴゅ");
-        builder.put("vye", "ヴぇ");
-        builder.put("vyo", "ヴょ");
-
-        builder.put("pa", "ぱ");
-        builder.put("pi", "ぴ");
-        builder.put("pu", "ぷ");
-        builder.put("pe", "ぺ");
-        builder.put("po", "ぽ");
-
-        builder.put("pya", "ぴゃ");
-        builder.put("pyi", "ぴぃ");
-        builder.put("pyu", "ぴゅ");
-        builder.put("pye", "ぴぇ");
-        builder.put("pyo", "ぴょ");
-
-        builder.put("ma", "ま");
-        builder.put("mi", "み");
-        builder.put("mu", "む");
-        builder.put("me", "め");
-        builder.put("mo", "も");
-
-        builder.put("mya", "みゃ");
-        builder.put("myi", "みぃ");
-        builder.put("myu", "みゅ");
-        builder.put("mye", "みぇ");
-        builder.put("myo", "みょ");
-
-        builder.put("ya", "や");
-        //
-        builder.put("yu", "ゆ");
-        //
-        builder.put("yo", "よ");
-
-        builder.put("lya", "ゃ").put("xya", "ゃ");
-        //
-        builder.put("lyu", "ゅ").put("xyu", "ゅ");
-        //
-        builder.put("lyo", "ょ").put("xyo", "ょ");
-
-        builder.put("ra", "ら");
-        builder.put("ri", "り");
-        builder.put("ru", "る");
-        builder.put("re", "れ");
-        builder.put("ro", "ろ");
-
-        builder.put("rya", "りゃ");
-        builder.put("ryi", "りぃ");
-        builder.put("ryu", "りゅ");
-        builder.put("rye", "りぇ");
-        builder.put("ryo", "りょ");
-
-        builder.put("wa", "わ");
-        //
-        //
-        //
-        builder.put("wo", "を");
-
-        builder.put("lwa", "ゎ").put("xwa", "ゎ");
-        //
+        map.put("ye", "いぇ");
         //
         //
         //
 
-        builder.put("n", "ん").put("nn", "ん").put("n'", "ん").put("xn", "ん");
+        map.put("ka", "か");
+        map.put("ca", "か");
+        map.put("ki", "き");
+        map.put("ku", "く");
+        map.put("cu", "く");
+        map.put("qu", "く");
+        map.put("ke", "け");
+        map.put("ko", "こ");
+        map.put("co", "こ");
+
+        map.put("kya", "きゃ");
+        map.put("kyi", "きぃ");
+        map.put("kyu", "きゅ");
+        map.put("kye", "きぇ");
+        map.put("kyo", "きょ");
+
+        map.put("qya", "くゃ");
+        //
+        map.put("qyu", "くゅ");
+        //
+        map.put("qyo", "くょ");
+
+        map.put("qwa", "くぁ");
+        map.put("qa", "くぁ");
+        map.put("kwa", "くぁ");
+        map.put("qwi", "くぃ");
+        map.put("qi", "くぃ");
+        map.put("qyi", "くぃ");
+        map.put("qwu", "くぅ");
+        map.put("qwe", "くぇ");
+        map.put("qe", "くぇ");
+        map.put("qye", "くぇ");
+        map.put("qwo", "くぉ");
+        map.put("qo", "くぉ");
+        map.put("kwo", "くぉ");
+
+        map.put("ga", "が");
+        map.put("gi", "ぎ");
+        map.put("gu", "ぐ");
+        map.put("ge", "げ");
+        map.put("go", "ご");
+
+        map.put("gya", "ぎゃ");
+        map.put("gyi", "ぎぃ");
+        map.put("gyu", "ぎゅ");
+        map.put("gye", "ぎぇ");
+        map.put("gyo", "ぎょ");
+
+        map.put("gwa", "ぐぁ");
+        map.put("gwi", "ぐぃ");
+        map.put("gwu", "ぐぅ");
+        map.put("gwe", "ぐぇ");
+        map.put("gwo", "ぐぉ");
+
+        map.put("lka", "ヵ");
+        map.put("xka", "ヵ");
+        //
+        //
+        map.put("lke", "ヶ");
+        map.put("xke", "ヶ");
+        //
+
+        map.put("sa", "さ");
+        map.put("si", "し");
+        map.put("ci", "し");
+        map.put("shi", "し");
+        map.put("su", "す");
+        map.put("se", "せ");
+        map.put("ce", "せ");
+        map.put("so", "そ");
+
+        map.put("sya", "しゃ");
+        map.put("sha", "しゃ");
+        map.put("syi", "しぃ");
+        map.put("syu", "しゅ");
+        map.put("shu", "しゅ");
+        map.put("sye", "しぇ");
+        map.put("she", "しぇ");
+        map.put("syo", "しょ");
+        map.put("sho", "しょ");
+
+        map.put("swa", "すぁ");
+        map.put("swi", "すぃ");
+        map.put("swu", "すぅ");
+        map.put("swe", "すぇ");
+        map.put("swo", "すぉ");
+
+        map.put("za", "ざ");
+        map.put("zi", "じ");
+        map.put("ji", "じ");
+        map.put("zu", "ず");
+        map.put("ze", "ぜ");
+        map.put("zo", "ぞ");
+
+        map.put("zya", "じゃ");
+        map.put("ja", "じゃ");
+        map.put("jya", "じゃ");
+        map.put("zyi", "じぃ");
+        map.put("jyi", "じぃ");
+        map.put("zyu", "じゅ");
+        map.put("ju", "じゅ");
+        map.put("jyu", "じゅ");
+        map.put("zye", "じぇ");
+        map.put("je", "じぇ");
+        map.put("jye", "じぇ");
+        map.put("zyo", "じょ");
+        map.put("jo", "じょ");
+        map.put("jyo", "じょ");
+
+        map.put("ta", "た");
+        map.put("ti", "ち");
+        map.put("chi", "ち");
+        map.put("tu", "つ");
+        map.put("tsu", "つ");
+        map.put("te", "て");
+        map.put("to", "と");
+
+        map.put("tya", "ちゃ");
+        map.put("cha", "ちゃ");
+        map.put("cya", "ちゃ");
+        map.put("tyi", "ちぃ");
+        map.put("cyi", "ちぃ");
+        map.put("tyu", "ちゅ");
+        map.put("chu", "ちゅ");
+        map.put("cyu", "ちゅ");
+        map.put("tye", "ちぇ");
+        map.put("che", "ちぇ");
+        map.put("cye", "ちぇ");
+        map.put("tyo", "ちょ");
+        map.put("cho", "ちょ");
+        map.put("cyo", "ちょ");
+
+        map.put("tsa", "つぁ");
+        map.put("tsi", "つぃ");
+        //
+        map.put("tse", "つぇ");
+        map.put("tso", "つぉ");
+
+        map.put("tha", "てゃ");
+        map.put("thi", "てぃ");
+        map.put("thu", "てゅ");
+        map.put("the", "てぇ");
+        map.put("tho", "てょ");
+
+        map.put("twa", "とぁ");
+        map.put("twi", "とぃ");
+        map.put("twu", "とぅ");
+        map.put("twe", "とぇ");
+        map.put("two", "とぉ");
+
+        map.put("da", "だ");
+        map.put("di", "ぢ");
+        map.put("du", "づ");
+        map.put("de", "で");
+        map.put("do", "ど");
+
+        map.put("dya", "ぢゃ");
+        map.put("dyi", "ぢぃ");
+        map.put("dyu", "ぢゅ");
+        map.put("dye", "ぢぇ");
+        map.put("dyo", "ぢょ");
+
+        map.put("dha", "でゃ");
+        map.put("dhi", "でぃ");
+        map.put("dhu", "でゅ");
+        map.put("dhe", "でぇ");
+        map.put("dho", "でょ");
+
+        map.put("dwa", "どぁ");
+        map.put("dwi", "どぃ");
+        map.put("dwu", "どぅ");
+        map.put("dwe", "どぇ");
+        map.put("dwo", "どぉ");
+
+        //
+        //
+        map.put("ltu", "っ");
+        map.put("xtu", "っ");
+        map.put("ltsu", "っ");
+        map.put("xtsu", "っ");
+        //
+        //
+
+        map.put("na", "な");
+        map.put("ni", "に");
+        map.put("nu", "ぬ");
+        map.put("ne", "ね");
+        map.put("no", "の");
+
+        map.put("nya", "にゃ");
+        map.put("nyi", "にぃ");
+        map.put("nyu", "にゅ");
+        map.put("nye", "にぇ");
+        map.put("nyo", "にょ");
+
+        map.put("ha", "は");
+        map.put("hi", "ひ");
+        map.put("hu", "ふ");
+        map.put("fu", "ふ");
+        map.put("he", "へ");
+        map.put("ho", "ほ");
+
+        map.put("hya", "ひゃ");
+        map.put("hyi", "ひぃ");
+        map.put("hyu", "ひゅ");
+        map.put("hye", "ひぇ");
+        map.put("hyo", "ひょ");
+
+        map.put("fwa", "ふぁ");
+        map.put("fa", "ふぁ");
+        map.put("fwi", "ふぃ");
+        map.put("fi", "ふぃ");
+        map.put("fyi", "ふぃ");
+        map.put("fwu", "ふぅ");
+        map.put("fwe", "ふぇ");
+        map.put("fe", "ふぇ");
+        map.put("fye", "ふぇ");
+        map.put("fwo", "ふぉ");
+        map.put("fo", "ふぉ");
+
+        map.put("fya", "ふゃ");
+        //
+        map.put("fyu", "ふゅ");
+        //
+        map.put("fyo", "ふょ");
+
+        map.put("ba", "ば");
+        map.put("bi", "び");
+        map.put("bu", "ぶ");
+        map.put("be", "べ");
+        map.put("bo", "ぼ");
+
+        map.put("bya", "びゃ");
+        map.put("byi", "びぃ");
+        map.put("byu", "びゅ");
+        map.put("bye", "びぇ");
+        map.put("byo", "びょ");
+
+        map.put("va", "ヴぁ");
+        map.put("vi", "ヴぃ");
+        map.put("vu", "ヴ");
+        map.put("ve", "ヴぇ");
+        map.put("vo", "ヴぉ");
+
+        map.put("vya", "ヴゃ");
+        map.put("vyi", "ヴぃ");
+        map.put("vyu", "ヴゅ");
+        map.put("vye", "ヴぇ");
+        map.put("vyo", "ヴょ");
+
+        map.put("pa", "ぱ");
+        map.put("pi", "ぴ");
+        map.put("pu", "ぷ");
+        map.put("pe", "ぺ");
+        map.put("po", "ぽ");
+
+        map.put("pya", "ぴゃ");
+        map.put("pyi", "ぴぃ");
+        map.put("pyu", "ぴゅ");
+        map.put("pye", "ぴぇ");
+        map.put("pyo", "ぴょ");
+
+        map.put("ma", "ま");
+        map.put("mi", "み");
+        map.put("mu", "む");
+        map.put("me", "め");
+        map.put("mo", "も");
+
+        map.put("mya", "みゃ");
+        map.put("myi", "みぃ");
+        map.put("myu", "みゅ");
+        map.put("mye", "みぇ");
+        map.put("myo", "みょ");
+
+        map.put("ya", "や");
+        //
+        map.put("yu", "ゆ");
+        //
+        map.put("yo", "よ");
+
+        map.put("lya", "ゃ");
+        map.put("xya", "ゃ");
+        //
+        map.put("lyu", "ゅ");
+        map.put("xyu", "ゅ");
+        //
+        map.put("lyo", "ょ");
+        map.put("xyo", "ょ");
+
+        map.put("ra", "ら");
+        map.put("ri", "り");
+        map.put("ru", "る");
+        map.put("re", "れ");
+        map.put("ro", "ろ");
+
+        map.put("rya", "りゃ");
+        map.put("ryi", "りぃ");
+        map.put("ryu", "りゅ");
+        map.put("rye", "りぇ");
+        map.put("ryo", "りょ");
+
+        map.put("wa", "わ");
+        //
+        //
+        //
+        map.put("wo", "を");
+
+        map.put("lwa", "ゎ");
+        map.put("xwa", "ゎ");
+        //
+        //
+        //
+        //
+
+        //map.put("n", "ん"); // move to #convert(String)
+        map.put("nn", "ん");
+        //map.put("n'", "ん"); // move to #convert(String)
+        map.put("xn", "ん");
 
         // 促音を追加する
-        for ( Map.Entry<String, String> entry : builder.build().entrySet() ) {
+        for (Map.Entry<String, String> entry : Map.copyOf(map).entrySet()) {
             String romaji = entry.getKey();
             String hiragana = entry.getValue();
-            if ( canStartFromSokuon(romaji) ) {
-                builder.put(romaji.charAt(0) + romaji, "っ" + hiragana);
+
+            if (!startsWithVowelOrN(romaji)) { // if the romaji does not start with vowel or n, romaji can be added "っ"
+                map.put(romaji.charAt(0) + romaji, "っ" + hiragana);
             }
         }
 
         // 記号とか
-        builder.put("-", "ー");
-        builder.put(",", "、");
-        builder.put(".", "。");
-        builder.put("?", "？");
-        builder.put("!", "！");
-        builder.put("[", "「").put("]", "」");
-        builder.put("<", "＜").put(">", "＞");
-        builder.put("&", "＆");
-        builder.put("\"", "”");
-        builder.put("(", "（").put(")", "）");
+        map.put("-", "ー");
+        map.put(",", "、");
+        map.put(".", "。");
+        map.put("?", "？");
+        map.put("!", "！");
+        map.put("[", "「");
+        map.put("]", "」");
+        map.put("<", "＜");
+        map.put(">", "＞");
+        map.put("&", "＆");
+        map.put("\"", "”");
+        map.put("(", "（");
+        map.put(")", "）");
 
-        MAP = builder.build();
-
-        ROMAJI_LIST = MAP.keySet().toArray(new String[0]);
-        HIRAGANA_LIST = MAP.values().toArray(new String[0]);
+        return Collections.unmodifiableMap(map);
     }
 
-    /**
-     * 「っ」や「ッ」などの促音から開始できるかどうか
-     *
-     * @param romaji 検証したい「ローマ字」
-     * @return 促音から開始できるかどうか
-     * @since 2.8.10
-     */
-    private static boolean canStartFromSokuon(String romaji) {
-        // okocraft start - remove commons-lang3
-        char first = romaji.charAt(0);
-        return first == 'a' || first == 'i' || first == 'u' || first == 'e' || first == 'o';
-        // okocraft end
+    private static boolean isJapaneseVowel(char c) {
+        return c == 'a' || c == 'i' || c == 'u' || c == 'e' || c == 'o';
     }
 
-    /**
-     * 「ローマ字」から「かな文字」に変換する
-     *
-     * @param romaji 変換元の「ローマ字」
-     * @return 変換後の「かな文字」
-     * @since 2.8.10
-     */
-    public static String conv(String romaji) {
-        return net.okocraft.lunachat.japanize.YukiKanaConverter.convert(romaji) /*StringUtils.replaceEach(romaji, ROMAJI_LIST, HIRAGANA_LIST)*/;  // okocraft - remove commons-lang3
+    private static boolean isAlphabet(char c) {
+        return 'a' <= c && c <= 'z';
     }
 
-    /**
-     * 全角カッコを半角カッコに変換する (1.8以下のサーバーで全角カッコは表示できないため)
-     *
-     * @param text 変換元のテキスト
-     * @return 全角カッコが半角カッコになったテキスト
-     * @since 2.8.10
-     */
-    public static String fixBrackets(String text) {
-        String[] full = new String[] { "（", "）" };
-        String[] half = new String[] { "(", ")" };
-        return ""/* StringUtils.replaceEach(text, full, half)*/; // okocraft - remove commons-lang3
+    private static boolean startsWithVowelOrN(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+
+        char c = str.toCharArray()[0];
+        return isJapaneseVowel(c) || c == 'n';
+    }
+
+    public static @NotNull String convert(String romaji) {
+        if (romaji == null || romaji.isEmpty()) {
+            return "";
+        }
+
+        var resultBuilder = new StringBuilder();
+        int length = romaji.length();
+
+        int startIndex = 0;
+        int offset = 1;
+
+        while (startIndex < length) {
+            int endIndex = startIndex + offset;
+
+            if (length < endIndex) {
+                resultBuilder.append(romaji, startIndex, length);
+                break;
+            }
+
+            String replacement = null;
+
+            if (offset == 1) { // For single letters, vowels or non-alphabetic letters can be converted.
+                char c = romaji.charAt(startIndex);
+
+                if (!isAlphabet(c) || isJapaneseVowel(c)) {
+                    var searchStr = String.valueOf(c);
+                    replacement = REPLACEMENT_MAP.getOrDefault(searchStr, searchStr); // use searchStr if replacement not exists
+                }
+            } else {
+                int lastIndex = endIndex - 1;
+
+                if (offset == 2 && romaji.charAt(startIndex) == 'n' && romaji.charAt(lastIndex) == '\'') { // for "n'"
+                    replacement = "ん";
+                } else if (isAlphabet(romaji.charAt(lastIndex))) {
+                    var searchStr = romaji.substring(startIndex, endIndex);
+                    replacement = REPLACEMENT_MAP.get(searchStr);
+                } else {
+                    // If the last char is not an alphabet, it cannot be converted to kana.
+                    // Add the first character in the conversion range to the result
+                    // and begin processing again at the next index.
+                    char firstChar = romaji.charAt(startIndex);
+                    resultBuilder.append(firstChar == 'n' ? "ん" : firstChar); // n should convert to "ん"
+                    startIndex++;
+                    offset = 1;
+                    continue;
+                }
+            }
+
+            if (replacement != null) {
+                resultBuilder.append(replacement);
+                startIndex = endIndex;
+                offset = 1;
+            } else {
+                offset++;
+
+                // When the maximum length of roman characters that can be converted is reached
+                // or the conversion range exceeds the length of the original string,
+                // add the first character in the conversion range to the result and begin processing again at the next index.
+                if (MAX_ROMAJI_LENGTH < offset || length < startIndex + offset) {
+                    char firstChar = romaji.charAt(startIndex);
+                    resultBuilder.append(firstChar == 'n' ? "ん" : firstChar); // n should convert to "ん"
+                    startIndex++;
+                    offset = 1;
+                }
+            }
+        }
+
+        return resultBuilder.toString();
     }
 }

@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import net.okocraft.okochat.core.LunaChat;
 import net.okocraft.okochat.core.event.EventResult;
 import net.okocraft.okochat.core.japanize.JapanizeType;
+import net.okocraft.okochat.core.japanize.Japanizer;
 import net.okocraft.okochat.core.member.ChannelMember;
 import net.okocraft.okochat.core.util.Utility;
 
@@ -56,7 +57,7 @@ public class JapanizeConvertTask {
      */
     public boolean runSync() {
         // okocraft start - use improved Japanizer
-        String japanized = net.okocraft.lunachat.japanize.Japanizer.japanize(org, type, LunaChat.getAPI().getAllDictionary());
+        String japanized = Japanizer.japanize(org, type, LunaChat.getAPI().getAllDictionary());
         /*
         // 変換対象外のキーワード
         HashMap<String, String> keywordMap = new HashMap<String, String>();
