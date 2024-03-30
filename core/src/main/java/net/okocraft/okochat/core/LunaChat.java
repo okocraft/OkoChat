@@ -84,14 +84,6 @@ public class LunaChat {
     }
 
     /**
-     * LunaChatの通常チャットロガーを取得する
-     * @return 通常チャットロガー
-     */
-    public static LunaChatLogger getNormalChatLogger() {
-        return instance.getNormalChatLogger();
-    }
-
-    /**
      * LunaChatで非同期タスクを実行する
      * @param task 実行するタスク
      */

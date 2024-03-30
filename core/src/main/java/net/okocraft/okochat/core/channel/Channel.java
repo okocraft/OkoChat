@@ -26,7 +26,6 @@ import net.okocraft.okochat.core.LunaChat;
 import net.okocraft.okochat.core.LunaChatAPI;
 import net.okocraft.okochat.core.LunaChatBukkit;
 import net.okocraft.okochat.core.LunaChatConfig;
-import net.okocraft.okochat.core.LunaChatLogger;
 import net.okocraft.okochat.core.LunaChatMode;
 import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.NGWordAction;
@@ -138,9 +137,6 @@ public abstract class Channel {
     /** チャンネルごとのjapanize変換設定 */
     private JapanizeType japanizeType;
 
-
-    protected LunaChatLogger logger;
-
     /**
      * コンストラクタ
      * @param name チャンネルの名称
@@ -173,8 +169,6 @@ public abstract class Channel {
             this.format = config.getDefaultFormat();
         }
         this.japanizeType = config.getJapanizeType();
-
-        logger = new LunaChatLogger(name.replace(">", "-").replace("*", "_"));
     }
 
     /**

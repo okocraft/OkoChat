@@ -8,7 +8,6 @@ package net.okocraft.okochat.core.command;
 import java.util.ArrayList;
 
 import net.okocraft.okochat.core.LunaChat;
-import net.okocraft.okochat.core.LunaChatLogger;
 import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.channel.Channel;
 import net.okocraft.okochat.core.member.ChannelMember;
@@ -126,8 +125,8 @@ public class LogCommand extends LunaChatSubCommand {
 
             // グローバルチャンネル設定が無くて、指定チャンネルがマーカーの場合、
             // 通常チャットのログを取得する
-            LunaChatLogger logger = LunaChat.getNormalChatLogger();
-            logs = logger.getLog(argsPlayer, argsFilter, argsDate, reverse);
+            // TODO: rewrite this
+            logs = new ArrayList<>();
 
             cname = "GlobalChat";
 
