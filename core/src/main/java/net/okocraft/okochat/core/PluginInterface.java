@@ -7,7 +7,7 @@ package net.okocraft.okochat.core;
 
 import java.io.File;
 import java.util.Set;
-import java.util.logging.Level;
+import org.slf4j.Logger;
 
 /**
  * プラグインインターフェイス
@@ -40,12 +40,6 @@ public interface PluginInterface {
     public File getDataFolder();
 
     /**
-     * 通常チャット用のロガーを返す
-     * @return normalChatLogger
-     */
-    public LunaChatLogger getNormalChatLogger();
-
-    /**
      * オンラインのプレイヤー名一覧を取得する
      * @return オンラインのプレイヤー名一覧
      */
@@ -53,13 +47,6 @@ public interface PluginInterface {
     // okocraft start - add name stream
     java.util.stream.Stream<String> getOnlinePlayerNameStream();
     // okocraft end
-
-    /**
-     * このプラグインのログを記録する
-     * @param level ログレベル
-     * @param msg ログメッセージ
-     */
-    public void log(Level level, String msg);
 
     /**
      * UUIDキャッシュデータを取得する

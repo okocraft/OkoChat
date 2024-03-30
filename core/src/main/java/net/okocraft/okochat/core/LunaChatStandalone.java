@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import net.okocraft.okochat.core.channel.ChannelManager;
+import org.slf4j.Logger;
 
 /**
  * LunaChatのスタンドアロンサーバー
@@ -68,11 +69,6 @@ public class LunaChatStandalone implements PluginInterface {
         return dataFolder;
     }
 
-    @Override
-    public LunaChatLogger getNormalChatLogger() {
-        return null;
-    }
-
     /**
      * オンラインのプレイヤー名一覧を取得する
      * @return オンラインのプレイヤー名一覧
@@ -86,12 +82,6 @@ public class LunaChatStandalone implements PluginInterface {
         return java.util.stream.Stream.empty();
     }
     // okocraft end
-
-    @Override
-    public void log(Level level, String msg) {
-        // 画面に表示する
-        System.out.println(String.format("[%s]%s", level.toString(), msg));
-    }
 
     /**
      * UUIDキャッシュデータを取得する

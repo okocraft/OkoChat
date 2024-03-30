@@ -454,19 +454,6 @@ public abstract class Channel {
             }
         }
 
-        if (LunaChat.getMode() == LunaChatMode.BUKKIT) { // okocraft - Prevent calling DynmapBridge in BungeeCord
-        // 通常ブロードキャストなら、設定に応じてdynmapへ送信する
-        DynmapBridge dynmap = LunaChatBukkit.getInstance().getDynmap();
-        if ( config.isSendBroadcastChannelChatToDynmap() &&
-                sendDynmap &&
-                dynmap != null &&
-                isBroadcastChannel() &&
-                !isWorldRange() ) {
-
-            dynmap.broadcast(makeLegacyText(message));
-        }
-        } // okocraft
-
         // 送信する
         for ( ChannelMember p : recipients ) {
             p.sendMessage(message);

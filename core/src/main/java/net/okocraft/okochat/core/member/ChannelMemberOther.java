@@ -1,5 +1,6 @@
 package net.okocraft.okochat.core.member;
 
+import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,50 +11,26 @@ import net.okocraft.okochat.core.util.BlockLocation;
  * 任意の内容を設定できるChannelMember
  * @author ucchy
  */
-public class ChannelMemberOther extends ChannelMember {
+public class ChannelMemberOther implements ChannelMember {
 
     private String id;
     private String name;
-    private String displayName;
-    private String prefix;
-    private String suffix;
     private BlockLocation location;
-    private String serverName;
-    private String worldName;
 
     public ChannelMemberOther(@NotNull String name) {
-        this(name, name);
+        this(name, null);
     }
 
-    public ChannelMemberOther(@NotNull String name, @NotNull String displayName) {
-        this(name, displayName, "", "");
-    }
-
-    public ChannelMemberOther(@NotNull String name, @NotNull String displayName,
-            @NotNull String prefix, @NotNull String suffix) {
-        this(name, displayName, prefix, suffix, null);
-    }
-
-    public ChannelMemberOther(@NotNull String name, @NotNull String displayName,
-            @NotNull String prefix, @NotNull String suffix,
+    public ChannelMemberOther(@NotNull String name,
             @Nullable BlockLocation location) {
-        this(name, displayName, prefix, suffix, location, null);
+        this(name, location, null);
     }
 
-    public ChannelMemberOther(@NotNull String name, @NotNull String displayName,
-            @NotNull String prefix, @NotNull String suffix,
+    public ChannelMemberOther(@NotNull String name,
             @Nullable BlockLocation location, @Nullable String id) {
         this.name = name;
-        this.displayName = displayName;
-        this.prefix = prefix;
-        this.suffix = suffix;
         this.location = location;
         this.id = id;
-    }
-
-    @Override
-    public boolean isOnline() {
-        return true;
     }
 
     @Override
@@ -62,18 +39,8 @@ public class ChannelMemberOther extends ChannelMember {
     }
 
     @Override
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    @Override
-    public String getPrefix() {
-        return prefix;
-    }
-
-    @Override
-    public String getSuffix() {
-        return suffix;
+    public UUID getUniqueId() {
+        return null;
     }
 
     @Override
@@ -86,31 +53,8 @@ public class ChannelMemberOther extends ChannelMember {
         // do nothing.
     }
 
-    @Override
-    public String getWorldName() {
-        if ( worldName != null ) return worldName;
-        if ( location != null ) return location.getWorldName();
-        return "";
-    }
-
-    public void setWorldName(String worldName) {
-        this.worldName = worldName;
-    }
-
     public @Nullable BlockLocation getLocation() {
         return location;
-    }
-
-    @Override
-    public String getServerName() {
-        return serverName;
-    }
-
-    /**
-     * @param serverName serverName
-     */
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
     }
 
     @Override
@@ -122,16 +66,6 @@ public class ChannelMemberOther extends ChannelMember {
     public String toString() {
         if ( id != null ) return "$" + id;
         return name;
-    }
-
-    @Override
-    public boolean isPermissionSet(String node) {
-        return true;
-    }
-
-    @Override
-    public void chat(String message) {
-        // do nothing.
     }
 
     /**

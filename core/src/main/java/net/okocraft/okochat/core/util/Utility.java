@@ -13,13 +13,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
 import java.util.Locale;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import net.okocraft.okochat.core.LunaChat;
-import net.okocraft.okochat.core.LunaChatMode;
-import com.google.common.io.Files;
 
 /**
  * ユーティリティクラス
@@ -46,7 +45,7 @@ public class Utility {
             File file = new File(jarFile, sourceFilePath);
 
             try {
-                Files.copy(file, targetFile);
+                Files.copy(file.toPath(), targetFile.toPath());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -145,7 +144,7 @@ public class Utility {
 
     /**
      * カラーコード候補（&aや#99AABB）かどうかを判断する
-     * @param color カラーコード候補
+     * @param code カラーコード候補
      * @return カラーコード候補かどうか
      */
     public static boolean isAltColorCode(String code) {
@@ -202,20 +201,20 @@ public class Utility {
         return buf.toString();
     }
 
-    /**
-     * 指定された名前のプレイヤーが接続したことがあるかどうかを検索する
-     * @param name プレイヤー名
-     * @return 接続したことがあるかどうか
-     */
-    public static boolean existsOfflinePlayer(String name) {
-        if (LunaChat.getUUIDCacheData().getUUIDFromName(name) != null ) {
-            return true;
-        }
-        if (LunaChat.getMode() == LunaChatMode.BUKKIT ) {
-            return UtilityBukkit.existsOfflinePlayer(name);
-        }
-        return false;
-    }
+//    /**
+//     * 指定された名前のプレイヤーが接続したことがあるかどうかを検索する
+//     * @param name プレイヤー名
+//     * @return 接続したことがあるかどうか
+//     */
+//    public static boolean existsOfflinePlayer(String name) {
+//        if (LunaChat.getUUIDCacheData().getUUIDFromName(name) != null ) {
+//            return true;
+//        }
+//        if (LunaChat.getMode() == LunaChatMode.BUKKIT ) {
+//            return UtilityBukkit.existsOfflinePlayer(name);
+//        }
+//        return false;
+//    }
 
     /**
      * 動作環境のロケールを取得する。
