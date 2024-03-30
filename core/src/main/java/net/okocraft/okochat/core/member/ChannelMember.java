@@ -5,10 +5,9 @@
  */
 package net.okocraft.okochat.core.member;
 
+import net.kyori.adventure.text.Component;
 import net.okocraft.okochat.core.LunaChat;
 import net.okocraft.okochat.core.LunaChatMode;
-
-import net.md_5.bungee.api.chat.BaseComponent;
 
 /**
  * チャンネルメンバーの抽象クラス
@@ -56,7 +55,7 @@ public abstract class ChannelMember implements Comparable<ChannelMember> {
      * メッセージを送る
      * @param message 送るメッセージ
      */
-    public abstract void sendMessage(BaseComponent[] message);
+    public abstract void sendMessage(Component message);
 
     /**
      * 発言者が今いるワールドのワールド名を取得する

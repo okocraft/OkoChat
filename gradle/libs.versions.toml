@@ -14,6 +14,8 @@ mockito = "5.10.0"
 annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
 adventure = { module = "net.kyori:adventure-api", version.ref = "adventure" }
 adventure-text-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }
+adventure-text-serializer-legacy = { module = "net.kyori:adventure-text-serializer-legacy", version.ref = "adventure" }
+adventure-text-serializer-plain = { module = "net.kyori:adventure-text-serializer-plain", version.ref = "adventure" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 
 # for testing

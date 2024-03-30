@@ -12,18 +12,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.okocraft.okochat.core.LunaChat;
 import net.okocraft.okochat.core.LunaChatAPI;
 import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.channel.Channel;
 import net.okocraft.okochat.core.member.ChannelMember;
 import org.jetbrains.annotations.Nullable;
-
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * チャットのフォーマットを作成するユーティリティクラス
@@ -180,11 +179,11 @@ public class ClickableFormat {
         return makeFormat(format, member, null, false).toLegacyText();
     }
 
-    public BaseComponent[] makeTextComponent() {
+    public Component makeTextComponent() {
 
         message.translateColorCode();
 
-        List<BaseComponent> components = new ArrayList<>();
+        TextComponent.Builder builder = Component.text();
         Matcher matcher = Pattern.compile(PLACEHOLDER_PATTERN).matcher(message.getStringBuilder());
         int lastIndex = 0;
 
@@ -192,9 +191,7 @@ public class ClickableFormat {
 
             // マッチする箇所までの文字列を取得する
             if ( lastIndex < matcher.start() ) {
-                for ( BaseComponent c : TextComponent.fromLegacyText(message.substring(lastIndex, matcher.start())) ) {
-                    components.add(c);
-                }
+                builder.append(LegacyComponentSerializer.legacySection().deserialize(message.substring(lastIndex, matcher.start())));
             }
 
             // マッチした箇所の文字列を解析して追加する
@@ -202,43 +199,28 @@ public class ClickableFormat {
             String text = matcher.group(2);
             String hover = matcher.group(3);
             String command = matcher.group(4);
-            TextComponent tc = new TextComponent(TextComponent.fromLegacyText(text));
+            var tc = Component.text().content(text);
             if ( !hover.isEmpty() ) {
-                @SuppressWarnings("deprecation")
-                HoverEvent event = new HoverEvent(
-                        HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(hover).create());
-                // bungeecord-chat v1.16-R0.3 style.
-//                HoverEvent event = new HoverEvent(
-//                        HoverEvent.Action.SHOW_TEXT, new Text(hover));
-                tc.setHoverEvent(event);
+                tc.hoverEvent(HoverEvent.showText(Component.text(hover)));
             }
             if ( type.equals("RUN_COMMAND") ) {
-                tc.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+                tc.clickEvent(ClickEvent.runCommand(command));
             } else { // type.equals("SUGGEST_COMMAND")
-                tc.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
+                tc.clickEvent(ClickEvent.suggestCommand(command));
             }
 
-            // componentsの最後の要素のカラーコードを、TextComponentにも反映させる。 see issue #202
-            if ( components.size() > 0 ) {
-                BaseComponent last = components.get(components.size() - 1);
-                tc.setColor(last.getColor());
-            }
-
-            components.add(tc);
+            // componentsの最後の要素のカラーコードを、TextComponentにも反映させる。 see issue #202 // TODO: 検証 - OKOCRAFT
+            builder.append(tc);
 
             lastIndex = matcher.end();
         }
 
         if ( lastIndex < message.length() - 1 ) {
             // 残りの部分の文字列を取得する
-            for ( BaseComponent c : TextComponent.fromLegacyText(message.substring(lastIndex)) ) {
-                components.add(c);
-            }
+            builder.append(LegacyComponentSerializer.legacySection().deserialize(message.substring(lastIndex)));
         }
 
-        BaseComponent[] result = new BaseComponent[components.size()];
-        components.toArray(result);
-        return result;
+        return builder.build();
     }
 
     public String toLegacyText() {

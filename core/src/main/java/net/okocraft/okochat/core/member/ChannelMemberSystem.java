@@ -1,6 +1,6 @@
 package net.okocraft.okochat.core.member;
 
-import net.md_5.bungee.api.chat.BaseComponent;
+import net.kyori.adventure.text.Component;
 
 public class ChannelMemberSystem extends ChannelMember {
 
@@ -38,7 +38,7 @@ public class ChannelMemberSystem extends ChannelMember {
     }
 
     @Override
-    public void sendMessage(BaseComponent[] message) {
+    public void sendMessage(Component message) {
         // do nothing.
     }
 

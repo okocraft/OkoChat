@@ -1,11 +1,10 @@
 package net.okocraft.okochat.core.member;
 
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import net.okocraft.okochat.core.util.BlockLocation;
-
-import net.md_5.bungee.api.chat.BaseComponent;
 
 /**
  * 任意の内容を設定できるChannelMember
@@ -83,7 +82,7 @@ public class ChannelMemberOther extends ChannelMember {
     }
 
     @Override
-    public void sendMessage(BaseComponent[] message) {
+    public void sendMessage(Component message) {
         // do nothing.
     }
 
