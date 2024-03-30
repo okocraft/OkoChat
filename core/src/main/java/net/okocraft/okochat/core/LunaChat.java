@@ -92,14 +92,6 @@ public class LunaChat {
     }
 
     /**
-     * LunaChatのUUIDキャッシュを取得する
-     * @return UUIDキャッシュ
-     */
-    public static UUIDCacheData getUUIDCacheData() {
-        return instance.getUUIDCacheData();
-    }
-
-    /**
      * LunaChatで非同期タスクを実行する
      * @param task 実行するタスク
      */

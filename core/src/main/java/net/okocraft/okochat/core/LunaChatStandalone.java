@@ -21,7 +21,6 @@ public class LunaChatStandalone implements PluginInterface {
 
     private LunaChatConfig config;
     private ChannelManager manager;
-    private UUIDCacheData uuidCacheData;
     private File dataFolder;
 
     public LunaChatStandalone(File dataFolder) {
@@ -38,9 +37,6 @@ public class LunaChatStandalone implements PluginInterface {
 
         // コンフィグ取得
         config = new LunaChatConfig(getDataFolder(), getPluginJarFile());
-
-        // UUIDキャッシュデータ
-        uuidCacheData = new UUIDCacheData(getDataFolder());
     }
 
     @Override
@@ -82,16 +78,6 @@ public class LunaChatStandalone implements PluginInterface {
         return java.util.stream.Stream.empty();
     }
     // okocraft end
-
-    /**
-     * UUIDキャッシュデータを取得する
-     * @return UUIDキャッシュデータ
-     * @see PluginInterface#getUUIDCacheData()
-     */
-    @Override
-    public UUIDCacheData getUUIDCacheData() {
-        return uuidCacheData;
-    }
 
     /**
      * 非同期タスクを実行する

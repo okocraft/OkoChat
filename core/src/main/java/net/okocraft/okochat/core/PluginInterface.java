@@ -49,12 +49,6 @@ public interface PluginInterface {
     // okocraft end
 
     /**
-     * UUIDキャッシュデータを取得する
-     * @return UUIDキャッシュデータ
-     */
-    public UUIDCacheData getUUIDCacheData();
-
-    /**
      * 非同期タスクを実行する
      * @param task タスク
      */
