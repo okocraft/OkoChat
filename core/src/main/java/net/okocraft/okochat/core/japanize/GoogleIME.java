@@ -6,7 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.URL;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -29,7 +29,7 @@ final class GoogleIME {
         }
 
         var url = GOOGLE_IME_URL + URLEncoder.encode(original, StandardCharsets.UTF_8);
-        var request = HttpRequest.newBuilder().uri(new URL(url).toURI()).GET().build();
+        var request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build(); // TODO: testing
         var response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() == 200) {

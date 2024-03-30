@@ -99,10 +99,10 @@ public class ClickableFormat {
             if ( channel.getPrivateMessageTo() != null ) {
                 msg.replace("%to", String.format(
                         PLACEHOLDER_SUGGEST_COMMAND,
-                        channel.getPrivateMessageTo().getDisplayName(),
+                        "", // FIXME: channel.getPrivateMessageTo().getDisplayName(),
                         Messages.hoverPlayerName(channel.getPrivateMessageTo().getName()),
                         String.format(TELL_COMMAND_TEMPLATE, channel.getPrivateMessageTo().getName())));
-                msg.replace("%recieverserver", channel.getPrivateMessageTo().getServerName());
+                // FIXME: msg.replace("%recieverserver", channel.getPrivateMessageTo().getServerName());
             }
         }
 
@@ -119,7 +119,7 @@ public class ClickableFormat {
             if ( withPlayerLink ) {
                 String playerPMPlaceHolder = String.format(
                         PLACEHOLDER_SUGGEST_COMMAND,
-                        member.getDisplayName(),
+                        "", // FIXME: member.getDisplayName(),
                         Messages.hoverPlayerName(member.getName()),
                         String.format(TELL_COMMAND_TEMPLATE, member.getName()));
                 msg.replace("%displayname", playerPMPlaceHolder);
@@ -130,18 +130,18 @@ public class ClickableFormat {
                         Messages.hoverPlayerName(member.getName()),
                         String.format(TELL_COMMAND_TEMPLATE, member.getName())));
             } else {
-                msg.replace("%displayname", member.getDisplayName());
-                msg.replace("%username", member.getDisplayName());
+                // FIXME: msg.replace("%displayname", member.getDisplayName());
+                // FIXME: msg.replace("%username", member.getDisplayName());
                 msg.replace("%player", member.getName());
             }
 
             if ( msg.contains("%prefix") || msg.contains("%suffix") ) {
-                msg.replace("%prefix", member.getPrefix());
-                msg.replace("%suffix", member.getSuffix());
+                // FIXME: msg.replace("%prefix", member.getPrefix());
+                // FIXME: msg.replace("%suffix", member.getSuffix());
             }
 
-            msg.replace("%world", member.getWorldName());
-            msg.replace("%server", member.getServerName());
+            // FIXME: msg.replace("%world", member.getWorldName());
+            // FIXME: msg.replace("%server", member.getServerName());
         }
 
         return new ClickableFormat(msg);

@@ -151,7 +151,7 @@ public class LogCommand extends LunaChatSubCommand {
                 return true;
             }
 
-            logs = channel.getLog(argsPlayer, argsFilter, argsDate, reverse);
+            logs = new ArrayList<>(); // TODO: rework
         }
 
         // 整形と表示

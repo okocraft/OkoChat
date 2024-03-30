@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import com.github.siroshun09.configapi.core.node.MapNode;
@@ -17,6 +16,8 @@ import com.github.siroshun09.configapi.format.yaml.YamlFormat;
 import net.okocraft.okochat.core.japanize.JapanizeType;
 import net.okocraft.okochat.core.util.EventPriority;
 import net.okocraft.okochat.core.util.Utility;
+
+import static net.okocraft.okochat.core.util.OkoChatLogger.logger;
 
 /**
  * LunaChatのコンフィグクラス
@@ -289,7 +290,7 @@ public class LunaChatConfig {
                 !globalChannel.matches("[0-9a-zA-Z\\-_]{1,20}") ) {
 
             // コンソールに警告を表示する
-            LunaChat.getPlugin().log(Level.WARNING, Messages.errmsgCannotUseForGlobal(globalChannel));
+            logger().warn(Messages.errmsgCannotUseForGlobal(globalChannel));
             globalChannel = "";
         }
     }

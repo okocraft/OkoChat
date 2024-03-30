@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,12 +31,13 @@ import net.okocraft.okochat.core.NGWordAction;
 import net.okocraft.okochat.core.japanize.JapanizeType;
 import org.jetbrains.annotations.Nullable;
 
-import net.okocraft.okochat.core.bridge.DynmapBridge;
 import net.okocraft.okochat.core.member.ChannelMember;
 import net.okocraft.okochat.core.member.ChannelMemberOther;
 import net.okocraft.okochat.core.util.ChatColor;
 import net.okocraft.okochat.core.util.ClickableFormat;
 import net.okocraft.okochat.core.util.Utility;
+
+import static net.okocraft.okochat.core.util.OkoChatLogger.logger;
 
 /**
  * チャンネル
@@ -449,7 +449,7 @@ public abstract class Channel {
 
         // 設定に応じて、コンソールに出力する
         if ( config.isDisplayChatOnConsole() ) {
-            LunaChat.getPlugin().log(Level.INFO, makePlainText(message));
+            logger().info(makePlainText(message));
         }
 
         // ロギング
@@ -785,20 +785,6 @@ public abstract class Channel {
                 }
             }
         }
-    }
-
-    /**
-     * ログファイルを読み込んで、ログデータを取得する
-     * @param player プレイヤー名、フィルタしないならnullを指定すること
-     * @param filter フィルタ、フィルタしないならnullを指定すること
-     * @param date 日付、今日のデータを取得するならnullを指定すること
-     * @param reverse 逆順取得
-     * @return ログデータ
-     */
-    public ArrayList<String> getLog(
-            String player, String filter, String date, boolean reverse) {
-
-        return logger.getLog(player, filter, date, reverse);
     }
 
     /**
