@@ -3,9 +3,10 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2020
  */
-package net.okocraft.okochat.core.bungee.event;
+package net.okocraft.okochat.core.event.chat;
 
 import com.github.ucchyocean.lc3.member.ChannelMember;
+import net.okocraft.okochat.core.event.LunaChatBungeeBaseCancellableEvent;
 
 /**
  * Japanize変換が行われた後に呼び出されるイベント

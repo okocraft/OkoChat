@@ -3,10 +3,12 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2020
  */
-package net.okocraft.okochat.core.bukkit.event;
+package net.okocraft.okochat.core.event.channel;
 
 import com.github.ucchyocean.lc3.member.ChannelMember;
+import net.okocraft.okochat.core.event.LunaChatBungeeBaseEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +16,7 @@ import java.util.List;
  * このイベントはキャンセルできない。
  * @author ucchy
  */
-public class LunaChatBukkitChannelMessageEvent extends LunaChatBukkitBaseEvent {
+public class LunaChatBungeeChannelMessageEvent extends LunaChatBungeeBaseEvent {
 
     private ChannelMember member;
     private String message;
@@ -22,7 +24,7 @@ public class LunaChatBukkitChannelMessageEvent extends LunaChatBukkitBaseEvent {
     private String displayName;
     private String originalMessage;
 
-    public LunaChatBukkitChannelMessageEvent(String channelName,
+    public LunaChatBungeeChannelMessageEvent(String channelName,
             ChannelMember member, String message, List<ChannelMember> recipients,
             String displayName, String originalMessage) {
         super(channelName);
@@ -85,7 +87,7 @@ public class LunaChatBukkitChannelMessageEvent extends LunaChatBukkitBaseEvent {
      * メッセージ受信者を上書き設定する
      * @param recipients メッセージ受信者
      */
-    public void setRecipients(List<ChannelMember> recipients) {
+    public void setRecipients(ArrayList<ChannelMember> recipients) {
         this.recipients = recipients;
     }
 }

@@ -3,22 +3,23 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2020
  */
-package net.okocraft.okochat.core.bukkit.event;
+package net.okocraft.okochat.core.event.channel;
 
 import com.github.ucchyocean.lc3.member.ChannelMember;
+import net.okocraft.okochat.core.event.LunaChatBungeeBaseCancellableEvent;
 
 /**
  * チャンネルチャットのチャットイベント
  * @author ucchy
  */
-public class LunaChatBukkitChannelChatEvent extends LunaChatBukkitBaseCancellableEvent {
+public class LunaChatBungeeChannelChatEvent extends LunaChatBungeeBaseCancellableEvent {
 
     private ChannelMember member;
     private String originalMessage;
     private String ngMaskedMessage;
     private String messageFormat;
 
-    public LunaChatBukkitChannelChatEvent(String channelName, ChannelMember member,
+    public LunaChatBungeeChannelChatEvent(String channelName, ChannelMember member,
             String originalMessage, String ngMaskedMessage,
             String messageFormat) {
         super(channelName);
