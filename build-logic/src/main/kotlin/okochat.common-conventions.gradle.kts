@@ -12,7 +12,9 @@ val libs = extensions.getByType(org.gradle.accessors.dm.LibrariesForLibs::class)
 
 dependencies {
     implementation(libs.annotations)
-    implementation(libs.configapi.format.yaml)
+    implementation(libs.configapi.format.yaml) {
+        exclude("org.yaml", "snakeyaml")
+    }
 
     compileOnlyApi(libs.adventure)
     compileOnlyApi(libs.adventure.text.minimessage)
@@ -26,6 +28,7 @@ dependencies {
     testImplementation(libs.adventure.text.minimessage)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly(libs.slf4j.simple)
+    testRuntimeOnly(libs.snakeyaml)
 }
 
 val javaVersion = JavaVersion.VERSION_21

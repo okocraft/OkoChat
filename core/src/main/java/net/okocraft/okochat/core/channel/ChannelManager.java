@@ -27,6 +27,9 @@ import net.okocraft.okochat.core.japanize.JapanizeType;
 import net.okocraft.okochat.core.japanize.Japanizer;
 import net.okocraft.okochat.core.member.ChannelMember;
 import net.okocraft.okochat.core.util.DataFiles;
+import net.okocraft.okochat.core.util.OkoChatLogger;
+
+import static net.okocraft.okochat.core.util.OkoChatLogger.logger;
 
 /**
  * チャンネルマネージャー
@@ -198,6 +201,7 @@ public class ChannelManager implements LunaChatAPI {
             DataFiles.saveStringMap(fileDefaults.toPath(), java.util.Map.copyOf(defaultChannels)); // okocraft - Make file saving async
             return true;
         } catch (IOException e) {
+            logger().error("Failed to save **", e);
             e.printStackTrace();
             return false;
         }

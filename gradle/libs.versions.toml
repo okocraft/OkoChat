@@ -5,10 +5,18 @@ annotations = "24.1.0"
 configapi = "5.0.0-beta.3"
 gson = "2.10.1"
 slf4j = "2.0.12"
+snakeyaml = "2.2"
 
 # for testing
 junit = "5.10.2"
 mockito = "5.10.0"
+
+# gradle plugins
+shadow = "8.1.7"
+
+# platform api
+paper = "1.20.4-R0.1-SNAPSHOT"
+velocity = "3.3.0-SNAPSHOT"
 
 [libraries]
 
@@ -26,3 +34,11 @@ slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+
+# platform api
+platform-paper = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+platform-velocity = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
+
+# Gradle plugins
+build-shadow = {module = "io.github.goooler.shadow:io.github.goooler.shadow.gradle.plugin", version.ref="shadow" }
