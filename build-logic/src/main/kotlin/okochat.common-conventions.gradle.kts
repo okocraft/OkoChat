@@ -44,6 +44,10 @@ tasks {
     compileJava {
         options.encoding = charset.name()
         options.release.set(javaVersion.ordinal + 1)
+        options.compilerArgs.addAll(sequenceOf(
+                "-Xmaxerrs", "9999",
+                "-Xmaxwarns", "9999"
+        ))
     }
 
     processResources {
