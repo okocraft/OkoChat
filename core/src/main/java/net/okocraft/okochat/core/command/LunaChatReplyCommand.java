@@ -26,7 +26,7 @@ public class LunaChatReplyCommand extends LunaChatMessageCommand {
     public boolean execute(ChannelMember sender, String label, String[] args) {
 
         // senderからChannelMemberを作成する
-        ChannelMember inviter = ChannelMember.getChannelMember(sender);
+        ChannelMember inviter = sender; // FIXME: uuid
 
         // 会話相手を履歴から取得する
         String invitedName = DataMaps.privateMessageMap.get(inviter.getName());

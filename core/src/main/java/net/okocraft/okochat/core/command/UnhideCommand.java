@@ -10,6 +10,8 @@ import net.okocraft.okochat.core.channel.Channel;
 import net.okocraft.okochat.core.member.ChannelMember;
 import net.okocraft.okochat.core.util.Utility;
 
+import java.util.UUID;
+
 /**
  * unhideコマンドの実行クラス
  * @author ucchy
@@ -104,9 +106,10 @@ public class UnhideCommand extends LunaChatSubCommand {
 
         // チャンネルかプレイヤーが存在するかどうかをチェックする
         Channel channel = api.getChannel(cname);
+        UUID target = api.getUserProvider().lookupUuid(cname);
         if ( !isPlayerCommand && channel != null ) {
             isChannelCommand = true;
-        } else if ( !Utility.existsOfflinePlayer(cname) ) {
+        } else if ( target == null ) {
             sender.sendMessage(Messages.errmsgNotExistChannelAndPlayer());
             return true;
         }
@@ -131,15 +134,15 @@ public class UnhideCommand extends LunaChatSubCommand {
             // プレイヤーが対象の場合の処理
 
             // 既に表示になっていないかどうかをチェックする
-            ChannelMember hided = ChannelMember.getChannelMember(cname);
-            if ( !api.getHidelist(hided).contains(sender) ) {
+            if ( !api.getHidelist(target).contains(sender.getUniqueId()) ) {
                 sender.sendMessage(Messages.errmsgAlreadyUnhidedPlayer());
                 return true;
             }
 
             // 設定する
-            api.removeHidelist(sender, hided);
-            sender.sendMessage(Messages.cmdmsgUnhidedPlayer(hided.getDisplayName()));
+            api.removeHidelist(sender.getUniqueId(), target);
+            String targetName = api.getUserProvider().lookupName(target);
+            sender.sendMessage(Messages.cmdmsgUnhidedPlayer(targetName != null ? targetName : target.toString()));
 
             return true;
         }

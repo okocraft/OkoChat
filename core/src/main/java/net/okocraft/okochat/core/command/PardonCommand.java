@@ -9,6 +9,9 @@ import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.channel.Channel;
 import net.okocraft.okochat.core.member.ChannelMember;
 
+import java.util.Optional;
+import java.util.UUID;
+
 /**
  * pardonコマンドの実行クラス
  * @author ucchy
@@ -100,31 +103,31 @@ public class PardonCommand extends LunaChatSubCommand {
         }
 
         // BAN解除されるプレイヤーがBANされているかどうかチェックする
-        ChannelMember kicked = ChannelMember.getChannelMember(kickedName);
-        if (!channel.getBanned().contains(kicked)) {
-            sender.sendMessage(Messages.errmsgNotBanned());
+        UUID kicked = api.getUserProvider().lookupUuid(kickedName);
+
+        if (kicked == null) {
+            sender.sendMessage(Messages.errmsgNotfoundPlayer(kickedName));
             return true;
         }
 
         // BAN解除実行
-        channel.getBanned().remove(kicked);
-        if ( channel.getBanExpires().containsKey(kicked) ) {
-            channel.getBanExpires().remove(kicked);
+        if (!channel.unban(kicked)) { // If false, the user is already banned
+            sender.sendMessage(Messages.errmsgNotBanned());
+            return true;
         }
-        channel.save();
 
         // senderに通知メッセージを出す
         sender.sendMessage(Messages.cmdmsgPardon(kickedName, channel.getName()));
 
         // チャンネルに通知メッセージを出す
         channel.sendSystemMessage(Messages.pardonMessage(
-                channel.getColorCode(), channel.getName(), kicked.getName()),
+                channel.getColorCode(), channel.getName(), kickedName),
                 true, "system");
 
         // BANされていた人に通知メッセージを出す
-        if ( kicked != null && kicked.isOnline() ) {
-            kicked.sendMessage(Messages.cmdmsgPardoned(channel.getName()));
-        }
+        String channelName = channel.getName();
+        Optional.ofNullable(api.getChannelMemberProvider().getByUniqueId(kicked))
+                .ifPresent(member -> member.sendMessage(Messages.cmdmsgPardoned(channelName)));
 
         return true;
     }

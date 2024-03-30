@@ -95,7 +95,7 @@ public class LeaveCommand extends LunaChatSubCommand {
 
         // 退室権限を確認する
         String node = PERMISSION_NODE + "." + channelName;
-        if (sender.isPermissionSet(node) && !sender.hasPermission(node)) {
+        if (sender.checkPermission(node).toBooleanOrElse(true)) {
             sender.sendMessage(Messages.errmsgPermission(node));
             return true;
         }

@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.github.siroshun09.configapi.core.node.MapNode;
@@ -25,8 +26,11 @@ import net.okocraft.okochat.core.LunaChatBungee;
 import net.okocraft.okochat.core.japanize.JapanizeType;
 import net.okocraft.okochat.core.japanize.Japanizer;
 import net.okocraft.okochat.core.member.ChannelMember;
+import net.okocraft.okochat.core.platform.provider.ChannelMemberProvider;
+import net.okocraft.okochat.core.platform.provider.UserProvider;
 import net.okocraft.okochat.core.util.DataFiles;
 import net.okocraft.okochat.core.util.OkoChatLogger;
+import org.jetbrains.annotations.NotNull;
 
 import static net.okocraft.okochat.core.util.OkoChatLogger.logger;
 
@@ -165,7 +169,7 @@ public class ChannelManager implements LunaChatAPI {
         for ( Object key : configHidelist.value().keySet() ) {
             hidelist.put(String.valueOf(key), new ArrayList<ChannelMember>());
             for ( String id : configHidelist.getList(key).asList(String.class) ) {
-                hidelist.get(String.valueOf(key)).add(ChannelMember.getChannelMember(id));
+                hidelist.get(String.valueOf(key)).add(LunaChat.getAPI().getChannelMemberProvider().getByName(id));
             }
         }
 
@@ -356,7 +360,7 @@ public class ChannelManager implements LunaChatAPI {
     @Override
     public Collection<Channel> getChannelsByPlayer(String playerName) {
 
-        ChannelMember cp = ChannelMember.getChannelMember(playerName);
+        ChannelMember cp = LunaChat.getAPI().getChannelMemberProvider().getByName(playerName);
         Collection<Channel> result = new ArrayList<Channel>();
         for ( String key : channels.keySet() ) {
             Channel channel = channels.get(key);
@@ -588,6 +592,11 @@ public class ChannelManager implements LunaChatAPI {
         return new ArrayList<ChannelMember>();
     }
 
+    @Override
+    public List<UUID> getHidelist(UUID key) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
     /**
      * 該当のプレイヤーがhideしているプレイヤーのリストを返す。
      * @param player プレイヤー
@@ -600,10 +609,14 @@ public class ChannelManager implements LunaChatAPI {
         ArrayList<ChannelMember> info = new ArrayList<ChannelMember>();
         for ( String key : hidelist.keySet() ) {
             if ( hidelist.get(key).contains(player) ) {
-                info.add(ChannelMember.getChannelMember(key));
+                info.add(LunaChat.getAPI().getChannelMemberProvider().getByName(key));
             }
         }
         return info;
+    }
+
+    public ArrayList<UUID> getHideinfo(UUID uuid) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**
@@ -620,6 +633,11 @@ public class ChannelManager implements LunaChatAPI {
             hidelist.get(hidedId).add(player);
             saveHidelist();
         }
+    }
+
+    @Override
+    public void addHidelist(UUID player, UUID hided) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**
@@ -639,6 +657,11 @@ public class ChannelManager implements LunaChatAPI {
             }
             saveHidelist();
         }
+    }
+
+    @Override
+    public void removeHidelist(UUID player, UUID hided) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**
@@ -702,5 +725,15 @@ public class ChannelManager implements LunaChatAPI {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public @NotNull UserProvider getUserProvider() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public @NotNull ChannelMemberProvider getChannelMemberProvider() {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }

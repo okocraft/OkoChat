@@ -113,8 +113,8 @@ public class InviteCommand extends LunaChatSubCommand {
         }
 
         // 招待相手が存在するかどうかを確認する
-        ChannelMember invited = ChannelMember.getChannelMember(invitedName);
-        if ( invited == null || !invited.isOnline() ) {
+        ChannelMember invited = api.getChannelMemberProvider().getByName(invitedName);
+        if ( invited == null ) {
             sender.sendMessage(Messages.errmsgNotfoundPlayer(invitedName));
             return true;
         }
@@ -174,8 +174,8 @@ public class InviteCommand extends LunaChatSubCommand {
 
         // 招待相手が存在するかどうかを確認する
         String invitedName = args[1];
-        ChannelMember invited = ChannelMember.getChannelMember(invitedName);
-        if ( invited == null || !invited.isOnline() ) {
+        ChannelMember invited = api.getChannelMemberProvider().getByName(invitedName);
+        if ( invited == null ) {
             sender.sendMessage(Messages.errmsgNotfoundPlayer(invitedName));
             return true;
         }

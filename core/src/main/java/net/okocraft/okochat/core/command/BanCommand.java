@@ -9,6 +9,9 @@ import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.channel.Channel;
 import net.okocraft.okochat.core.member.ChannelMember;
 
+import java.util.Optional;
+import java.util.UUID;
+
 /**
  * banコマンドの実行クラス
  * @author ucchy
@@ -109,15 +112,15 @@ public class BanCommand extends LunaChatSubCommand {
         }
 
         // BANされるプレイヤーがメンバーかどうかチェックする
-        ChannelMember kicked = ChannelMember.getChannelMember(kickedName);
-        if (!channel.getMembers().contains(kicked)) {
-            sender.sendMessage(Messages.errmsgNomemberOther());
+        UUID kicked = api.getUserProvider().lookupUuid(kickedName);
+
+        if (kicked == null) {
+            sender.sendMessage(Messages.errmsgNotfoundPlayer(kickedName));
             return true;
         }
 
-        // 既にBANされているかどうかチェックする
-        if (channel.getBanned().contains(kicked)) {
-            sender.sendMessage(Messages.errmsgAlreadyBanned());
+        if (!channel.isMember(kicked)) {
+            sender.sendMessage(Messages.errmsgNomemberOther());
             return true;
         }
 
@@ -135,13 +138,16 @@ public class BanCommand extends LunaChatSubCommand {
             }
         }
 
-        // BAN実行
-        channel.getBanned().add(kicked);
+        // 既にBANされているかどうかチェックする
+        if (!channel.ban(kicked)) { // If false, the user is already banned
+            sender.sendMessage(Messages.errmsgAlreadyBanned());
+            return true;
+        }
+
         if ( expireMinutes != -1 ) {
             long expire = System.currentTimeMillis() + expireMinutes * 60 * 1000;
-            channel.getBanExpires().put(kicked, expire);
+            // FIXME: channel.getBanExpires().put(kicked, expire);
         }
-        channel.removeMember(kicked);
 
         // senderに通知メッセージを出す
         if ( expireMinutes != -1 ) {
@@ -155,18 +161,18 @@ public class BanCommand extends LunaChatSubCommand {
         // チャンネルに通知メッセージを出す
         if ( expireMinutes != -1 ) {
             channel.sendSystemMessage(Messages.banWithExpireMessage(
-                    channel.getColorCode(), channel.getName(), kicked.getName(), expireMinutes),
+                    channel.getColorCode(), channel.getName(), kickedName, expireMinutes),
                     true, "system");
         } else {
             channel.sendSystemMessage(Messages.banMessage(
-                    channel.getColorCode(), channel.getName(), kicked.getName()),
+                    channel.getColorCode(), channel.getName(), kickedName),
                     true, "system");
         }
 
         // BANされた人に通知メッセージを出す
-        if ( kicked != null && kicked.isOnline() ) {
-            kicked.sendMessage(Messages.cmdmsgBanned(channel.getName()));
-        }
+        String channelName = channel.getName();
+        Optional.ofNullable(api.getChannelMemberProvider().getByUniqueId(kicked))
+                .ifPresent(member -> member.sendMessage(Messages.cmdmsgBanned(channelName)));
 
         return true;
     }

@@ -9,6 +9,9 @@ import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.channel.Channel;
 import net.okocraft.okochat.core.member.ChannelMember;
 
+import java.util.Optional;
+import java.util.UUID;
+
 /**
  * muteコマンドの実行クラス
  * @author ucchy
@@ -103,15 +106,15 @@ public class MuteCommand extends LunaChatSubCommand {
         }
 
         // Muteされるプレイヤーがメンバーかどうかチェックする
-        ChannelMember kicked = ChannelMember.getChannelMember(kickedName);
-        if (!channel.getMembers().contains(kicked)) {
-            sender.sendMessage(Messages.errmsgNomemberOther());
+        UUID kicked = api.getUserProvider().lookupUuid(kickedName);
+
+        if (kicked == null) {
+            sender.sendMessage(Messages.errmsgNotfoundPlayer(kickedName));
             return true;
         }
 
-        // 既にMuteされているかどうかチェックする
-        if (channel.getMuted().contains(kicked)) {
-            sender.sendMessage(Messages.errmsgAlreadyMuted());
+        if (!channel.isMember(kicked)) {
+            sender.sendMessage(Messages.errmsgNomemberOther());
             return true;
         }
 
@@ -129,11 +132,17 @@ public class MuteCommand extends LunaChatSubCommand {
             }
         }
 
+        // 既にMuteされているかどうかチェックする
+        if (channel.mute(kicked)) { // If false, the user is already muted
+            sender.sendMessage(Messages.errmsgAlreadyMuted());
+            return true;
+        }
+
+
         // Mute実行
-        channel.getMuted().add(kicked);
         if ( expireMinutes != -1 ) {
             long expire = System.currentTimeMillis() + expireMinutes * 60 * 1000;
-            channel.getMuteExpires().put(kicked, expire);
+            // FIXME: channel.getMuteExpires().put(kicked, expire);
         }
         channel.save();
 
@@ -148,18 +157,18 @@ public class MuteCommand extends LunaChatSubCommand {
         // チャンネルに通知メッセージを出す
         if ( expireMinutes != -1 ) {
             channel.sendSystemMessage(Messages.muteWithExpireMessage(
-                    channel.getColorCode(), channel.getName(), kicked.getName(), expireMinutes),
+                    channel.getColorCode(), channel.getName(), kickedName, expireMinutes),
                     true, "system");
         } else {
             channel.sendSystemMessage(Messages.muteMessage(
-                    channel.getColorCode(), channel.getName(), kicked.getName()),
+                    channel.getColorCode(), channel.getName(), kickedName),
                     true, "system");
         }
 
         // BANされた人に通知メッセージを出す
-        if ( kicked != null ) {
-            kicked.sendMessage(Messages.cmdmsgMuted(channel.getName()));
-        }
+        String channelName = channel.getName();
+        Optional.ofNullable(api.getChannelMemberProvider().getByUniqueId(kicked))
+                .ifPresent(member -> member.sendMessage(Messages.cmdmsgMuted(channelName)));
 
         return true;
     }

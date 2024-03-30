@@ -110,9 +110,9 @@ public class JoinCommand extends LunaChatSubCommand {
                     sender.sendMessage(Messages.cmdmsgSet("Global"));
                 }
 
-                // 何かメッセージがあるなら、そのままチャット送信する
+                // 何かメッセージがあるなら、そのままチャット送信する // FIXME: REMOVE THIS FEATURE
                 // TODO 要テスト
-                sender.chat(message.toString());
+                //sender.chat(message.toString());
 
                 return true;
             }
@@ -160,7 +160,7 @@ public class JoinCommand extends LunaChatSubCommand {
 
         // 入室権限を確認する
         String node = PERMISSION_NODE + "." + channelName;
-        if (sender.isPermissionSet(node) && !sender.hasPermission(node)) {
+        if (sender.checkPermission(node).toBooleanOrElse(true)) {
             sender.sendMessage(Messages.errmsgPermission(node));
             return true;
         }
@@ -247,6 +247,6 @@ public class JoinCommand extends LunaChatSubCommand {
 
     private boolean hasSpeakPermission(ChannelMember sender, String channelName) {
         String node = PERMISSION_SPEAK_PREFIX + "." + channelName;
-        return sender.isPermissionSet(node) && sender.hasPermission(node);
+        return sender.checkPermission(node).toBooleanOrElse(true);
     }
 }

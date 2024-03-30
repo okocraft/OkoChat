@@ -112,7 +112,7 @@ public class LogCommand extends LunaChatSubCommand {
 
         // 参照権限を確認する
         String node = PERMISSION_NODE + "." + cname;
-        if (sender.isPermissionSet(node) && !sender.hasPermission(node)) {
+        if (sender.checkPermission(node).toBooleanOrElse(true)) {
             sender.sendMessage(Messages.errmsgPermission(node));
             return true;
         }

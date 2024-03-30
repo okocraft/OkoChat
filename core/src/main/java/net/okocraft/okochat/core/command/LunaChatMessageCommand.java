@@ -30,7 +30,7 @@ public class LunaChatMessageCommand {
     public boolean execute(ChannelMember sender, String label, String[] args) {
 
         // senderからChannelMemberを作成する
-        ChannelMember inviter = ChannelMember.getChannelMember(sender);
+        ChannelMember inviter = sender; // FIXME: uuid
 
         // 引数が無ければ、usageを表示して終了する
         if (args.length == 0) {
@@ -73,8 +73,8 @@ public class LunaChatMessageCommand {
         }
 
         // 招待相手が存在するかどうかを確認する
-        ChannelMember invited = ChannelMember.getChannelMember(invitedName);
-        if ( invited == null || !invited.isOnline() ) {
+        ChannelMember invited = LunaChat.getAPI().getChannelMemberProvider().getByName(invitedName);
+        if ( invited == null ) {
             inviter.sendMessage(Messages.errmsgNotfoundPlayer(invitedName));
             return;
         }

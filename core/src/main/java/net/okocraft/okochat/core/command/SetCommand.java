@@ -4,6 +4,8 @@ import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.channel.Channel;
 import net.okocraft.okochat.core.member.ChannelMember;
 
+import java.util.Optional;
+
 public class SetCommand extends LunaChatSubCommand {
 
     private static final String COMMAND_NAME = "set";
@@ -88,10 +90,9 @@ public class SetCommand extends LunaChatSubCommand {
             sender.sendMessage(Messages.cmdmsgSetDefault(targetPlayer, targetChannel.getName()));
 
             // setされる相手のプレイヤーにも通知する
-            ChannelMember target = ChannelMember.getChannelMember(targetPlayer);
-            if ( target != null ) {
-                target.sendMessage(Messages.cmdmsgSet(targetChannel.getName()));
-            }
+            String channelName = targetChannel.getName();
+            Optional.ofNullable(api.getChannelMemberProvider().getByName(targetPlayer))
+                    .ifPresent(member -> member.sendMessage(Messages.cmdmsgSet(channelName)));
 
             return true;
         }

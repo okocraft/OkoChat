@@ -9,6 +9,9 @@ import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.channel.Channel;
 import net.okocraft.okochat.core.member.ChannelMember;
 
+import java.util.Optional;
+import java.util.UUID;
+
 /**
  * kickコマンドの実行クラス
  * @author ucchy
@@ -106,8 +109,14 @@ public class KickCommand extends LunaChatSubCommand {
         }
 
         // キックされるプレイヤーがメンバーかどうかチェックする
-        ChannelMember kicked = ChannelMember.getChannelMember(kickedName);
-        if (!channel.getMembers().contains(kicked)) {
+        UUID kicked = api.getUserProvider().lookupUuid(kickedName);
+
+        if (kicked == null) {
+            sender.sendMessage(Messages.errmsgNotfoundPlayer(kickedName));
+            return true;
+        }
+
+        if (!channel.isMember(kicked)) {
             sender.sendMessage(Messages.errmsgNomemberOther());
             return true;
         }
@@ -125,9 +134,9 @@ public class KickCommand extends LunaChatSubCommand {
                 true, "system");
 
         // キックされた人に通知メッセージを出す
-        if ( kicked != null && kicked.isOnline() ) {
-            kicked.sendMessage(Messages.cmdmsgKicked(channel.getName()));
-        }
+        String channelName = channel.getName();
+        Optional.ofNullable(api.getChannelMemberProvider().getByUniqueId(kicked))
+                .ifPresent(member -> member.sendMessage(Messages.cmdmsgKicked(channelName)));
 
         return true;
     }

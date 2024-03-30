@@ -8,10 +8,14 @@ package net.okocraft.okochat.core;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import net.okocraft.okochat.core.channel.Channel;
 import net.okocraft.okochat.core.japanize.JapanizeType;
 import net.okocraft.okochat.core.member.ChannelMember;
+import net.okocraft.okochat.core.platform.provider.ChannelMemberProvider;
+import net.okocraft.okochat.core.platform.provider.UserProvider;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * LunaChat APIクラス
@@ -142,12 +146,16 @@ public interface LunaChatAPI {
      */
     public List<ChannelMember> getHidelist(ChannelMember key);
 
+    public List<UUID> getHidelist(UUID key);
+
     /**
      * 該当のプレイヤーがhideしているプレイヤーのリストを返す。
      * @param player プレイヤー
      * @return 指定したプレイヤーがhideしているプレイヤーのリスト
      */
     public List<ChannelMember> getHideinfo(ChannelMember player);
+
+    public List<UUID> getHideinfo(UUID player);
 
     /**
      * 指定されたプレイヤーが、指定されたプレイヤーをhideするように設定する。
@@ -156,12 +164,16 @@ public interface LunaChatAPI {
      */
     public void addHidelist(ChannelMember player, ChannelMember hided);
 
+    public void addHidelist(UUID player, UUID hided);
+
     /**
      * 指定されたプレイヤーが、指定されたプレイヤーのhideを解除するように設定する。
      * @param player hideしていた側のプレイヤー
      * @param hided hideされていた側のプレイヤー
      */
     public void removeHidelist(ChannelMember player, ChannelMember hided);
+
+    public void removeHidelist(UUID player, UUID hided);
 
     /**
      * Japanize変換を行う
@@ -189,4 +201,9 @@ public interface LunaChatAPI {
      * LunaChatの全データを再読み込みする
      */
     public void reloadAllData();
+
+    @NotNull UserProvider getUserProvider();
+
+    @NotNull ChannelMemberProvider getChannelMemberProvider();
+
 }

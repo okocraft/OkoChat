@@ -6,6 +6,7 @@
 package net.okocraft.okochat.core.command;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.channel.Channel;
@@ -114,9 +115,10 @@ public class HideCommand extends LunaChatSubCommand {
 
         // チャンネルかプレイヤーが存在するかどうかをチェックする
         Channel channel = api.getChannel(cname);
+        UUID target = api.getUserProvider().lookupUuid(cname);
         if ( !isPlayerCommand && channel != null ) {
             isChannelCommand = true;
-        } else if ( !Utility.existsOfflinePlayer(cname) ) {
+        } else if ( target == null ) {
             sender.sendMessage(Messages.errmsgNotExistChannelAndPlayer());
             return true;
         }
@@ -147,21 +149,21 @@ public class HideCommand extends LunaChatSubCommand {
             // プレイヤーが対象の場合の処理
 
             // 既に非表示になっていないかどうかをチェックする
-            ChannelMember hided = ChannelMember.getChannelMember(cname);
-            if ( api.getHidelist(hided).contains(sender) ) {
+            if ( api.getHidelist(target).contains(sender.getUniqueId()) ) {
                 sender.sendMessage(Messages.errmsgAlreadyHidedPlayer());
                 return true;
             }
 
             // 自分自身を指定していないかどうかチェックする
-            if ( hided.equals(sender) ) {
+            if ( target.equals(sender.getUniqueId()) ) {
                 sender.sendMessage(Messages.errmsgCannotHideSelf());
                 return true;
             }
 
             // 設定する
-            api.addHidelist(sender, hided);
-            sender.sendMessage(Messages.cmdmsgHidedPlayer(hided.getDisplayName()));
+            api.addHidelist(sender.getUniqueId(), target);
+            String targetName = api.getUserProvider().lookupName(target);
+            sender.sendMessage(Messages.cmdmsgHidedPlayer(targetName != null ? targetName : target.toString()));
 
             return true;
         }
@@ -180,8 +182,9 @@ public class HideCommand extends LunaChatSubCommand {
             items.add(Messages.listPlainPrefix() + channel);
         }
         items.add(Messages.hidePlayerFirstLine());
-        for ( ChannelMember p : api.getHideinfo(player) ) {
-            items.add(Messages.listPlainPrefix() + p.getDisplayName());
+        for ( UUID p : api.getHideinfo(player.getUniqueId()) ) {
+            String name = api.getUserProvider().lookupName(p);
+            items.add(Messages.listPlainPrefix() + (name != null ? name : p.toString()));
         }
         items.add(Messages.listEndLine());
 

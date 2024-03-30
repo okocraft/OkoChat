@@ -81,10 +81,10 @@ public class DenyCommand extends LunaChatSubCommand {
         DataMaps.inviteMap.remove(sender.getName());
         DataMaps.inviterMap.remove(sender.getName());
 
-        // メッセージ送信
+        // 招待した人がオンラインであれば、拒否された旨のメッセージを送信
         sender.sendMessage(Messages.cmdmsgDeny());
-        ChannelMember inviter = ChannelMember.getChannelMember(inviterName);
-        if (inviter != null && inviter.isOnline()) {
+        ChannelMember inviter = api.getChannelMemberProvider().getByName(inviterName);
+        if (inviter != null) {
             inviter.sendMessage(Messages.cmdmsgDenyed());
         }
         return true;

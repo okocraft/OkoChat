@@ -9,6 +9,9 @@ import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.channel.Channel;
 import net.okocraft.okochat.core.member.ChannelMember;
 
+import java.util.Optional;
+import java.util.UUID;
+
 /**
  * unmuteコマンドの実行クラス
  * @author ucchy
@@ -100,17 +103,19 @@ public class UnmuteCommand extends LunaChatSubCommand {
         }
 
         // Mute解除されるプレイヤーがMuteされているかどうかチェックする
-        ChannelMember kicked = ChannelMember.getChannelMember(kickedName);
-        if (!channel.getMuted().contains(kicked)) {
-            sender.sendMessage(Messages.errmsgNotMuted());
+        UUID kicked = api.getUserProvider().lookupUuid(kickedName);
+
+        if (kicked == null) {
+            sender.sendMessage(Messages.errmsgNotfoundPlayer(kickedName));
             return true;
         }
 
         // Mute解除実行
-        channel.getMuted().remove(kicked);
-        if ( channel.getMuteExpires().containsKey(kicked) ) {
-            channel.getMuteExpires().remove(kicked);
+        if (!channel.unmute(kicked)) { // If false, the user is already banned
+            sender.sendMessage(Messages.errmsgNotMuted());
+            return true;
         }
+
         channel.save();
 
         // senderに通知メッセージを出す
@@ -118,13 +123,13 @@ public class UnmuteCommand extends LunaChatSubCommand {
 
         // チャンネルに通知メッセージを出す
         channel.sendSystemMessage(Messages.unmuteMessage(
-                channel.getColorCode(), channel.getName(), kicked.getName()),
+                channel.getColorCode(), channel.getName(), kickedName),
                 true, "system");
 
         // BANされていた人に通知メッセージを出す
-        if ( kicked != null && kicked.isOnline() ) {
-            kicked.sendMessage(Messages.cmdmsgUnmuted(channel.getName()));
-        }
+        String channelName = channel.getName();
+        Optional.ofNullable(api.getChannelMemberProvider().getByUniqueId(kicked))
+                .ifPresent(member -> member.sendMessage(Messages.cmdmsgUnmuted(channelName)));
 
         return true;
     }

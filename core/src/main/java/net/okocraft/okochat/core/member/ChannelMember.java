@@ -7,6 +7,7 @@ package net.okocraft.okochat.core.member;
 
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.TriState;
 
 /**
  * チャンネルメンバーの抽象クラス
@@ -44,5 +45,9 @@ public interface ChannelMember {
      * @return 権限を持っているかどうか
      */
     boolean hasPermission(String node);
+
+    // isPermissionSet(node) && !hasPermission(node) = checkPermission().toBooleanOrElse(true) = default allowed
+    // isPermissionSet(node) && hasPermission(node) = checkPermission().toBooleanOrElse(false) = default disallowed
+    TriState checkPermission(String node); // TODO: enhanced permission checking by Permissible#permissionValue in Paper or PermissionSubject#getPermissionValue in Velocity
 
 }

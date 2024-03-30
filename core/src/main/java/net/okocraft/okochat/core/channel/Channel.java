@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -224,7 +225,7 @@ public abstract class Channel {
 
         // 発言権限を確認する
         String node = PERMISSION_SPEAK_PREFIX + "." + getName();
-        if ( player.isPermissionSet(node) && !player.hasPermission(node) ) {
+        if ( player.checkPermission(node).toBooleanOrElse(true)) {
             player.sendMessage(Messages.errmsgPermission(node));
             return;
         }
@@ -433,7 +434,7 @@ public abstract class Channel {
         // 受信者に加える。
         if ( config.isOpListenAllChannel() ) {
             for ( String playerName : LunaChat.getPlugin().getOnlinePlayerNames() ) {
-                ChannelMember cp = ChannelMember.getChannelMember(playerName);
+                ChannelMember cp = LunaChat.getAPI().getChannelMemberProvider().getByName(playerName);
                 if ( cp != null
                         && cp.hasPermission("lunachat-admin.listen-all-channels")
                         && !recipients.contains(cp) ) {
@@ -532,6 +533,10 @@ public abstract class Channel {
         }
 
         save();
+    }
+
+    public void removeMember(UUID uuid) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**
@@ -648,7 +653,7 @@ public abstract class Channel {
                 if ( getModerator().contains(cp) ) {
                     name = "@" + name;
                 }
-                if ( cp.isOnline() ) {
+                if ( true /*player.isOnline()*/ ) { // FIXME
                     if ( getHided().contains(cp) )
                         disp = ChatColor.DARK_AQUA + name;
                     else
@@ -755,7 +760,7 @@ public abstract class Channel {
                     }
 
                     String pardonedMsg = Messages.cmdmsgPardoned(getName());
-                    if ( cp.isOnline() && !pardonedMsg.isEmpty() ) {
+                    if ( /*cp.isOnline() &&*/ !pardonedMsg.isEmpty() ) { // FIXME
                         cp.sendMessage(pardonedMsg);
                     }
                 }
@@ -779,7 +784,7 @@ public abstract class Channel {
                     }
 
                     String unmutedMsg = Messages.cmdmsgUnmuted(getName());
-                    if ( cp.isOnline() && !unmutedMsg.isEmpty() ) {
+                    if ( /*cp.isOnline() &&*/ !unmutedMsg.isEmpty() ) { // FIXME
                         cp.sendMessage(unmutedMsg);
                     }
                 }
@@ -796,7 +801,7 @@ public abstract class Channel {
         // オンラインになっているメンバーの人数を数える
         int onlineNum = 0;
         for ( ChannelMember player : members ) {
-            if ( player.isOnline() ) {
+            if ( true /*player.isOnline()*/ ) { // FIXME
                 onlineNum++;
             }
         }
@@ -996,6 +1001,14 @@ public abstract class Channel {
         return muted;
     }
 
+    public boolean mute(UUID uuid) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public boolean unmute(UUID uuid) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
     /**
      * 期限付きBANの期限マップを返す（key=プレイヤー名、value=期日（ミリ秒））
      * @return banExpires
@@ -1130,6 +1143,23 @@ public abstract class Channel {
      */
     public void setJapanizeType(JapanizeType japanize) {
         this.japanizeType = japanize;
+    }
+
+    public boolean isMember(UUID uuid) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public boolean isBanned(UUID uuid) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public boolean ban(UUID uuid) {
+        // TODO: remove member
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public boolean unban(UUID uuid) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**
@@ -1297,7 +1327,7 @@ public abstract class Channel {
         ArrayList<ChannelMember> players = new ArrayList<ChannelMember>();
 
         for ( String entry : entries ) {
-            players.add(ChannelMember.getChannelMember(entry));
+            players.add(LunaChat.getAPI().getChannelMemberProvider().getByName(entry));
         }
 
         return players;
@@ -1331,7 +1361,7 @@ public abstract class Channel {
         HashMap<ChannelMember, Long> map = new HashMap<ChannelMember, Long>();
 
         for ( String key : entries.keySet() ) {
-            ChannelMember cp = ChannelMember.getChannelMember(key);
+            ChannelMember cp = LunaChat.getAPI().getChannelMemberProvider().getByName(key);
             map.put(cp, entries.get(key));
         }
 

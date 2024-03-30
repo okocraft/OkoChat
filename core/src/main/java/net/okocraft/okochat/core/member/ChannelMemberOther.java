@@ -2,6 +2,7 @@ package net.okocraft.okochat.core.member;
 
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.TriState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,6 +61,11 @@ public class ChannelMemberOther implements ChannelMember {
     @Override
     public boolean hasPermission(String node) {
         return true;
+    }
+
+    @Override
+    public TriState checkPermission(String node) {
+        return TriState.TRUE;
     }
 
     @Override
