@@ -8,6 +8,7 @@ package net.okocraft.okochat.core.command;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import net.kyori.adventure.text.Component;
 import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.channel.Channel;
 import net.okocraft.okochat.core.member.ChannelMember;
@@ -90,7 +91,7 @@ public class HideCommand extends LunaChatSubCommand {
 
             if ( args[1].equals("list") ) {
                 // 指定されたコマンドが「/ch hide list」なら、リストを表示して終了
-                for ( String item : getHideInfoList(sender) ) {
+                for ( Component item : getHideInfoList(sender) ) {
                     sender.sendMessage(item);
                 }
                 return true;
@@ -174,17 +175,17 @@ public class HideCommand extends LunaChatSubCommand {
      * @param player 対象となるプレイヤー
      * @return メッセージ
      */
-    private ArrayList<String> getHideInfoList(ChannelMember player) {
+    private ArrayList<Component> getHideInfoList(ChannelMember player) {
 
-        ArrayList<String> items = new ArrayList<String>();
+        ArrayList<Component> items = new ArrayList<Component>();
         items.add(Messages.hideChannelFirstLine());
         for ( String channel : getHideChannelNameList(player) ) {
-            items.add(Messages.listPlainPrefix() + channel);
+            items.add(Messages.listPlainPrefix().append(Component.text(channel)));
         }
         items.add(Messages.hidePlayerFirstLine());
         for ( UUID p : api.getHideinfo(player.getUniqueId()) ) {
             String name = api.getUserProvider().lookupName(p);
-            items.add(Messages.listPlainPrefix() + (name != null ? name : p.toString()));
+            items.add(Messages.listPlainPrefix().append(Component.text(name != null ? name : p.toString())));
         }
         items.add(Messages.listEndLine());
 

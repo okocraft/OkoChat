@@ -5,6 +5,9 @@
  */
 package net.okocraft.okochat.core.util;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+
 import java.util.regex.Pattern;
 
 /**
@@ -36,13 +39,12 @@ public class KeywordReplacer {
         }
     }
 
-    /**
-     * 正規表現regexに一致する箇所を、文字列valueに置き換える
-     * @param regex 正規表現
-     * @param value 値
-     */
-    public void replaceRegex(String regex, String value) {
-        str = new StringBuilder(Pattern.compile(regex).matcher(str).replaceAll(value));
+    public void prefix(String prefix) {
+        this.str.insert(0, prefix);
+    }
+
+    public Component toComponent() {
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(this.str.toString());
     }
 
     /**

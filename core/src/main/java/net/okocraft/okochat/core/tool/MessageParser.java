@@ -119,11 +119,10 @@ public class MessageParser {
                 result.add("     * " + value);
                 result.add("     */");
                 result.add(String.format(
-                        "    public static String %s(%s) {", key, arguments));
+                        "    public static Component %s(%s) {", key, arguments));
                 result.add(String.format(
                         "        String msg = resources.getStringOrNull(\"%s\");", key));
-                result.add(String.format(
-                        "        if ( msg == null ) return \"\";", key));
+                result.add("        if ( msg == null ) return Component.empty();");
                 result.add("        KeywordReplacer kr = new KeywordReplacer(msg);");
 
                 for ( String keyword : keywords ) {
@@ -131,12 +130,11 @@ public class MessageParser {
                             "        kr.replace(\"%%%s%%\", %s.toString());", keyword, keyword));
                 }
                 if ( strKey.startsWith("errmsg") ) {
-                    result.add("        return Utility.replaceColorCode(resources.getString(\"errorPrefix\", \"\") + kr.toString());");
+                    result.add("        kr.prefix(resources.getString(\"errorPrefix\", \"\"));");
                 } else if ( strKey.startsWith("cmdmsg") ) {
-                    result.add("        return Utility.replaceColorCode(resources.getString(\"infoPrefix\", \"\") + kr.toString());");
-                } else {
-                    result.add("        return Utility.replaceColorCode(kr.toString());");
+                    result.add("        kr.prefix(resources.getString(\"infoPrefix\", \"\"));");
                 }
+                result.add("        return kr.toComponent();");
                 result.add("    }");
             } else {
                 result.add("");

@@ -196,12 +196,10 @@ public class OptionCommand extends LunaChatSubCommand {
                 }
                 if ( Utility.isAltColorCode(code) ) {
                     channel.setColorCode(code);
-                    sender.sendMessage(Messages.cmdmsgOption("color", colorForMsg)
-                            .replace("＃", "#").replace("＆", "&"));
+                    sender.sendMessage(Messages.cmdmsgOption("color", colorForMsg)); // FIXME: replace("＃", "#").replace("＆", "&")
                     setOption = true;
                 } else {
-                    sender.sendMessage(Messages.errmsgInvalidColorCode(colorForMsg)
-                            .replace("＃", "#").replace("＆", "&"));
+                    sender.sendMessage(Messages.errmsgInvalidColorCode(colorForMsg)); // FIXME: replace("＃", "#").replace("＆", "&")
                 }
             }
         }

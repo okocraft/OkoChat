@@ -7,6 +7,7 @@ package net.okocraft.okochat.core.command;
 
 import java.util.List;
 
+import net.kyori.adventure.text.Component;
 import net.okocraft.okochat.core.Messages;
 import net.okocraft.okochat.core.channel.Channel;
 import net.okocraft.okochat.core.member.ChannelMember;
@@ -106,8 +107,8 @@ public class InfoCommand extends LunaChatSubCommand {
         boolean isModerator = channel.hasModeratorPermission(sender);
 
         // 情報を取得して表示する
-        List<String> list = channel.getInfo(isModerator);
-        for (String msg : list) {
+        List<Component> list = channel.getInfo(isModerator);
+        for (Component msg : list) {
             sender.sendMessage(msg);
         }
         return true;

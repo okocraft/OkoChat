@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import com.github.siroshun09.configapi.core.node.MapNode;
 import com.github.siroshun09.configapi.format.yaml.YamlFormat;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.okocraft.okochat.core.LunaChat;
@@ -613,18 +614,18 @@ public abstract class Channel {
      * @param forModerator モデレータ向けの情報を含めるかどうか
      * @return チャンネル情報
      */
-    public List<String> getInfo(boolean forModerator) {
+    public List<Component> getInfo(boolean forModerator) {
 
-        ArrayList<String> info = new ArrayList<String>();
+        ArrayList<Component> info = new ArrayList<>();
         info.add(Messages.channelInfoFirstLine());
 
         // チャンネル名、参加人数、総人数、チャンネル説明文
-        info.add(makeLegacyText(Messages.listFormat(getName(), getOnlineNum(), getTotalNum(), getDescription())));
+        info.add(Messages.listFormat(getName(), getOnlineNum(), getTotalNum(), getDescription()));
 
         // チャンネル別名
         String alias = getAlias();
         if ( alias != null && alias.length() > 0 ) {
-            info.add(Messages.channelInfoAlias() + alias);
+            info.add(Messages.channelInfoAlias().append(Component.text(alias)));
         }
 
         // 参加メンバー一覧
@@ -634,35 +635,33 @@ public abstract class Channel {
             info.add(Messages.channelInfoBroadcast());
         } else {
             // メンバーを、5人ごとに表示する
-            StringBuffer buf = new StringBuffer();
-            buf.append(Messages.channelInfoPrefix());
+            Component buf = Messages.channelInfoPrefix();
 
             for ( int i=0; i<getMembers().size(); i++ ) {
 
                 if ( i%5 == 0 && i != 0 ) {
-                    info.add(buf.toString());
-                    buf = new StringBuffer();
-                    buf.append(Messages.channelInfoPrefix());
+                    info.add(buf);
+                    buf = Messages.channelInfoPrefix();
                 }
 
                 ChannelMember cp = getMembers().get(i);
                 String name = cp.getName();
-                String disp;
+                Component disp;
                 if ( getModerator().contains(cp) ) {
                     name = "@" + name;
                 }
                 if ( true /*player.isOnline()*/ ) { // FIXME
-                    if ( getHided().contains(cp) )
-                        disp = ChatColor.DARK_AQUA + name;
+                    if (getHided().contains(cp))
+                        disp = Component.text(name, NamedTextColor.DARK_AQUA);
                     else
-                        disp = ChatColor.WHITE + name;
+                        disp = Component.text(name, NamedTextColor.WHITE);
                 } else {
-                    disp = ChatColor.GRAY + name;
+                    disp = Component.text(name, NamedTextColor.GRAY);
                 }
-                buf.append(disp + ",");
+                buf = buf.append(disp.append(Component.text(",")));
             }
 
-            info.add(buf.toString());
+            info.add(buf);
         }
 
         // シークレットチャンネルかどうか
@@ -675,7 +674,7 @@ public abstract class Channel {
             if ( !forModerator ) {
                 info.add(Messages.channelInfoPassword());
             } else {
-                info.add(Messages.channelInfoPassword() + " " + getPassword());
+                info.add(Messages.channelInfoPassword().append(Component.space()).append(Component.text(getPassword())));
             }
         }
 
@@ -690,42 +689,38 @@ public abstract class Channel {
 
             // フォーマット情報
             info.add(Messages.channelInfoFormat());
-            info.add(Messages.channelInfoPrefix() + " " + ChatColor.WHITE + getFormat());
+            info.add(Messages.channelInfoPrefix().append(Component.space()).append(Component.text(getFormat(), NamedTextColor.WHITE)));
 
             // Muteリスト情報、5人ごとに表示する
             if ( getMuted().size() > 0 ) {
                 info.add(Messages.channelInfoMuted());
 
-                StringBuffer buf = new StringBuffer();
-                buf.append(Messages.channelInfoPrefix() + ChatColor.WHITE);
+                Component buf = Messages.channelInfoPrefix();
                 for ( int i=0; i<getMuted().size(); i++ ) {
                     if ( i%5 == 0 && i != 0 ) {
-                        info.add(buf.toString());
-                        buf = new StringBuffer();
-                        buf.append(Messages.channelInfoPrefix() + ChatColor.WHITE);
+                        info.add(buf);
+                        buf = Messages.channelInfoPrefix();
                     }
-                    buf.append(getMuted().get(i).getName() + ",");
+                    buf = buf.append(Component.text(getMuted().get(i).getName() + ",", NamedTextColor.WHITE));
                 }
 
-                info.add(buf.toString());
+                info.add(buf);
             }
 
             // BANリスト情報、5人ごとに表示する
             if ( getBanned().size() > 0 ) {
                 info.add(Messages.channelInfoBanned());
 
-                StringBuffer buf = new StringBuffer();
-                buf.append(Messages.channelInfoPrefix() + ChatColor.WHITE);
+                Component buf = Messages.channelInfoPrefix();
                 for ( int i=0; i<getBanned().size(); i++ ) {
                     if ( i%5 == 0 && i != 0 ) {
-                        info.add(buf.toString());
-                        buf = new StringBuffer();
-                        buf.append(Messages.channelInfoPrefix() + ChatColor.WHITE);
+                        info.add(buf);
+                        buf = Messages.channelInfoPrefix();
                     }
-                    buf.append(getBanned().get(i).getName() + ",");
+                    buf = buf.append(Component.text(getBanned().get(i).getName() + ",", NamedTextColor.WHITE));
                 }
 
-                info.add(buf.toString());
+                info.add(buf);
             }
         }
 
@@ -757,9 +752,8 @@ public abstract class Channel {
                         sendSystemMessage(msg, true, "system");
                     }
 
-                    String pardonedMsg = Messages.cmdmsgPardoned(getName());
-                    if ( /*cp.isOnline() &&*/ !pardonedMsg.isEmpty() ) { // FIXME
-                        cp.sendMessage(pardonedMsg);
+                    if ( /*cp.isOnline() &&*/ true ) { // FIXME
+                        cp.sendMessage(Messages.cmdmsgPardoned(getName()));
                     }
                 }
             }
@@ -781,9 +775,8 @@ public abstract class Channel {
                         sendSystemMessage(msg, true, "system");
                     }
 
-                    String unmutedMsg = Messages.cmdmsgUnmuted(getName());
-                    if ( /*cp.isOnline() &&*/ !unmutedMsg.isEmpty() ) { // FIXME
-                        cp.sendMessage(unmutedMsg);
+                    if ( /*cp.isOnline() &&*/ true ) { // FIXME
+                        cp.sendMessage(Messages.cmdmsgUnmuted(getName()));
                     }
                 }
             }
@@ -1381,10 +1374,6 @@ public abstract class Channel {
             return new HashMap<String, Long>();
         }
         return (Map<String, Long>)obj;
-    }
-
-    private static String makeLegacyText(Component component) {
-        return LegacyComponentSerializer.legacySection().serialize(component);
     }
 
     private static String makePlainText(Component component) {

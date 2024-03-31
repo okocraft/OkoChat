@@ -110,14 +110,14 @@ public class ListCommand extends LunaChatSubCommand {
 
         ArrayList<Component> items = new ArrayList<>();
         if ( page == 0 ) { // 全表示
-            items.add(LegacyComponentSerializer.legacySection().deserialize(Messages.listFirstLine()));
+            items.add(Messages.listFirstLine());
             items.addAll(list);
-            items.add(LegacyComponentSerializer.legacySection().deserialize(Messages.listEndLine()));
+            items.add(Messages.listEndLine());
         } else { // ページ表示
-            items.add(LegacyComponentSerializer.legacySection().deserialize(Messages.listFirstLinePaging(page, maxPage)));
+            items.add(Messages.listFirstLinePaging(page, maxPage));
             int endIndex = (page * PAGE_SIZE > size) ? size : page * PAGE_SIZE;
             items.addAll(list.subList((page - 1) * PAGE_SIZE, endIndex));
-            items.add(LegacyComponentSerializer.legacySection().deserialize(Messages.listEndLine()));
+            items.add(Messages.listEndLine());
         }
 
         return items;

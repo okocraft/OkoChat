@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import com.github.siroshun09.configapi.core.node.MapNode;
 import com.github.siroshun09.configapi.format.yaml.YamlFormat;
+import net.kyori.adventure.text.Component;
 import net.okocraft.okochat.core.LunaChat;
 import net.okocraft.okochat.core.LunaChatAPI;
 import net.okocraft.okochat.core.Messages;
@@ -500,8 +501,8 @@ public class ChannelManager implements LunaChatAPI {
         if ( channel != null ) {
 
             // 強制解散のメッセージを、残ったメンバーに流す
-            String message = Messages.breakupMessage(channel.getColorCode(), channel.getName());
-            if ( !channel.isPersonalChat() && !message.equals("") ) {
+            Component message = Messages.breakupMessage(channel.getColorCode(), channel.getName());
+            if ( !channel.isPersonalChat() ) {
                 for ( ChannelMember cp : channel.getMembers() ) {
                     cp.sendMessage(message);
                 }
