@@ -5,6 +5,9 @@
  */
 package net.okocraft.okochat.core.tool;
 
+import com.github.siroshun09.configapi.core.node.MapNode;
+import com.github.siroshun09.configapi.format.yaml.YamlFormat;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,17 +19,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.github.siroshun09.configapi.core.node.MapNode;
-import com.github.siroshun09.configapi.format.yaml.YamlFormat;
-
 /**
  * messages_ja.yml を読んで、Messagesクラス用のメソッドを生成するツール
  * @author ucchy
  */
 public class MessageParser {
 
-    private static final String INPUT_FILE_PATH = "src/main/resources/messages_ja.yml";
-    private static final String OUTPUT_FILE_PATH = "src/main/java/com/github/ucchyocean/lc3/Messages.java";
+    private static final String INPUT_FILE_PATH = "./core/src/main/resources/messages_ja.yml";
+    private static final String OUTPUT_FILE_PATH = "./core/src/main/java/net/okocraft/okochat/core/Messages.java";
 
     private static final String START_MARKER = "    // === Auto-generated methods area start. ===";
     private static final String END_MARKER = "    // === Auto-generated methods area end. ===";
@@ -121,7 +121,7 @@ public class MessageParser {
                 result.add(String.format(
                         "    public static String %s(%s) {", key, arguments));
                 result.add(String.format(
-                        "        String msg = resources.getString(\"%s\");", key));
+                        "        String msg = resources.getStringOrNull(\"%s\");", key));
                 result.add(String.format(
                         "        if ( msg == null ) return \"\";", key));
                 result.add("        KeywordReplacer kr = new KeywordReplacer(msg);");
@@ -146,7 +146,7 @@ public class MessageParser {
                 result.add(String.format(
                         "    public static Component %s(%s) {", key, arguments));
                 result.add(String.format(
-                        "        String msg = resources.getString(\"%s\");", key));
+                        "        String msg = resources.getStringOrNull(\"%s\");", key));
                 result.add(String.format(
                         "        if ( msg == null ) return Component.empty();", key));
                 result.add("        ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());");
