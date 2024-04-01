@@ -11,6 +11,9 @@ repositories {
 val libs = extensions.getByType(org.gradle.accessors.dm.LibrariesForLibs::class)
 
 dependencies {
+    if (project.name != "okochat-api") {
+        api(project(":okochat-api"))
+    }
     implementation(libs.annotations)
     implementation(libs.configapi.format.yaml) {
         exclude("org.yaml", "snakeyaml")

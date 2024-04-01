@@ -5,6 +5,10 @@ plugins {
 
 project.extra["platform.name"] = "unknown"
 
+dependencies {
+    implementation(project(":okochat-core"))
+}
+
 tasks {
     build {
         dependsOn(shadowJar)

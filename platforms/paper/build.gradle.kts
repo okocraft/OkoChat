@@ -9,11 +9,6 @@ repositories {
 }
 
 dependencies {
-    implementation(projects.okochatCore)
-   // implementation(projects.okochatBridgeApi)
-   // implementation(projects.okochatBridgeLuckperms)
-  //  implementation(projects.okochatBridgeVault)
-
     compileOnly(libs.platform.paper)
 }
 

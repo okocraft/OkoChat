@@ -9,10 +9,6 @@ repositories {
 }
 
 dependencies {
-  //  implementation(projects.okochatBridgeApi)
-  //  implementation(projects.okochatBridgeLuckperms)
-  //  implementation(projects.okochatBridgeVault)
-
     compileOnly(libs.platform.velocity)
 }
 
