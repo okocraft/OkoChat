@@ -13,6 +13,7 @@ import net.kyori.adventure.util.TriState;
  * チャンネルメンバーの抽象クラス
  * @author ucchy
  */
+@Deprecated(forRemoval = true)
 public interface ChannelMember {
 
     /**
