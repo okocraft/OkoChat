@@ -12,6 +12,7 @@ import net.okocraft.okochat.core.util.BlockLocation;
  * 任意の内容を設定できるChannelMember
  * @author ucchy
  */
+@Deprecated(forRemoval = true)
 public class ChannelMemberOther implements ChannelMember {
 
     private String id;
