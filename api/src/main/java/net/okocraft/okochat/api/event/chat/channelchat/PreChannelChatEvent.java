@@ -1,38 +1,39 @@
-package net.okocraft.okochat.core.event.chat.privatechat;
+package net.okocraft.okochat.api.event.chat.channelchat;
 
-import net.okocraft.okochat.core.event.Cancellable;
-import net.okocraft.okochat.core.event.chat.PreChatEvent;
-import net.okocraft.okochat.core.member.ChannelMember;
+import net.okocraft.okochat.api.sender.Sender;
+import net.okocraft.okochat.api.channel.Channel;
+import net.okocraft.okochat.api.event.Cancellable;
+import net.okocraft.okochat.api.event.chat.PreChatEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class PrePrivateChatEvent implements PrivateChatEvent, PreChatEvent, Cancellable {
+public class PreChannelChatEvent implements ChannelChatEvent, PreChatEvent, Cancellable {
 
-    private final ChannelMember sender;
-    private final ChannelMember target;
+    private final Channel channel;
+    private final Sender sender;
     private final String originalMessage;
 
     private @Nullable String modifiedMessage = null;
     private boolean cancelled = false;
 
     @ApiStatus.Internal
-    public PrePrivateChatEvent(@NotNull ChannelMember sender, @NotNull ChannelMember target, @NotNull String originalMessage) {
+    public PreChannelChatEvent(@NotNull Channel channel, @NotNull Sender sender, @NotNull String originalMessage) {
+        this.channel = channel;
         this.sender = sender;
-        this.target = target;
         this.originalMessage = originalMessage;
     }
 
     @Override
-    public @NotNull ChannelMember getSender() {
-        return this.sender;
+    public @NotNull Channel getChannel() {
+        return this.channel;
     }
 
     @Override
-    public @NotNull ChannelMember getTarget() {
-        return this.target;
+    public @NotNull Sender getSender() {
+        return this.sender;
     }
 
     @Override

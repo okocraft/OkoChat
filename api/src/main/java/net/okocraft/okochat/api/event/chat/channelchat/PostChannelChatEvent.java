@@ -1,25 +1,26 @@
-package net.okocraft.okochat.core.event.chat.channelchat;
+package net.okocraft.okochat.api.event.chat.channelchat;
 
 import net.kyori.adventure.text.Component;
-import net.okocraft.okochat.core.channel.Channel;
-import net.okocraft.okochat.core.event.chat.PostChatEvent;
-import net.okocraft.okochat.core.member.ChannelMember;
+import net.okocraft.okochat.api.sender.Sender;
+import net.okocraft.okochat.api.channel.Channel;
+import net.okocraft.okochat.api.event.chat.PostChatEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 
+@SuppressWarnings("ClassCanBeRecord")
 public class PostChannelChatEvent implements ChannelChatEvent, PostChatEvent {
 
     private final Channel channel;
-    private final ChannelMember sender;
+    private final Sender sender;
     private final String originalMessage;
     private final Component formattedMessage;
-    private final Collection<ChannelMember> recipients;
+    private final Collection<Sender> recipients;
 
-    public PostChannelChatEvent(@NotNull Channel channel, @NotNull ChannelMember sender,
+    public PostChannelChatEvent(@NotNull Channel channel, @NotNull Sender sender,
                                 @NotNull String originalMessage, @NotNull Component formattedMessage,
-                                @NotNull @Unmodifiable Collection<ChannelMember> recipients) {
+                                @NotNull @Unmodifiable Collection<Sender> recipients) {
         this.channel = channel;
         this.sender = sender;
         this.originalMessage = originalMessage;
@@ -33,7 +34,7 @@ public class PostChannelChatEvent implements ChannelChatEvent, PostChatEvent {
     }
 
     @Override
-    public @NotNull ChannelMember getSender() {
+    public @NotNull Sender getSender() {
         return this.sender;
     }
 
@@ -48,7 +49,7 @@ public class PostChannelChatEvent implements ChannelChatEvent, PostChatEvent {
     }
 
     @Override
-    public @NotNull @Unmodifiable Collection<ChannelMember> getRecipients() {
+    public @NotNull @Unmodifiable Collection<Sender> getRecipients() {
         return this.recipients;
     }
 }

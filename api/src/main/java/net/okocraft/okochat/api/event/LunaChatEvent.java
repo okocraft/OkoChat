@@ -1,4 +1,4 @@
-package net.okocraft.okochat.core.event;
+package net.okocraft.okochat.api.event;
 
 /**
  * The root type of LunaChat's events.
