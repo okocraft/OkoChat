@@ -7,6 +7,7 @@ import com.github.siroshun09.event4j.priority.Priority;
 import com.github.siroshun09.event4j.simple.EventServiceProvider;
 import com.github.siroshun09.event4j.subscriber.EventSubscriber;
 import net.kyori.adventure.key.Key;
+import net.okocraft.okochat.api.event.LunaChatEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

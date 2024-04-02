@@ -1,8 +1,8 @@
-package net.okocraft.okochat.core.event.chat.privatechat;
+package net.okocraft.okochat.api.event.chat.privatechat;
 
 import net.kyori.adventure.text.Component;
-import net.okocraft.okochat.core.event.chat.PostChatEvent;
-import net.okocraft.okochat.core.member.ChannelMember;
+import net.okocraft.okochat.api.sender.Sender;
+import net.okocraft.okochat.api.event.chat.PostChatEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -13,13 +13,13 @@ import java.util.List;
 @SuppressWarnings("ClassCanBeRecord")
 public class PostPrivateChatEvent implements PrivateChatEvent, PostChatEvent {
 
-    private final ChannelMember sender;
-    private final ChannelMember target;
+    private final Sender sender;
+    private final Sender target;
     private final String originalMessage;
     private final Component formattedMessage;
 
     @ApiStatus.Internal
-    public PostPrivateChatEvent(@NotNull ChannelMember sender, @NotNull ChannelMember target, @NotNull String originalMessage, @NotNull Component formattedMessage) {
+    public PostPrivateChatEvent(@NotNull Sender sender, @NotNull Sender target, @NotNull String originalMessage, @NotNull Component formattedMessage) {
         this.sender = sender;
         this.target = target;
         this.originalMessage = originalMessage;
@@ -27,12 +27,12 @@ public class PostPrivateChatEvent implements PrivateChatEvent, PostChatEvent {
     }
 
     @Override
-    public @NotNull ChannelMember getSender() {
+    public @NotNull Sender getSender() {
         return this.sender;
     }
 
     @Override
-    public @NotNull ChannelMember getTarget() {
+    public @NotNull Sender getTarget() {
         return this.target;
     }
 
@@ -47,7 +47,7 @@ public class PostPrivateChatEvent implements PrivateChatEvent, PostChatEvent {
     }
 
     @Override
-    public @NotNull @Unmodifiable Collection<ChannelMember> getRecipients() {
+    public @NotNull @Unmodifiable Collection<Sender> getRecipients() {
         return List.of(this.sender, this.target);
     }
 }

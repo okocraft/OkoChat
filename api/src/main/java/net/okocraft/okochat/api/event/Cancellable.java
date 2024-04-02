@@ -1,4 +1,4 @@
-package net.okocraft.okochat.core.event;
+package net.okocraft.okochat.api.event;
 
 /**
  * An interface that indicates the cancel status of the event.

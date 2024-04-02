@@ -1,4 +1,4 @@
-package net.okocraft.okochat.core.event.chat;
+package net.okocraft.okochat.api.event.chat;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

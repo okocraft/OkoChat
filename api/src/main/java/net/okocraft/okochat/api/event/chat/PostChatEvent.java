@@ -1,7 +1,7 @@
-package net.okocraft.okochat.core.event.chat;
+package net.okocraft.okochat.api.event.chat;
 
 import net.kyori.adventure.text.Component;
-import net.okocraft.okochat.core.member.ChannelMember;
+import net.okocraft.okochat.api.sender.Sender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -11,6 +11,6 @@ public interface PostChatEvent extends ChatEvent {
 
     @NotNull Component getFormattedMessage();
 
-    @NotNull @Unmodifiable Collection<ChannelMember> getRecipients();
+    @NotNull @Unmodifiable Collection<Sender> getRecipients();
 
 }
