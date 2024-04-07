@@ -8,3 +8,4 @@ jobs:
       java-version: '21'
       build-arguments: "build"
       package-name: OkoChat-Build-${{ github.run_number }}
+      upload-test-results: true
