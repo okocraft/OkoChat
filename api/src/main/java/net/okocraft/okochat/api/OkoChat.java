@@ -1,5 +1,6 @@
 package net.okocraft.okochat.api;
 
+import net.okocraft.okochat.api.chat.entrypoint.ChatEntryPoint;
 import net.okocraft.okochat.api.util.registry.RegistryAccess;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -12,5 +13,7 @@ public interface OkoChat {
     }
 
     @NotNull RegistryAccess getRegistryAccess();
+
+    @NotNull ChatEntryPoint getChatEntryPoint();
 
 }
