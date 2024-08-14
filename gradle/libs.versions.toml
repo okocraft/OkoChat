@@ -9,7 +9,7 @@ slf4j = "2.0.13"
 snakeyaml = "2.3"
 
 # for testing
-junit = "5.10.2"
+junit = "5.11.0"
 mockito = "5.10.0"
 
 # gradle plugins
