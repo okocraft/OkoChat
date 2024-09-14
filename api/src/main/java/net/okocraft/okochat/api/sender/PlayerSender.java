@@ -1,5 +1,6 @@
 package net.okocraft.okochat.api.sender;
 
+import net.kyori.adventure.text.Component;
 import net.okocraft.okochat.api.identity.Identified;
 import net.okocraft.okochat.api.identity.Identity;
 import net.okocraft.okochat.api.identity.PlayerIdentity;
@@ -15,4 +16,20 @@ public interface PlayerSender extends Sender, Identified {
     default @NotNull PlayerIdentity identity() {
         return Identity.player(this.getUniqueId());
     }
+
+    Component getDisplayName();
+
+    Component getPrefix();
+
+    Component getSuffix();
+
+    String getServerName();
+
+    String getWorldName();
+
+    int getBlockX();
+
+    int getBlockY();
+
+    int getBlockZ();
 }

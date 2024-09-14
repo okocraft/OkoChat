@@ -6,10 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 final class Placeholders {
 
-    record StringPlaceholder<C extends ChatContext>(@NotNull String value) implements Placeholder<C> {
+    record ComponentPlaceholder<C extends ChatContext>(@NotNull Component component) implements Placeholder<C> {
         @Override
         public @NotNull Component apply(@NotNull C context) {
-            return Component.text(this.value);
+            return this.component;
         }
     }
 
