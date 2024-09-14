@@ -115,7 +115,7 @@ public class JapanizeConvertTask {
         }
 
         // LunaChatPostJapanizeEvent イベントコール
-        LunaChat.getEventService().call(new PostJapanizeEvent(this.player, this.org, japanized));
+        LunaChat.getEventService().async().call(new PostJapanizeEvent(this.player, this.org, japanized));
 
         // フォーマットする
         result = format.replace("%msg", org);

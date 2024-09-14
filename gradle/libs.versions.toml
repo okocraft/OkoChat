@@ -3,7 +3,7 @@
 adventure = "4.17.0"
 annotations = "24.1.0"
 configapi = "5.0.0-beta.3"
-event4j = "4.0.0-rc.2"
+event4j = "4.0.1"
 gson = "2.11.0"
 slf4j = "2.0.16"
 snakeyaml = "2.3"
@@ -28,7 +28,7 @@ adventure-text-minimessage = { module = "net.kyori:adventure-text-minimessage", 
 adventure-text-serializer-legacy = { module = "net.kyori:adventure-text-serializer-legacy", version.ref = "adventure" }
 adventure-text-serializer-plain = { module = "net.kyori:adventure-text-serializer-plain", version.ref = "adventure" }
 configapi-format-yaml = { module = "com.github.siroshun09.configapi:configapi-format-yaml", version.ref = "configapi" }
-event4j = { module = "com.github.siroshun09.event4j:event4j", version.ref = "event4j" }
+event4j = { module = "dev.siroshun.event4j:event4j-tree", version.ref = "event4j" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 

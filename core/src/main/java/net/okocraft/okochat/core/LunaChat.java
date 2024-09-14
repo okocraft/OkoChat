@@ -7,7 +7,7 @@ package net.okocraft.okochat.core;
 
 import java.io.File;
 
-import net.okocraft.okochat.core.event.LunaChatEventService;
+import net.okocraft.okochat.core.event.LunaChatEventCallerProvider;
 
 /**
  * LunaChat
@@ -33,7 +33,7 @@ public class LunaChat {
         return instance;
     }
 
-    public static LunaChatEventService getEventService() { // FIXME: this should be here? For now, as an alternative to #getEventSender.
+    public static LunaChatEventCallerProvider getEventService() { // FIXME: this should be here? For now, as an alternative to #getEventSender.
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
