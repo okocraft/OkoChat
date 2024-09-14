@@ -1,6 +1,6 @@
 plugins {
     id("okochat.common-conventions")
-    id("io.github.goooler.shadow")
+    id("com.gradleup.shadow")
 }
 
 project.extra["platform.name"] = "unknown"

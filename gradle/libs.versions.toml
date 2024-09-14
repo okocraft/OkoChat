@@ -13,7 +13,7 @@ junit = "5.11.0"
 mockito = "5.10.0"
 
 # gradle plugins
-shadow = "8.1.7"
+shadow = "8.3.1"
 
 # platform api
 paper = "1.20.4-R0.1-SNAPSHOT"
@@ -43,4 +43,4 @@ platform-paper = { module = "io.papermc.paper:paper-api", version.ref = "paper" 
 platform-velocity = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
 
 # Gradle plugins
-build-shadow = {module = "io.github.goooler.shadow:io.github.goooler.shadow.gradle.plugin", version.ref="shadow" }
+build-shadow = { module = "com.gradleup.shadow:shadow-gradle-plugin", version.ref = "shadow" }
