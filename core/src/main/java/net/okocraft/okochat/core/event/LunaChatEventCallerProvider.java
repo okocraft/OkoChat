@@ -1,6 +1,7 @@
 package net.okocraft.okochat.core.event;
 
 import dev.siroshun.event4j.api.caller.EventCaller;
+import net.okocraft.okochat.api.event.LunaChatEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**

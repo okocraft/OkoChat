@@ -1,6 +1,6 @@
 package net.okocraft.okochat.core.chat.processor;
 
-import com.github.siroshun09.event4j.caller.EventCaller;
+import dev.siroshun.event4j.api.caller.EventCaller;
 import net.okocraft.okochat.api.channel.Channel;
 import net.okocraft.okochat.api.channel.member.status.MemberStatus;
 import net.okocraft.okochat.api.chat.context.ChannelChatContext;
