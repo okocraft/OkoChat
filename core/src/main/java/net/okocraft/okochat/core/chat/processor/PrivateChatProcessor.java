@@ -16,6 +16,7 @@ import net.okocraft.okochat.api.chat.ngword.NGWord;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public record PrivateChatProcessor(
@@ -23,7 +24,8 @@ public record PrivateChatProcessor(
         @NotNull ChatMessageFormat<PrivateChatContext> chatMessageFormat,
         @NotNull Function<Sender, ChatConverter> converterAccessor,
         @NotNull String disableChatConvertMarker,
-        @NotNull Collection<NGWord> ngWords
+        @NotNull Collection<NGWord> ngWords,
+        @NotNull BiFunction<Sender, Sender, Boolean> isMuted
 ) implements ChatProcessor<ProcessContext.PrivateChat, PrivateChatContext, PrivateChatResult> {
 
     @Override
@@ -61,7 +63,10 @@ public record PrivateChatProcessor(
                 Either.right(new PrivateChatContexts.Preparing(event.getSender(), event.getResultMessage(), event.getTarget()));
     }
 
-    private @NotNull Either<PrivateChatResult, PrivateChatContext> checkMuted(@NotNull PrivateChatContext context) { // TODO
+    private @NotNull Either<PrivateChatResult, PrivateChatContext> checkMuted(@NotNull PrivateChatContext context) {
+        if (this.isMuted.apply(context.sender(), context.target())) {
+            return Either.left(new PrivateChatResult.Muted(context.sender(), context.message(), context.target()));
+        }
         return Either.right(context);
     }
 
