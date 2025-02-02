@@ -13,7 +13,7 @@ junit = "5.11.0"
 mockito = "5.10.0"
 
 # gradle plugins
-shadow = "8.3.1"
+shadow = "8.3.6"
 
 # platform api
 paper = "1.20.4-R0.1-SNAPSHOT"
