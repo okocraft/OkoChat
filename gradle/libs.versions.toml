@@ -6,7 +6,7 @@ configapi = "5.0.0-beta.3"
 event4j = "4.0.1"
 gson = "2.11.0"
 slf4j = "2.0.16"
-snakeyaml = "2.3"
+snakeyaml = "2.4"
 
 # for testing
 junit = "5.11.0"
