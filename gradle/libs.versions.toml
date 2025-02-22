@@ -15,6 +15,10 @@ shadow = "8.3.6"
 paper = "1.21.4-R0.1-SNAPSHOT"
 velocity = "3.4.0-SNAPSHOT"
 
+# other plugins
+luckperms = "5.4"
+vault = "1.7.1"
+
 [libraries]
 
 # common libraries
@@ -34,6 +38,10 @@ slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 # platform api
 platform-paper = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
 platform-velocity = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
+
+# other plugins
+integration-luckperms = { module = "net.luckperms:api", version.ref = "luckperms" }
+integration-vault = { module = "com.github.MilkBowl:VaultAPI", version.ref = "vault" }
 
 # Gradle plugins
 build-shadow = { module = "com.gradleup.shadow:shadow-gradle-plugin", version.ref = "shadow" }

@@ -14,6 +14,9 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 sequenceOf(
     "bridge-protocol",
+    "integration",
+    "integration-luckperms",
+    "integration-vault"
 ).forEach {
     include("$okochatPrefix-$it")
     project(":$okochatPrefix-$it").projectDir = file(it)
