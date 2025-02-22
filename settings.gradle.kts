@@ -12,7 +12,8 @@ val okochatPrefix = rootProject.name.lowercase()
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-sequenceOf<String>(
+sequenceOf(
+    "bridge-protocol",
 ).forEach {
     include("$okochatPrefix-$it")
     project(":$okochatPrefix-$it").projectDir = file(it)
