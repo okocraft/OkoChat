@@ -1,0 +1,12 @@
+name: OkoChatBridge
+version: '${projectVersion}'
+main: net.okocraft.okochat.bridge.paper.OkoChatBridgePaperPlugin
+api-version: '1.21'
+folia-supported: true
+
+dependencies:
+  server:
+    Vault:
+      required: false
+    LuckPerms:
+      required: false
