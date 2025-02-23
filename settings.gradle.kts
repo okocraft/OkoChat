@@ -18,7 +18,9 @@ sequenceOf(
     "integration",
     "integration-luckperms",
     "integration-placeholderapi",
-    "integration-vault"
+    "integration-vault",
+
+    "legacy"
 ).forEach {
     include("$okochatPrefix-$it")
     project(":$okochatPrefix-$it").projectDir = file(it)
