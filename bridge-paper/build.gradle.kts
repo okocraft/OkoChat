@@ -10,6 +10,7 @@ dependencies {
     implementation(projects.okochatBridgeProtocol)
     implementation(projects.okochatIntegration)
     implementation(projects.okochatIntegrationLuckperms)
+    implementation(projects.okochatIntegrationPlaceholderapi)
     implementation(projects.okochatIntegrationVault)
 }
 

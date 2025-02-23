@@ -1,7 +1,9 @@
 package net.okocraft.okochat.bridge.paper.listener;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.okocraft.okochat.bridge.paper.OkoChatBridgePaperPlugin;
+import net.okocraft.okochat.bridge.paper.messaging.PluginMessageSender;
 import net.okocraft.okochat.bridge.protocol.BlockPosition;
 import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
 import net.okocraft.okochat.bridge.protocol.ServerChatMessageData;
@@ -20,10 +22,12 @@ import org.slf4j.Logger;
 public class ChatListener implements Listener {
 
     private final AffixProvider<Player> affixProvider;
+    private final PluginMessageSender pluginMessageSender;
     private final Logger logger;
 
-    public ChatListener(AffixProvider<Player> affixProvider, Logger logger) {
+    public ChatListener(AffixProvider<Player> affixProvider, PluginMessageSender pluginMessageSender, Logger logger) {
         this.affixProvider = affixProvider;
+        this.pluginMessageSender = pluginMessageSender;
         this.logger = logger;
     }
 
@@ -34,7 +38,9 @@ public class ChatListener implements Listener {
         String suffix = this.affixProvider.getSuffix(player);
         Location location = player.getLocation();
 
-        ServerChatMessageData messageData = new ServerChatMessageData(
+        event.setCancelled(true);
+        this.logger.info("{}: {}", player.getName(), PlainTextComponentSerializer.plainText().serialize(event.message()));
+        this.pluginMessageSender.send(player, OkoChatProtocol.CHAT, new ServerChatMessageData(
                 new ServerSenderData(
                         player.getUniqueId(),
                         player.getName(),
@@ -49,24 +55,6 @@ public class ChatListener implements Listener {
                         )
                 ),
                 event.message()
-        );
-
-        byte[] data;
-        try {
-            data = OkoChatProtocol.encodeData(OkoChatProtocol.CHAT, messageData);
-        } catch (Exception e) {
-            this.logger.error("Failed to write chat message: {}", messageData, e);
-            event.setCancelled(true);
-            return;
-        }
-
-        player.sendPluginMessage(
-                JavaPlugin.getPlugin(OkoChatBridgePaperPlugin.class),
-                OkoChatProtocol.CHANNEL,
-                data
-        );
-
-        this.logger.info("[{}] {}", player.getName(), event.message());
-        event.setCancelled(true);
+        ));
     }
 }
