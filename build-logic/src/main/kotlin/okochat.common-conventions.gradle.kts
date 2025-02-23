@@ -11,8 +11,7 @@ repositories {
 val libs = extensions.getByType(org.gradle.accessors.dm.LibrariesForLibs::class)
 
 dependencies {
-    implementation(libs.annotations)
-
+    compileOnlyApi(libs.annotations)
     compileOnlyApi(libs.adventure)
     compileOnlyApi(libs.adventure.text.minimessage)
     compileOnlyApi(libs.adventure.text.serializer.gson)
