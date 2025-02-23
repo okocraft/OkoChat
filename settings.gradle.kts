@@ -17,6 +17,7 @@ sequenceOf(
     "bridge-protocol",
     "integration",
     "integration-luckperms",
+    "integration-placeholderapi",
     "integration-vault"
 ).forEach {
     include("$okochatPrefix-$it")

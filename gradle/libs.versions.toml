@@ -17,6 +17,7 @@ velocity = "3.4.0-SNAPSHOT"
 
 # other plugins
 luckperms = "5.4"
+placeholderapi = "2.11.6"
 vault = "1.7.1"
 
 [libraries]
@@ -41,6 +42,7 @@ platform-velocity = { module = "com.velocitypowered:velocity-api", version.ref =
 
 # other plugins
 integration-luckperms = { module = "net.luckperms:api", version.ref = "luckperms" }
+integration-placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi"}
 integration-vault = { module = "com.github.MilkBowl:VaultAPI", version.ref = "vault" }
 
 # Gradle plugins
