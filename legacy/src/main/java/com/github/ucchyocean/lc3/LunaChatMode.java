@@ -10,6 +10,5 @@ package com.github.ucchyocean.lc3;
  * @author ucchy
  */
 public enum LunaChatMode {
-    VELOCITY,
-    STANDALONE,
+    VELOCITY
 }
