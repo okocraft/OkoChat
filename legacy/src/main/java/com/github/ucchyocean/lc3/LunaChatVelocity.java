@@ -21,10 +21,12 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.scheduler.ScheduledTask;
+import net.okocraft.okochat.api.OkoChat;
 import net.okocraft.okochat.integration.AffixProvider;
 import net.okocraft.okochat.integration.luckperms.LuckPermsIntegration;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+import org.slf4j.helpers.SubstituteLogger;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -43,7 +45,6 @@ public class LunaChatVelocity implements PluginInterface {
     private static LunaChatVelocity instance;
 
     public final ProxyServer server;
-    public final Logger logger;
     public final Path dataDirectory;
 
     private HashMap<String, String> history;
@@ -58,9 +59,10 @@ public class LunaChatVelocity implements PluginInterface {
     @Inject
     public LunaChatVelocity(@NotNull ProxyServer server, @NotNull Logger logger,
                             @DataDirectory Path dataDirectory) {
+        ((SubstituteLogger) OkoChat.logger()).setDelegate(logger);
+
         instance = this;
         this.server = server;
-        this.logger = logger;
         this.dataDirectory = dataDirectory;
     }
 
@@ -115,7 +117,7 @@ public class LunaChatVelocity implements PluginInterface {
 
         this.expireCheckTask = this.server.getScheduler().buildTask(this, new ExpireCheckTask()).delay(Duration.ofSeconds(5)).repeat(Duration.ofSeconds(30)).schedule();
 
-        this.logger.info("LunaChat enabled");
+        OkoChat.logger().info("LunaChat enabled");
     }
 
     @Subscribe
@@ -123,7 +125,7 @@ public class LunaChatVelocity implements PluginInterface {
         if (this.expireCheckTask != null) {
             this.expireCheckTask.cancel();
         }
-        this.logger.info("LunaChat disabled");
+        OkoChat.logger().info("LunaChat disabled");
     }
 
     /**
@@ -228,11 +230,11 @@ public class LunaChatVelocity implements PluginInterface {
     @Override
     public void log(Level level, String msg) {
         if (level == Level.INFO) {
-            this.logger.info(msg);
+            OkoChat.logger().info(msg);
         } else        if (level == Level.WARNING) {
-            this.logger.warn(msg);
+            OkoChat.logger().warn(msg);
         } else if (level == Level.SEVERE) {
-            this.logger.error(msg);
+            OkoChat.logger().error(msg);
         }
     }
 
