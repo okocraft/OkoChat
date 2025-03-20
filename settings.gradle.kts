@@ -13,6 +13,8 @@ val okochatPrefix = rootProject.name.lowercase()
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 sequenceOf(
+    "core",
+
     "bridge-paper",
     "bridge-protocol",
     "integration",
