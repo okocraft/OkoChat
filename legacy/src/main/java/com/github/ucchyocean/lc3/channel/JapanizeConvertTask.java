@@ -5,17 +5,12 @@
  */
 package com.github.ucchyocean.lc3.channel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.github.ucchyocean.lc3.LunaChat;
 import com.github.ucchyocean.lc3.event.EventResult;
-import com.github.ucchyocean.lc3.japanize.IMEConverter;
 import com.github.ucchyocean.lc3.japanize.JapanizeType;
-import com.github.ucchyocean.lc3.japanize.YukiKanaConverter;
 import com.github.ucchyocean.lc3.member.ChannelMember;
 import com.github.ucchyocean.lc3.util.Utility;
 
