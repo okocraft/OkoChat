@@ -14,7 +14,6 @@ import java.util.List;
 
 import com.github.ucchyocean.lc3.LunaChat;
 import com.github.ucchyocean.lc3.LunaChatAPI;
-import com.github.ucchyocean.lc3.LunaChatMode;
 import com.github.ucchyocean.lc3.Messages;
 import com.github.ucchyocean.lc3.event.EventResult;
 import com.github.ucchyocean.lc3.japanize.JapanizeType;
@@ -277,11 +276,7 @@ public class ChannelManager implements LunaChatAPI {
     }
     // okocraft start - Set the default setting of japanize to false for those who do not use Japanese as a client language
     private boolean isUsingJapanese(String playerName) {
-        if (LunaChat.getMode() == LunaChatMode.VELOCITY) {
-            return com.github.ucchyocean.lc3.LunaChatVelocity.getInstance().isUsingJapanese(playerName);
-        } else {
-            return false;
-        }
+        return com.github.ucchyocean.lc3.LunaChatVelocity.getInstance().isUsingJapanese(playerName);
     }
     // okocraft end
 
@@ -426,12 +421,7 @@ public class ChannelManager implements LunaChatAPI {
         }
         String name = result.getChannelName();
 
-        Channel channel;
-        if ( LunaChat.getMode() == LunaChatMode.VELOCITY ) {
-            channel = new VelocityChannel(name);
-        } else {
-            channel = new StandaloneChannel(name);
-        }
+        Channel channel = new VelocityChannel(name);
 
         channels.put(name.toLowerCase(), channel);
         channel.save();

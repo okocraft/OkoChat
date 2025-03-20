@@ -18,7 +18,6 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import com.github.ucchyocean.lc3.LunaChat;
-import com.github.ucchyocean.lc3.LunaChatMode;
 import com.google.common.io.Files;
 
 /**

@@ -67,7 +67,6 @@ public class LunaChatVelocity implements PluginInterface {
     @Subscribe
     public void onEnable(ProxyInitializeEvent e) {
         LunaChat.setPlugin(this);
-        LunaChat.setMode(LunaChatMode.VELOCITY);
 
         // 初期化
         config = new LunaChatConfig(getDataFolder(), getPluginJarFile());

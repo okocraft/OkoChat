@@ -5,9 +5,6 @@
  */
 package com.github.ucchyocean.lc3.member;
 
-import com.github.ucchyocean.lc3.LunaChat;
-import com.github.ucchyocean.lc3.LunaChatMode;
-
 import net.md_5.bungee.api.chat.BaseComponent;
 
 /**
@@ -128,10 +125,7 @@ public abstract class ChannelMember implements Comparable<ChannelMember> {
      * @return ChannelMember
      */
     public static ChannelMember getChannelMember(String nameOrUuid) {
-        if ( LunaChat.getMode() == LunaChatMode.VELOCITY ) {
-            return ChannelMemberVelocityPlayer.getChannelMember(nameOrUuid);
-        }
-        return null; // TODO standalone用のChannelMemberを返す
+        return ChannelMemberVelocityPlayer.getChannelMember(nameOrUuid);
     }
 
     /**
@@ -141,10 +135,6 @@ public abstract class ChannelMember implements Comparable<ChannelMember> {
      */
     public static ChannelMember getChannelMember(Object obj) {
         if (obj instanceof ChannelMember) return (ChannelMember)obj;
-
-        if ( LunaChat.getMode() == LunaChatMode.VELOCITY ) {
-            return ChannelMemberVelocity.getChannelMemberVelocity(obj);
-        }
-        return null; // TODO standalone用のChannelMemberを返す
+        return ChannelMemberVelocity.getChannelMemberVelocity(obj);
     }
 }

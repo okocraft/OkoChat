@@ -23,7 +23,6 @@ import com.github.ucchyocean.lc3.LunaChat;
 import com.github.ucchyocean.lc3.LunaChatAPI;
 import com.github.ucchyocean.lc3.LunaChatConfig;
 import com.github.ucchyocean.lc3.LunaChatLogger;
-import com.github.ucchyocean.lc3.LunaChatMode;
 import com.github.ucchyocean.lc3.Messages;
 import com.github.ucchyocean.lc3.NGWordAction;
 import com.github.ucchyocean.lc3.event.EventResult;
@@ -890,12 +889,7 @@ public abstract class Channel {
             return null;
         }
 
-        Channel channel;
-        if ( LunaChat.getMode() == LunaChatMode.VELOCITY ) {
-            channel = new VelocityChannel(name);
-        } else {
-            channel = new StandaloneChannel(name);
-        }
+        Channel channel = new VelocityChannel(name);
 
         channel.alias = castWithDefault(data.get(KEY_ALIAS), "");
         channel.description = castWithDefault(data.get(KEY_DESC), "");
