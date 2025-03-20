@@ -7,6 +7,7 @@ plugins {
 project.extra["okochat.plugin-name"] = "OkoChat-Legacy"
 
 dependencies {
+    implementation(projects.okochatBridgeProtocol)
     implementation(projects.okochatIntegration)
     implementation(projects.okochatIntegrationLuckperms)
     implementation(libs.adventure.text.serializer.bungeecord) {

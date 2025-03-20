@@ -1,8 +1,6 @@
 package net.okocraft.okochat.bridge.paper;
 
-import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.okocraft.okochat.bridge.paper.listener.ChatListener;
-import net.okocraft.okochat.bridge.paper.listener.LegacyChatListener;
 import net.okocraft.okochat.bridge.paper.messaging.PluginMessageReceiver;
 import net.okocraft.okochat.bridge.paper.messaging.PluginMessageSender;
 import net.okocraft.okochat.bridge.paper.sync.SyncedValues;
@@ -26,16 +24,6 @@ public class OkoChatBridgePaperPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // TODO: remove this after legacy mode is dropped
-        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
-            commands.registrar().register("reloadocb", (source, args) -> {
-                if (source.getSender().isOp()) {
-                    this.setup();
-                    source.getSender().sendPlainMessage("OkoChatBridge has been reloaded.");
-                }
-            });
-        });
-
         this.setup();
 
         this.getServer().getMessenger().registerIncomingPluginChannel(this, OkoChatProtocol.CHANNEL, new PluginMessageReceiver(OkoChatProtocol.CHANNEL, this.getSLF4JLogger(), this.syncedValues));
@@ -57,9 +45,6 @@ public class OkoChatBridgePaperPlugin extends JavaPlugin {
 
     private void setup() {
         HandlerList.unregisterAll(this);
-        this.saveDefaultConfig();
-        this.reloadConfig();
-        boolean legacyMode = this.getConfig().getBoolean("legacy-mode");
 
         AffixProvider<Player> affixProvider;
 
@@ -69,12 +54,6 @@ public class OkoChatBridgePaperPlugin extends JavaPlugin {
             affixProvider = LuckPermsIntegration.createAffixProvider(Player::getUniqueId);
         } else {
             affixProvider = AffixProvider.createVoid();
-        }
-
-        if (legacyMode) {
-            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "lunachat:message");
-            this.getServer().getPluginManager().registerEvents(new LegacyChatListener(affixProvider, this.getSLF4JLogger()), this);
-            return;
         }
 
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, OkoChatProtocol.CHANNEL);

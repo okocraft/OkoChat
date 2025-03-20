@@ -2,7 +2,6 @@ package net.okocraft.okochat.bridge.paper.listener;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import net.okocraft.okochat.bridge.paper.OkoChatBridgePaperPlugin;
 import net.okocraft.okochat.bridge.paper.messaging.PluginMessageSender;
 import net.okocraft.okochat.bridge.protocol.BlockPosition;
 import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
@@ -14,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.slf4j.Logger;
 
