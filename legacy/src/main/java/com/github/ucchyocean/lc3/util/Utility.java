@@ -208,13 +208,7 @@ public class Utility {
      * @return 接続したことがあるかどうか
      */
     public static boolean existsOfflinePlayer(String name) {
-        if ( LunaChat.getUUIDCacheData().getUUIDFromName(name) != null ) {
-            return true;
-        }
-        if ( LunaChat.getMode() == LunaChatMode.BUKKIT ) {
-            return UtilityBukkit.existsOfflinePlayer(name);
-        }
-        return false;
+        return LunaChat.getUUIDCacheData().getUUIDFromName(name) != null;
     }
 
     /**
