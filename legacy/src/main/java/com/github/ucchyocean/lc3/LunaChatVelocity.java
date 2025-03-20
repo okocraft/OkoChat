@@ -5,7 +5,6 @@
  */
 package com.github.ucchyocean.lc3;
 
-import com.github.ucchyocean.lc3.bridge.LuckPermsBridge;
 import com.github.ucchyocean.lc3.channel.ChannelManager;
 import com.github.ucchyocean.lc3.velocity.JapanizeCommandVelocity;
 import com.github.ucchyocean.lc3.velocity.LunaChatCommandVelocity;
@@ -22,6 +21,8 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.scheduler.ScheduledTask;
+import net.okocraft.okochat.integration.AffixProvider;
+import net.okocraft.okochat.integration.luckperms.LuckPermsIntegration;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -52,7 +53,7 @@ public class LunaChatVelocity implements PluginInterface {
     private LunaChatLogger normalChatLogger;
     private ScheduledTask expireCheckTask;
 
-    private LuckPermsBridge luckperms;
+    private AffixProvider<Player> affixProvider = AffixProvider.createVoid();
 
     @Inject
     public LunaChatVelocity(@NotNull ProxyServer server, @NotNull Logger logger,
@@ -82,8 +83,8 @@ public class LunaChatVelocity implements PluginInterface {
             manager.removeAllDefaultChannels();
         }
 
-        if ( this.server.getPluginManager().isLoaded("luckperms") ) {
-            luckperms = LuckPermsBridge.load();
+        if (LuckPermsIntegration.canIntegrate()) {
+            this.affixProvider = LuckPermsIntegration.createAffixProvider(Player::getUniqueId);
         }
 
         // コマンド登録
@@ -256,13 +257,10 @@ public class LunaChatVelocity implements PluginInterface {
         this.server.getScheduler().buildTask(this, task).schedule();
     }
 
-    /**
-     * LuckPerms連携クラスを取得する
-     * @return LuckPerms連携クラス
-     */
-    public LuckPermsBridge getLuckPerms() {
-        return luckperms;
+    public AffixProvider<Player> getAffixProvider() {
+        return this.affixProvider;
     }
+
     // okocraft start - Set the default setting of japanize to false for those who do not use Japanese as a client language
     public boolean isUsingJapanese(String playerName) {
         Player player = this.server.getPlayer(playerName).orElse(null);

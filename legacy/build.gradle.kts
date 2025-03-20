@@ -8,6 +8,7 @@ project.extra["okochat.plugin-name"] = "OkoChat-Legacy"
 
 dependencies {
     implementation(projects.okochatIntegration)
+    implementation(projects.okochatIntegrationLuckperms)
     implementation(libs.adventure.text.serializer.bungeecord) {
         exclude("net.kyori", "adventure-api")
         exclude("net.kyori", "adventure-text-serializer-gson")
@@ -18,7 +19,6 @@ dependencies {
         exclude("com.google.guava", "guava")
     }
     compileOnly(libs.platform.velocity)
-    compileOnly(libs.integration.luckperms)
 }
 
 tasks {

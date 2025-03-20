@@ -7,7 +7,6 @@ package com.github.ucchyocean.lc3.member;
 
 import com.github.ucchyocean.lc3.LunaChat;
 import com.github.ucchyocean.lc3.LunaChatVelocity;
-import com.github.ucchyocean.lc3.bridge.LuckPermsBridge;
 import com.velocitypowered.api.permission.Tristate;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
@@ -24,7 +23,7 @@ import java.util.UUID;
  */
 public class ChannelMemberVelocityPlayer extends ChannelMemberVelocity {
 
-    private UUID id;
+    private final UUID id;
 
     /**
      * コンストラクタ
@@ -113,12 +112,7 @@ public class ChannelMemberVelocityPlayer extends ChannelMemberVelocity {
      */
     @Override
     public String getPrefix() {
-        LuckPermsBridge luckperms = LunaChatVelocity.getInstance().getLuckPerms();
-        if ( luckperms != null ) {
-            return luckperms.getPlayerPrefix(id);
-        }
-
-        return "";
+        return LunaChatVelocity.getInstance().getAffixProvider().getPrefix(this.id);
     }
 
     /**
@@ -128,12 +122,7 @@ public class ChannelMemberVelocityPlayer extends ChannelMemberVelocity {
      */
     @Override
     public String getSuffix() {
-        LuckPermsBridge luckperms = LunaChatVelocity.getInstance().getLuckPerms();
-        if ( luckperms != null ) {
-            return luckperms.getPlayerSuffix(id);
-        }
-
-        return "";
+        return LunaChatVelocity.getInstance().getAffixProvider().getSuffix(this.id);
     }
 
     /**
