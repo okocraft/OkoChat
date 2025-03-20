@@ -22,16 +22,26 @@ class LuckPermsAffixProvider<P> implements AffixProvider<P> {
 
     @Override
     public String getPrefix(P player) {
-        return this.getUserMetaData(player).map(CachedMetaData::getPrefix).orElse("");
+        return this.getPrefix(this.uuidFunction.apply(player));
+    }
+
+    @Override
+    public String getPrefix(UUID uuid) {
+        return this.getUserMetaData(uuid).map(CachedMetaData::getPrefix).orElse("");
     }
 
     @Override
     public String getSuffix(P player) {
-        return this.getUserMetaData(player).map(CachedMetaData::getSuffix).orElse("");
+        return this.getSuffix(this.uuidFunction.apply(player));
     }
 
-    private Optional<CachedMetaData> getUserMetaData(P player) {
-        return Optional.of(this.uuidFunction.apply(player))
+    @Override
+    public String getSuffix(UUID uuid) {
+        return this.getUserMetaData(uuid).map(CachedMetaData::getSuffix).orElse("");
+    }
+
+    private Optional<CachedMetaData> getUserMetaData(UUID uuid) {
+        return Optional.of(uuid)
                 .map(LuckPermsProvider.get().getUserManager()::getUser)
                 .map(User::getCachedData)
                 .map(CachedDataManager::getMetaData);

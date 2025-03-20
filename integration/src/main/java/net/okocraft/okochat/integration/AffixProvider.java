@@ -2,6 +2,8 @@ package net.okocraft.okochat.integration;
 
 import org.jetbrains.annotations.NotNullByDefault;
 
+import java.util.UUID;
+
 @NotNullByDefault
 public interface AffixProvider<P> {
 
@@ -13,7 +15,17 @@ public interface AffixProvider<P> {
             }
 
             @Override
+            public String getPrefix(UUID uuid) {
+                return "";
+            }
+
+            @Override
             public String getSuffix(P player) {
+                return "";
+            }
+
+            @Override
+            public String getSuffix(UUID uuid) {
                 return "";
             }
         };
@@ -21,6 +33,10 @@ public interface AffixProvider<P> {
 
     String getPrefix(P player);
 
+    String getPrefix(UUID uuid);
+
     String getSuffix(P player);
+
+    String getSuffix(UUID uuid);
 
 }
