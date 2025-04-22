@@ -30,7 +30,7 @@ adventure-text-serializer-gson = { module = "net.kyori:adventure-text-serializer
 adventure-text-serializer-legacy = { module = "net.kyori:adventure-text-serializer-legacy", version.ref = "adventure" }
 adventure-text-serializer-plain = { module = "net.kyori:adventure-text-serializer-plain", version.ref = "adventure" }
 adventure-text-serializer-bungeecord = { module = "net.kyori:adventure-text-serializer-bungeecord", version = "4.3.4" }
-bungeecord-chat = { module = "net.md-5:bungeecord-chat", version = "1.21-R0.1-SNAPSHOT"}
+bungeecord-chat = { module = "net.md-5:bungeecord-chat", version = "1.21-R0.3-SNAPSHOT"}
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 
 # for testing
