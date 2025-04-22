@@ -24,6 +24,7 @@ import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.okocraft.okochat.api.OkoChat;
 import net.okocraft.okochat.integration.AffixProvider;
 import net.okocraft.okochat.integration.luckperms.LuckPermsIntegration;
+import net.okocraft.okochat.platform.velocity.VelocityPlatform;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.helpers.SubstituteLogger;
@@ -46,6 +47,7 @@ public class LunaChatVelocity implements PluginInterface {
 
     public final ProxyServer server;
     public final Path dataDirectory;
+    public final VelocityPlatform platform;
 
     private HashMap<String, String> history;
     private LunaChatConfig config;
@@ -64,6 +66,7 @@ public class LunaChatVelocity implements PluginInterface {
         instance = this;
         this.server = server;
         this.dataDirectory = dataDirectory;
+        this.platform = VelocityPlatform.initialize(server);
     }
 
     @Subscribe

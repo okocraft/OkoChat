@@ -11,6 +11,7 @@ dependencies {
     implementation(projects.okochatBridgeProtocol)
     implementation(projects.okochatIntegration)
     implementation(projects.okochatIntegrationLuckperms)
+    implementation(projects.okochatPlatformVelocity)
     implementation(libs.adventure.text.serializer.bungeecord) {
         exclude("net.kyori", "adventure-api")
         exclude("net.kyori", "adventure-text-serializer-gson")
