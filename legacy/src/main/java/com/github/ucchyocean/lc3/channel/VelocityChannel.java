@@ -14,6 +14,7 @@ import com.github.ucchyocean.lc3.member.ChannelMember;
 import com.github.ucchyocean.lc3.util.ClickableFormat;
 import com.velocitypowered.api.proxy.Player;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.okocraft.okochat.api.OkoChat;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -120,7 +121,7 @@ public class VelocityChannel extends Channel {
 
         // 設定に応じて、コンソールに出力する
         if ( config.isDisplayChatOnConsole() ) {
-            LunaChatVelocity.getInstance().logger.info(message);
+            OkoChat.logger().info(message);
         }
 
         // ロギング

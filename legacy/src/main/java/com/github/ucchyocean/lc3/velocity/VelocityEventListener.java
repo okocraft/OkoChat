@@ -30,6 +30,7 @@ import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.okocraft.okochat.api.OkoChat;
 import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
 import net.okocraft.okochat.bridge.protocol.ServerChatMessageData;
 
@@ -329,7 +330,7 @@ public class VelocityEventListener {
 
             // コンソールに表示設定なら、コンソールに表示する
             if ( config.isDisplayNormalChatOnConsole() ) {
-                parent.logger.info(result);
+                OkoChat.logger().info(result);
             }
 
             // ログに記録する
