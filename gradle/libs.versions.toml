@@ -5,7 +5,7 @@ annotations = "26.0.2"
 slf4j = "2.0.17"
 
 # for testing
-junit = "5.12.1"
+junit = "5.12.2"
 mockito = "5.10.0"
 
 # gradle plugins
