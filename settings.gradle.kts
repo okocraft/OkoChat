@@ -18,10 +18,13 @@ sequenceOf(
 
     "bridge-paper",
     "bridge-protocol",
+
     "integration",
     "integration-luckperms",
     "integration-placeholderapi",
     "integration-vault",
+
+    "platform-velocity",
 
     "legacy"
 ).forEach {
