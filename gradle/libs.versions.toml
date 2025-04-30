@@ -1,6 +1,6 @@
 [versions]
 # common libraries
-adventure = "4.20.0"
+adventure = "4.21.0"
 annotations = "26.0.2"
 slf4j = "2.0.17"
 
