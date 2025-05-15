@@ -10,3 +10,5 @@ dependencies:
       required: false
     LuckPerms:
       required: false
+    PlaceholderAPI:
+      required: false
