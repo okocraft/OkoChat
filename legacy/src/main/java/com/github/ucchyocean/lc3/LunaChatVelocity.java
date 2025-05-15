@@ -22,6 +22,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.okocraft.okochat.api.OkoChat;
+import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
 import net.okocraft.okochat.integration.AffixProvider;
 import net.okocraft.okochat.integration.luckperms.LuckPermsIntegration;
 import net.okocraft.okochat.platform.velocity.VelocityPlatform;
@@ -116,7 +117,7 @@ public class LunaChatVelocity implements PluginInterface {
         LunaChat.setEventSender(new VelocityEventSender(this.server));
 
         // プラグインチャンネル登録
-        this.server.getChannelRegistrar().register(MinecraftChannelIdentifier.from(LunaChat.PMC_MESSAGE));
+        this.server.getChannelRegistrar().register(MinecraftChannelIdentifier.from(OkoChatProtocol.CHANNEL));
 
         this.expireCheckTask = this.server.getScheduler().buildTask(this, new ExpireCheckTask()).delay(Duration.ofSeconds(5)).repeat(Duration.ofSeconds(30)).schedule();
 

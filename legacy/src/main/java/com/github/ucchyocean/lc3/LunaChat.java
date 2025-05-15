@@ -15,9 +15,6 @@ import com.github.ucchyocean.lc3.event.EventSenderInterface;
  */
 public class LunaChat {
 
-    /** Bukkit→BungeeCord チャット発言内容の転送に使用するプラグインメッセージチャンネル名 */
-    public static final String PMC_MESSAGE = "lunachat:message";
-
     private static PluginInterface instance;
     private static EventSenderInterface esender;
 
