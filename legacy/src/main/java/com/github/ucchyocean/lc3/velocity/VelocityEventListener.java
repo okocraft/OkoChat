@@ -31,17 +31,16 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.okocraft.okochat.api.OkoChat;
+import net.okocraft.okochat.api.sender.ConsoleSender;
 import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
 import net.okocraft.okochat.bridge.protocol.ServerChatMessageData;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,7 +48,7 @@ import java.util.regex.Pattern;
  * Velocityのイベントを監視するリスナークラス
  * @author ucchy
  */
-public class VelocityEventListener {
+public class VelocityEventListener implements OkoChatProtocol.Listener {
 
     private static final int MAX_LIST_ITEMS = 8;
 
@@ -130,57 +129,39 @@ public class VelocityEventListener {
         }
     }
 
-    /**
-     * プラグインメッセージを受信したときに呼び出される
-     * @param event
-     */
     @Subscribe
     public void onPluginMessageReceived(PluginMessageEvent event) {
-        // 自分のチャンネルメッセージでない場合は無視する
-        if (!event.getIdentifier().getId().equals(OkoChatProtocol.CHANNEL)) {
-            return;
+        if (event.getSource() instanceof ServerConnection && event.getIdentifier().equals(this.parent.channelIdentifier)) {
+            event.setResult(PluginMessageEvent.ForwardResult.handled());
+
+            this.processPluginMessage(
+                    event.getTarget() instanceof Player receiver ? receiver.getUniqueId() : ConsoleSender.CONSOLE_UUID,
+                    event.getData(),
+                    OkoChat.logger()
+            );
         }
-        event.setResult(PluginMessageEvent.ForwardResult.handled());
+    }
 
-        ServerChatMessageData data;
-        try (var in = new ByteArrayInputStream(event.getData());
-             var dataIn = new DataInputStream(in)) {
-            int version = OkoChatProtocol.readVersion(dataIn);
-            if (version != OkoChatProtocol.VERSION) {
-                return;
-            }
-
-            int type = OkoChatProtocol.readMessageType(dataIn);
-            if (type != OkoChatProtocol.CHAT.identity()) {
-                return;
-            }
-
-            data = OkoChatProtocol.CHAT.reader().read(dataIn);
-        } catch (Exception e) {
-            LunaChatVelocity.getInstance().log(Level.SEVERE, e.getMessage());
-            //noinspection CallToPrintStackTrace
-            e.printStackTrace();
-            return;
-        }
-
+    @Override
+    public void onServerChatMessageData(UUID receiver, ServerChatMessageData data) {
         var sender = data.senderData();
         BlockLocation location = null;
         if (sender.position() != null) {
             location = new BlockLocation(sender.worldName(), sender.position().x(), sender.position().y(), sender.position().z());
         }
 
-        ChannelMemberOther member = new ChannelMemberOther(sender.name(), LegacyComponentSerializer.legacyAmpersand().serialize(sender.displayName()), sender.prefix(), sender.suffix(), location, sender.uuid().toString());
-
         // 受信者と発言者が一致しない場合は無視する
-        if (!(event.getTarget() instanceof Player receiver) || receiver.getUniqueId().equals(sender.uuid())) {
+        if (!receiver.equals(sender.uuid())) {
             return;
         }
+
+        ChannelMemberOther member = new ChannelMemberOther(sender.name(), LegacyComponentSerializer.legacyAmpersand().serialize(sender.displayName()), sender.prefix(), sender.suffix(), location, sender.uuid().toString());
 
         // 発言者を取得する　サーバー名を設定できる場合は設定する
         this.parent.server.getPlayer(member.getName()).ifPresent(player -> member.setServerName(player.getCurrentServer().map(ServerConnection::getServerInfo).map(ServerInfo::getName).orElse("null")));
 
         // 発言処理する
-        processChat(member, LegacyComponentSerializer.legacyAmpersand().serialize(data.message()));
+        this.processChat(member, LegacyComponentSerializer.legacyAmpersand().serialize(data.message()));
     }
 
     private void processChat(ChannelMember member, String message) {

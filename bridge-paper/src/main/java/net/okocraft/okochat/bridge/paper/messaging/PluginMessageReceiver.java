@@ -2,17 +2,13 @@ package net.okocraft.okochat.bridge.paper.messaging;
 
 import net.okocraft.okochat.bridge.paper.sync.SyncedValues;
 import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
-import net.okocraft.okochat.bridge.protocol.PlayerData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.slf4j.Logger;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-
 @NotNullByDefault
-public class PluginMessageReceiver implements PluginMessageListener {
+public class PluginMessageReceiver implements PluginMessageListener, OkoChatProtocol.Listener {
 
     private final String channel;
     private final Logger logger;
@@ -31,27 +27,6 @@ public class PluginMessageReceiver implements PluginMessageListener {
             return;
         }
 
-        try (ByteArrayInputStream bin = new ByteArrayInputStream(message);
-             DataInputStream in = new DataInputStream(bin)) {
-            int version = OkoChatProtocol.readVersion(in);
-            if (version == 1) {
-                this.processV1(in);
-            } else {
-                this.logger.error("Unknown protocol version received: {}", version);
-            }
-        } catch (Exception e) {
-            this.logger.error("Failed to read plugin message from {}", channel, e);
-        }
-    }
-
-    private void processV1(DataInputStream in) throws Exception {
-        byte type = OkoChatProtocol.readMessageType(in);
-
-        if (type == OkoChatProtocol.SYNC_PLAYER_DATA.identity()) {
-            PlayerData data = OkoChatProtocol.SYNC_PLAYER_DATA.reader().read(in);
-            this.syncedValues.updateDefaultChannelName(data.uuid(), data.defaultChannelName());
-        } else {
-            this.logger.error("Unknown protocol type received: {}", type);
-        }
+        this.processPluginMessage(player.getUniqueId(), message, this.logger);
     }
 }

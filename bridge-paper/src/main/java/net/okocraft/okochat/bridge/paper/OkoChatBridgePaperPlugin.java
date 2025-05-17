@@ -28,7 +28,7 @@ public class OkoChatBridgePaperPlugin extends JavaPlugin {
 
         this.getServer().getMessenger().registerIncomingPluginChannel(this, OkoChatProtocol.CHANNEL, new PluginMessageReceiver(OkoChatProtocol.CHANNEL, this.getSLF4JLogger(), this.syncedValues));
 
-        if (PlaceholderAPIIntegration.canIntegrate()) {
+        if (false && PlaceholderAPIIntegration.canIntegrate()) {
             this.registeredPlaceholders = PlaceholderAPIIntegration.registerPlaceholders(
                     this.getPluginMeta().getVersion(),
                     this.syncedValues
