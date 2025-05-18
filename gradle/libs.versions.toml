@@ -10,7 +10,7 @@ mockito = "5.10.0"
 
 # gradle plugins
 shadow = "8.3.6"
-gradle-plugins = "1.1.0"
+gradle-plugins = "1.2.0-SNAPSHOT"
 
 # platform api
 paper = "1.21.4-R0.1-SNAPSHOT"

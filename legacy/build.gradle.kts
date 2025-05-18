@@ -1,9 +1,12 @@
 plugins {
-    id("okochat.paper-dependency")
     id("okochat.bundle-conventions")
 }
 
 project.extra["okochat.plugin-name"] = "OkoChat-Legacy"
+
+jcommon {
+    setupPaperRepository()
+}
 
 dependencies {
     implementation(projects.okochatApi)

@@ -1,5 +1,5 @@
-plugins {
-    id("okochat.paper-dependency")
+jcommon {
+    setupPaperRepository()
 }
 
 repositories {
@@ -8,5 +8,7 @@ repositories {
 
 dependencies {
     implementation(projects.okochatIntegration)
+
+    compileOnly(libs.platform.paper)
     compileOnly(libs.integration.vault)
 }

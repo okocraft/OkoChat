@@ -1,11 +1,16 @@
 plugins {
-    id("okochat.paper-dependency")
     id("okochat.bundle-conventions")
 }
 
 project.extra["okochat.plugin-name"] = "OkoChatBridge-Paper"
 
+jcommon {
+    setupPaperRepository()
+}
+
 dependencies {
+    compileOnly(libs.platform.paper)
+
     implementation(projects.okochatBridgeProtocol)
     implementation(projects.okochatIntegration)
     implementation(projects.okochatIntegrationLuckperms)
