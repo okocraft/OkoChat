@@ -10,6 +10,7 @@ mockito = "5.10.0"
 
 # gradle plugins
 shadow = "8.3.6"
+gradle-plugins = "1.1.0"
 
 # platform api
 paper = "1.21.4-R0.1-SNAPSHOT"
@@ -49,3 +50,8 @@ integration-vault = { module = "com.github.MilkBowl:VaultAPI", version.ref = "va
 
 # Gradle plugins
 build-shadow = { module = "com.gradleup.shadow:shadow-gradle-plugin", version.ref = "shadow" }
+
+[plugins]
+
+jcommon = { id = "dev.siroshun.gradle.plugins.jcommon", version.ref = "gradle-plugins" }
+mavenPublication = { id = "dev.siroshun.gradle.plugins.maven-publication", version.ref = "gradle-plugins" }

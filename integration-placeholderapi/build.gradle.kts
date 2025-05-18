@@ -1,5 +1,4 @@
 plugins {
-    id("okochat.common-conventions")
     id("okochat.paper-dependency")
 }
 
