@@ -1,8 +1,6 @@
 plugins {
-    id("okochat.bundle-conventions")
+    alias(libs.plugins.bundler)
 }
-
-project.extra["okochat.plugin-name"] = "OkoChat-Velocity"
 
 jcommon {
     setupPaperRepository()
@@ -14,10 +12,7 @@ dependencies {
     compileOnly(libs.platform.velocity)
 }
 
-tasks {
-    processResources {
-        filesMatching(listOf("velocity-plugin.json")) {
-            expand("projectVersion" to project.version)
-        }
-    }
+bundler {
+    copyToRootBuildDirectory("OkoChat-Velocity-${project.version}")
+    replacePluginVersionForVelocity(project.version)
 }

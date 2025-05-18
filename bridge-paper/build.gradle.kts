@@ -1,8 +1,6 @@
 plugins {
-    id("okochat.bundle-conventions")
+    alias(libs.plugins.bundler)
 }
-
-project.extra["okochat.plugin-name"] = "OkoChatBridge-Paper"
 
 jcommon {
     setupPaperRepository()
@@ -18,10 +16,7 @@ dependencies {
     implementation(projects.okochatIntegrationVault)
 }
 
-tasks {
-    processResources {
-        filesMatching(listOf("paper-plugin.yml")) {
-            expand("projectVersion" to project.version)
-        }
-    }
+bundler {
+    copyToRootBuildDirectory("OkoChatBridge-Paper-${project.version}")
+    replacePluginVersionForPaper(project.version)
 }
