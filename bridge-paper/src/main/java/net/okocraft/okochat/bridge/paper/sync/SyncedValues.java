@@ -2,7 +2,6 @@ package net.okocraft.okochat.bridge.paper.sync;
 
 import net.okocraft.okochat.integration.placeholderapi.PlaceholderValueProvider;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.Map;
 import java.util.UUID;
@@ -13,8 +12,8 @@ public class SyncedValues implements PlaceholderValueProvider {
     private final Map<UUID, String> defaultChannelNameMap = new ConcurrentHashMap<>();
 
     @Override
-    public String getDefaultChannelByPlayer(Player player) {
-        return this.defaultChannelNameMap.getOrDefault(player.getUniqueId(), "");
+    public String getDefaultChannelByPlayer(UUID uuid) {
+        return this.defaultChannelNameMap.getOrDefault(uuid, "");
     }
 
     @Override

@@ -1,10 +1,10 @@
 package net.okocraft.okochat.integration.placeholderapi;
 
-import org.bukkit.entity.Player;
+import java.util.UUID;
 
 public interface PlaceholderValueProvider {
 
-    String getDefaultChannelByPlayer(Player player);
+    String getDefaultChannelByPlayer(UUID uuid);
 
     String getDefaultChannelByPlayerName(String name);
 
