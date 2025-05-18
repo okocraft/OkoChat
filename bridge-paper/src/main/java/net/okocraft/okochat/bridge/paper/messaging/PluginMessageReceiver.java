@@ -2,10 +2,13 @@ package net.okocraft.okochat.bridge.paper.messaging;
 
 import net.okocraft.okochat.bridge.paper.sync.SyncedValues;
 import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
+import net.okocraft.okochat.bridge.protocol.PlayerData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.slf4j.Logger;
+
+import java.util.UUID;
 
 @NotNullByDefault
 public class PluginMessageReceiver implements PluginMessageListener, OkoChatProtocol.Listener {
@@ -28,5 +31,13 @@ public class PluginMessageReceiver implements PluginMessageListener, OkoChatProt
         }
 
         this.processPluginMessage(player.getUniqueId(), message, this.logger);
+    }
+
+    @Override
+    public void onPlayerData(UUID receiver, PlayerData data) {
+        if (!receiver.equals(data.uuid())) {
+            return;
+        }
+        this.syncedValues.updateDefaultChannelName(data.uuid(), data.defaultChannelName());
     }
 }

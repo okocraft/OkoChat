@@ -33,7 +33,9 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.okocraft.okochat.api.OkoChat;
 import net.okocraft.okochat.api.sender.ConsoleSender;
 import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
+import net.okocraft.okochat.bridge.protocol.PlayerData;
 import net.okocraft.okochat.bridge.protocol.ServerChatMessageData;
+import net.okocraft.okochat.bridge.protocol.SyncPlayerRequestData;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -166,6 +168,32 @@ public class VelocityEventListener implements OkoChatProtocol.Listener {
 
         // 発言処理する
         this.processChat(member, LegacyComponentSerializer.legacyAmpersand().serialize(data.message()));
+    }
+
+    @Override
+    public void onSyncPlayerRequestData(UUID receiver, SyncPlayerRequestData data) {
+        if (!receiver.equals(data.uuid())) {
+            return;
+        }
+
+        Player player = this.parent.server.getPlayer(data.uuid()).orElse(null);
+        if (player == null) {
+            return;
+        }
+
+        Channel defaultChannel = this.parent.getLunaChatAPI().getDefaultChannel(player.getUsername());
+
+        PlayerData res = new PlayerData(
+                data.uuid(),
+                defaultChannel != null ? defaultChannel.getName() : this.parent.getLunaChatAPI().getChannel(this.config.getGlobalChannel()).getName()
+        );
+
+        try {
+            byte[] encoded = OkoChatProtocol.encodeData(OkoChatProtocol.SYNC_PLAYER_DATA, res);
+            player.sendPluginMessage(this.parent.channelIdentifier, encoded);
+        } catch (Exception e) {
+            OkoChat.logger().error("Failed to send plugin message: {}", data, e);
+        }
     }
 
     private void processChat(ChannelMember member, String message) {
