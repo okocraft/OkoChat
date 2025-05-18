@@ -131,9 +131,13 @@ public class VelocityEventListener implements OkoChatProtocol.Listener {
 
     @Subscribe
     public void onPluginMessageReceived(PluginMessageEvent event) {
-        if (event.getSource() instanceof ServerConnection && event.getIdentifier().equals(this.parent.channelIdentifier)) {
-            event.setResult(PluginMessageEvent.ForwardResult.handled());
+        if (!event.getIdentifier().equals(this.parent.channelIdentifier)) {
+            return;
+        }
 
+        event.setResult(PluginMessageEvent.ForwardResult.handled()); // For discarding messages from clients
+
+        if (event.getSource() instanceof ServerConnection) {
             this.processPluginMessage(
                     event.getTarget() instanceof Player receiver ? receiver.getUniqueId() : ConsoleSender.CONSOLE_UUID,
                     event.getData(),
