@@ -53,6 +53,7 @@ import java.util.regex.Pattern;
 public class VelocityEventListener implements OkoChatProtocol.Listener {
 
     private static final int MAX_LIST_ITEMS = 8;
+    private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacyAmpersand().toBuilder().hexColors().build();
 
     private LunaChatVelocity parent;
     private LunaChatConfig config;
@@ -161,13 +162,13 @@ public class VelocityEventListener implements OkoChatProtocol.Listener {
             return;
         }
 
-        ChannelMemberOther member = new ChannelMemberOther(sender.name(), LegacyComponentSerializer.legacyAmpersand().serialize(sender.displayName()), sender.prefix(), sender.suffix(), location, sender.uuid().toString());
+        ChannelMemberOther member = new ChannelMemberOther(sender.name(), LEGACY_SERIALIZER.serialize(sender.displayName()), sender.prefix(), sender.suffix(), location, sender.uuid().toString());
 
         // 発言者を取得する　サーバー名を設定できる場合は設定する
         this.parent.server.getPlayer(member.getName()).ifPresent(player -> member.setServerName(player.getCurrentServer().map(ServerConnection::getServerInfo).map(ServerInfo::getName).orElse("null")));
 
         // 発言処理する
-        this.processChat(member, LegacyComponentSerializer.legacyAmpersand().serialize(data.message()));
+        this.processChat(member, LEGACY_SERIALIZER.serialize(data.message()));
     }
 
     @Override
