@@ -25,10 +25,10 @@ public final class ChatMessageFormatCompiler<C extends ChatContext> {
     }
 
     public @NotNull ChatMessageFormat<C> compile(@NotNull Component format) {
-        var result = new ArrayList<StyleInheritingPlaceholder<C>>();
+        List<StyleInheritingPlaceholder<C>> result = new ArrayList<>();
 
         if (format instanceof TextComponent rootText) {
-            var style = format.style();
+            Style style = format.style();
             this.compile(rootText.content(), placeholder -> result.add(new StyleInheritingPlaceholder<>(placeholder, style)));
         }
 
@@ -36,13 +36,13 @@ public final class ChatMessageFormatCompiler<C extends ChatContext> {
             return new ChatMessageFormatImpl<>(Collections.unmodifiableList(result));
         }
 
-        for (var element : format.iterable(ComponentIteratorType.DEPTH_FIRST)) {
+        for (Component element : format.iterable(ComponentIteratorType.DEPTH_FIRST)) {
             if (element == format) { // Ignore the root component.
                 continue;
             }
 
             if (element instanceof TextComponent textComponent) {
-                var style = element.style();
+                Style style = element.style();
                 this.compile(textComponent.content(), placeholder -> result.add(new StyleInheritingPlaceholder<>(placeholder, style)));
             }
         }
@@ -53,33 +53,29 @@ public final class ChatMessageFormatCompiler<C extends ChatContext> {
     private void compile(@NotNull String raw, @NotNull Consumer<Placeholder<C>> consumer) {
         boolean inPlaceholder = false;
 
-        var textBuilder = new StringBuilder();
+        StringBuilder textBuilder = new StringBuilder();
 
         for (int codePoint : raw.codePoints().toArray()) {
             if (codePoint == PLACEHOLDER_BRACKET) {
-                if (inPlaceholder) {
-                    var rawPlaceholder = textBuilder.toString();
-                    var placeholder = this.registry.get(rawPlaceholder);
-
-                    consumer.accept(
-                            placeholder != null ?
-                                    placeholder :
-                                    Placeholder.string(textBuilder.insert(0, PLACEHOLDER_BRACKET).append(PLACEHOLDER_BRACKET).toString())
-                    );
-
+                String text = textBuilder.toString();
+                if (!text.isEmpty()) {
+                    consumer.accept(Placeholder.string(inPlaceholder ? PLACEHOLDER_BRACKET + text : text));
                     textBuilder.setLength(0);
-                } else {
-                    var text = textBuilder.toString();
-
-                    if (!text.isEmpty()) {
-                        consumer.accept(Placeholder.string(text));
-                        textBuilder.setLength(0);
-                    }
                 }
+                inPlaceholder = true;
+                continue;
+            }
 
-                inPlaceholder = !inPlaceholder;
-            } else {
-                textBuilder.appendCodePoint(codePoint);
+            textBuilder.appendCodePoint(codePoint);
+
+            if (inPlaceholder) {
+                String key = textBuilder.toString();
+                Placeholder<C> placeholder = this.registry.get(key);
+                if (placeholder != null) {
+                    consumer.accept(placeholder);
+                    textBuilder.setLength(0);
+                    inPlaceholder = false;
+                }
             }
         }
 
@@ -105,7 +101,7 @@ public final class ChatMessageFormatCompiler<C extends ChatContext> {
         @SuppressWarnings("ForLoopReplaceableByForEach")
         @Override
         public @NotNull Component render(@NotNull C context) {
-            var builder = Component.text();
+            TextComponent.Builder builder = Component.text();
 
             for (int i = 0, size = this.placeholders.size(); i < size; i++) {
                 this.placeholders.get(i).appendRendered(builder, context);
