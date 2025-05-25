@@ -24,12 +24,12 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.okocraft.okochat.api.OkoChat;
 import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
+import net.okocraft.okochat.core.OkoChatCore;
 import net.okocraft.okochat.integration.AffixProvider;
 import net.okocraft.okochat.integration.luckperms.LuckPermsIntegration;
 import net.okocraft.okochat.platform.velocity.VelocityPlatform;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
-import org.slf4j.helpers.SubstituteLogger;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -48,8 +48,7 @@ public class LunaChatVelocity implements PluginInterface {
     private static LunaChatVelocity instance;
 
     public final ProxyServer server;
-    public final Path dataDirectory;
-    public final VelocityPlatform platform;
+    private final OkoChatCore core;
     public final ChannelIdentifier channelIdentifier = MinecraftChannelIdentifier.from(OkoChatProtocol.CHANNEL);
 
     private HashMap<String, String> history;
@@ -64,16 +63,15 @@ public class LunaChatVelocity implements PluginInterface {
     @Inject
     public LunaChatVelocity(@NotNull ProxyServer server, @NotNull Logger logger,
                             @DataDirectory Path dataDirectory) {
-        ((SubstituteLogger) OkoChat.logger()).setDelegate(logger);
-
         instance = this;
         this.server = server;
-        this.dataDirectory = dataDirectory;
-        this.platform = VelocityPlatform.initialize(server);
+        this.core = new OkoChatCore(VelocityPlatform.initialize(server, logger, dataDirectory));
     }
 
     @Subscribe
     public void onEnable(ProxyInitializeEvent e) {
+        this.core.enable();
+
         LunaChat.setPlugin(this);
 
         // 初期化
@@ -128,6 +126,8 @@ public class LunaChatVelocity implements PluginInterface {
 
     @Subscribe
     public void onDisable(ProxyShutdownEvent event) {
+        this.core.disable();
+
         if (this.expireCheckTask != null) {
             this.expireCheckTask.cancel();
         }
@@ -277,6 +277,6 @@ public class LunaChatVelocity implements PluginInterface {
 
     @Override
     public File getDataFolder() {
-        return this.dataDirectory.toFile();
+        return this.core.platform().dataDirectory().toFile();
     }
 }

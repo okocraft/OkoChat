@@ -8,6 +8,7 @@ jcommon {
 
 dependencies {
     implementation(projects.okochatApi)
+    implementation(projects.okochatCore)
     implementation(projects.okochatBridgeProtocol)
     implementation(projects.okochatIntegration)
     implementation(projects.okochatIntegrationLuckperms)

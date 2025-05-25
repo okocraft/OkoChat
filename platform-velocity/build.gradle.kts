@@ -8,6 +8,7 @@ jcommon {
 
 dependencies {
     implementation(projects.okochatApi)
+    implementation(projects.okochatCore)
 
     compileOnly(libs.platform.velocity)
 }
