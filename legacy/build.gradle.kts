@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.bundler)
+    alias(libs.plugins.run.velocity)
 }
 
 jcommon {
@@ -28,4 +29,10 @@ dependencies {
 bundler {
     copyToRootBuildDirectory("OkoChat-Legacy-${project.version}")
     replacePluginVersionForVelocity(project.version)
+}
+
+tasks {
+    runVelocity {
+        velocityVersion(libs.versions.velocity.get())
+    }
 }

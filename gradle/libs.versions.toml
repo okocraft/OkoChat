@@ -11,6 +11,7 @@ mockito = "5.10.0"
 
 # gradle plugins
 gradle-plugins = "1.2.1"
+run-task = "2.3.1"
 
 # platform api
 paper = "1.21.4-R0.1-SNAPSHOT"
@@ -55,3 +56,5 @@ integration-vault = { module = "com.github.MilkBowl:VaultAPI", version.ref = "va
 bundler = { id = "dev.siroshun.gradle.plugins.bundler", version.ref = "gradle-plugins" }
 jcommon = { id = "dev.siroshun.gradle.plugins.jcommon", version.ref = "gradle-plugins" }
 mavenPublication = { id = "dev.siroshun.gradle.plugins.maven-publication", version.ref = "gradle-plugins" }
+
+run-velocity = { id = "xyz.jpenilla.run-velocity", version.ref = "run-task" }
