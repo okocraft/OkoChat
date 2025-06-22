@@ -7,16 +7,14 @@ import dev.siroshun.event4j.tree.TreeEventService;
 import net.kyori.adventure.key.Key;
 import net.okocraft.okochat.api.OkoChat;
 import net.okocraft.okochat.api.event.OkoChatEvent;
+import net.okocraft.okochat.api.recipient.RecipientProvider;
 import org.jetbrains.annotations.NotNullByDefault;
 
 @NotNullByDefault
-public class OkoChatAPI implements OkoChat {
-
-    private final TreeEventService<Key, OkoChatEvent, Priority> eventService;
-
-    public OkoChatAPI(TreeEventService<Key, OkoChatEvent, Priority> eventService) {
-        this.eventService = eventService;
-    }
+public record OkoChatAPI(
+        TreeEventService<Key, OkoChatEvent, Priority> eventService,
+        RecipientProvider recipientProvider
+) implements OkoChat {
 
     @Override
     public EventCaller<OkoChatEvent> eventCaller() {

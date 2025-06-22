@@ -26,7 +26,7 @@ public final class OkoChatCore {
     }
 
     public void enable() {
-        OkoChatAPIAccessor.setInstance(new OkoChatAPI(this.eventService));
+        OkoChatAPIAccessor.setInstance(new OkoChatAPI(this.eventService, this.platform.recipientProvider()));
     }
 
     public void disable() {

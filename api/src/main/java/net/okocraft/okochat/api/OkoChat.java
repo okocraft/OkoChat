@@ -5,6 +5,7 @@ import dev.siroshun.event4j.api.listener.ListenerSubscriber;
 import dev.siroshun.event4j.api.priority.Priority;
 import net.kyori.adventure.key.Key;
 import net.okocraft.okochat.api.event.OkoChatEvent;
+import net.okocraft.okochat.api.recipient.RecipientProvider;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.slf4j.Logger;
@@ -52,4 +53,11 @@ public interface OkoChat {
      * @return the {@link ListenerSubscriber} for listening {@link OkoChatEvent}s
      */
     ListenerSubscriber<Key, OkoChatEvent, Priority> listenerSubscriber();
+
+    /**
+     * Gets the {@link RecipientProvider}.
+     *
+     * @return the {@link RecipientProvider}
+     */
+    RecipientProvider recipientProvider();
 }
