@@ -2,7 +2,9 @@
 # common libraries
 adventure = "4.20.0"
 annotations = "26.0.2"
+codec4j = "0.2.0-beta.4"
 event4j = "4.0.2"
+jfun = "1.0.0-beta.3"
 slf4j = "2.0.17"
 
 # for testing
@@ -33,8 +35,11 @@ adventure-text-serializer-legacy = { module = "net.kyori:adventure-text-serializ
 adventure-text-serializer-plain = { module = "net.kyori:adventure-text-serializer-plain", version.ref = "adventure" }
 adventure-text-serializer-bungeecord = { module = "net.kyori:adventure-text-serializer-bungeecord", version = "4.3.4" }
 bungeecord-chat = { module = "net.md-5:bungeecord-chat", version = "1.20-R0.2"}
+codec4j-api = { module = "dev.siroshun.codec4j:codec4j-api", version.ref = "codec4j" }
+codec4j-io-yaml = { module = "dev.siroshun.codec4j:codec4j-io-yaml", version.ref = "codec4j" }
 event4j-api = { module = "dev.siroshun.event4j:event4j-api", version.ref = "event4j" }
 event4j-tree = { module = "dev.siroshun.event4j:event4j-tree", version.ref = "event4j" }
+jfun-result = { module = "dev.siroshun.jfun:jfun-result", version.ref = "jfun" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 
 # for testing
