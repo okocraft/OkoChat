@@ -5,7 +5,7 @@ import dev.siroshun.event4j.api.listener.ListenerSubscriber;
 import dev.siroshun.event4j.api.priority.Priority;
 import net.kyori.adventure.key.Key;
 import net.okocraft.okochat.api.event.OkoChatEvent;
-import net.okocraft.okochat.api.recipient.RecipientProvider;
+import net.okocraft.okochat.api.chat.recipient.RecipientProvider;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.slf4j.Logger;

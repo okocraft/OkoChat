@@ -1,4 +1,4 @@
-package net.okocraft.okochat.api.recipient;
+package net.okocraft.okochat.api.chat.recipient;
 
 import org.jetbrains.annotations.NotNullByDefault;
 

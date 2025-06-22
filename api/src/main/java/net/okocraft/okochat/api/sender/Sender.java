@@ -1,7 +1,7 @@
 package net.okocraft.okochat.api.sender;
 
 import net.kyori.adventure.util.TriState;
-import net.okocraft.okochat.api.recipient.Recipient;
+import net.okocraft.okochat.api.chat.recipient.Recipient;
 import org.jetbrains.annotations.NotNullByDefault;
 
 import java.util.UUID;

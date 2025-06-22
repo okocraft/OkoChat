@@ -1,4 +1,4 @@
-package net.okocraft.okochat.api.recipient;
+package net.okocraft.okochat.api.chat.recipient;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;

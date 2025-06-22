@@ -1,6 +1,6 @@
 package net.okocraft.okochat.core.platform;
 
-import net.okocraft.okochat.api.recipient.RecipientProvider;
+import net.okocraft.okochat.api.chat.recipient.RecipientProvider;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.slf4j.Logger;
 

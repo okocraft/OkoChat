@@ -1,7 +1,7 @@
 package net.okocraft.okochat.platform.velocity;
 
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.okocraft.okochat.api.recipient.RecipientProvider;
+import net.okocraft.okochat.api.chat.recipient.RecipientProvider;
 import net.okocraft.okochat.core.platform.Platform;
 import net.okocraft.okochat.platform.velocity.recipient.VelocityRecipientProvider;
 import org.jetbrains.annotations.NotNullByDefault;
