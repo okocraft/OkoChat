@@ -28,6 +28,7 @@ import net.okocraft.okochat.core.OkoChatCore;
 import net.okocraft.okochat.integration.AffixProvider;
 import net.okocraft.okochat.integration.luckperms.LuckPermsIntegration;
 import net.okocraft.okochat.platform.velocity.VelocityPlatform;
+import net.okocraft.okochat.platform.velocity.VelocityScheduler;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -65,7 +66,7 @@ public class LunaChatVelocity implements PluginInterface {
                             @DataDirectory Path dataDirectory) {
         instance = this;
         this.server = server;
-        this.core = new OkoChatCore(VelocityPlatform.initialize(server, logger, dataDirectory));
+        this.core = new OkoChatCore(VelocityPlatform.initialize(server, logger, dataDirectory, new VelocityScheduler(this, server)));
     }
 
     @Subscribe

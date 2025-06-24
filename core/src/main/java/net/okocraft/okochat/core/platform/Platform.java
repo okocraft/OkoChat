@@ -1,6 +1,7 @@
 package net.okocraft.okochat.core.platform;
 
 import net.okocraft.okochat.api.chat.recipient.RecipientProvider;
+import net.okocraft.okochat.core.data.legacy.LegacyChannelMemberResolver;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.slf4j.Logger;
 
@@ -13,6 +14,10 @@ public interface Platform {
 
     Path dataDirectory();
 
+    Scheduler scheduler();
+
     RecipientProvider recipientProvider();
+
+    LegacyChannelMemberResolver legacyChannelMemberResolver();
 
 }
