@@ -7,12 +7,14 @@ package com.github.ucchyocean.lc3.member;
 
 import com.github.ucchyocean.lc3.LunaChatVelocity;
 import com.velocitypowered.api.permission.Tristate;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * ChannelMemberのVelocity-ConsoleCommandSource実装
@@ -98,6 +100,11 @@ public class ChannelMemberVelocityConsole extends ChannelMemberVelocity {
     @Override
     public String getSuffix() {
         return null;
+    }
+
+    @Override
+    public @NotNull Identity identity() {
+        return Identity.nil();
     }
 
     /**

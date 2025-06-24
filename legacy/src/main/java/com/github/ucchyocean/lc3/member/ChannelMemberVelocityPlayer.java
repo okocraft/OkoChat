@@ -10,9 +10,11 @@ import com.github.ucchyocean.lc3.LunaChatVelocity;
 import com.velocitypowered.api.permission.Tristate;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -123,6 +125,11 @@ public class ChannelMemberVelocityPlayer extends ChannelMemberVelocity {
     @Override
     public String getSuffix() {
         return LunaChatVelocity.getInstance().getAffixProvider().getSuffix(this.id);
+    }
+
+    @Override
+    public @NotNull Identity identity() {
+        return Identity.identity(this.id);
     }
 
     /**

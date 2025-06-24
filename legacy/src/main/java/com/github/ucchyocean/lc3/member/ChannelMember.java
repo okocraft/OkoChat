@@ -5,13 +5,16 @@
  */
 package com.github.ucchyocean.lc3.member;
 
+import net.kyori.adventure.identity.Identified;
+import net.kyori.adventure.identity.Identity;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * チャンネルメンバーの抽象クラス
  * @author ucchy
  */
-public abstract class ChannelMember implements Comparable<ChannelMember> {
+public abstract class ChannelMember implements Comparable<ChannelMember>, Identified {
 
     /**
      * オンラインかどうか
@@ -73,6 +76,8 @@ public abstract class ChannelMember implements Comparable<ChannelMember> {
      * @return 権限を持っているかどうか
      */
     public abstract boolean hasPermission(String node);
+
+    public abstract @NotNull Identity identity();
 
     /**
      * 文字列表現を返す

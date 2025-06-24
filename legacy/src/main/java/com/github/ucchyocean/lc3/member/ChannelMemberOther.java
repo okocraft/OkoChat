@@ -1,11 +1,14 @@
 package com.github.ucchyocean.lc3.member;
 
+import net.kyori.adventure.identity.Identity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.github.ucchyocean.lc3.util.BlockLocation;
 
 import net.md_5.bungee.api.chat.BaseComponent;
+
+import java.util.UUID;
 
 /**
  * 任意の内容を設定できるChannelMember
@@ -117,6 +120,19 @@ public class ChannelMemberOther extends ChannelMember {
     @Override
     public boolean hasPermission(String node) {
         return true;
+    }
+
+    @Override
+    public @NotNull Identity identity() {
+        if (this.id == null) {
+            return Identity.nil();
+        }
+
+        try {
+            return Identity.identity(UUID.fromString(this.id));
+        } catch (IllegalArgumentException ignored) {
+            return Identity.nil();
+        }
     }
 
     @Override
