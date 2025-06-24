@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.bundler)
+    alias(libs.plugins.run.paper)
 }
 
 jcommon {
@@ -19,4 +20,10 @@ dependencies {
 bundler {
     copyToRootBuildDirectory("OkoChatBridge-Paper-${project.version}")
     replacePluginVersionForPaper(project.version)
+}
+
+tasks {
+    runServer {
+        minecraftVersion(libs.versions.paper.get().removeSuffix("-R0.1-SNAPSHOT"))
+    }
 }

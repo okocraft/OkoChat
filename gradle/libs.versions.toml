@@ -16,7 +16,7 @@ gradle-plugins = "1.2.1"
 run-task = "2.3.1"
 
 # platform api
-paper = "1.21.4-R0.1-SNAPSHOT"
+paper = "1.21.6-R0.1-SNAPSHOT"
 velocity = "3.4.0-SNAPSHOT"
 
 # other plugins
@@ -62,4 +62,5 @@ bundler = { id = "dev.siroshun.gradle.plugins.bundler", version.ref = "gradle-pl
 jcommon = { id = "dev.siroshun.gradle.plugins.jcommon", version.ref = "gradle-plugins" }
 mavenPublication = { id = "dev.siroshun.gradle.plugins.maven-publication", version.ref = "gradle-plugins" }
 
+run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-task" }
 run-velocity = { id = "xyz.jpenilla.run-velocity", version.ref = "run-task" }
