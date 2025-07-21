@@ -24,8 +24,8 @@ import com.github.ucchyocean.lc3.util.YamlConfig;
  */
 public class MessageParser {
 
-    private static final String INPUT_FILE_PATH = "src/main/resources/messages_ja.yml";
-    private static final String OUTPUT_FILE_PATH = "src/main/java/com/github/ucchyocean/lc3/Messages.java";
+    private static final String INPUT_FILE_PATH = "./legacy/src/main/resources/messages_ja.yml";
+    private static final String OUTPUT_FILE_PATH = "./legacy/src/main/java/com/github/ucchyocean/lc3/Messages.java";
 
     private static final String START_MARKER = "    // === Auto-generated methods area start. ===";
     private static final String END_MARKER = "    // === Auto-generated methods area end. ===";
@@ -92,7 +92,9 @@ public class MessageParser {
         List<String> result = new ArrayList<>();
 
         YamlConfig yaml = YamlConfig.load(new File(INPUT_FILE_PATH));
-        for ( String key : yaml.getKeys(false) ) {
+        List<String> keys = new ArrayList<>(yaml.getKeys(false));
+        keys.sort(null);
+        for ( String key : keys ) {
             String value = yaml.getString(key);
 
             ArrayList<String> keywords = new ArrayList<>();
