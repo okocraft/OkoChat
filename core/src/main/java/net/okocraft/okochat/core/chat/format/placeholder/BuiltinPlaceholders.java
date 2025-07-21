@@ -1,6 +1,8 @@
 package net.okocraft.okochat.core.chat.format.placeholder;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.okocraft.okochat.api.chat.context.ChannelChatContext;
 import net.okocraft.okochat.api.chat.context.ChatContext;
 import net.okocraft.okochat.api.chat.context.PrivateChatContext;
 import net.okocraft.okochat.api.chat.format.placeholder.Placeholder;
@@ -19,15 +21,19 @@ public class BuiltinPlaceholders {
 
         registry.put("date", ignored -> Component.text(DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now())));
         registry.put("time", ignored -> Component.text(DateTimeFormatter.ISO_LOCAL_TIME.format(LocalTime.now())));
+        registry.put("msg", ChatContext::formattedMessage);
     }
 
-/*
+
     public static void forChannelChat(@NotNull Map<String, Placeholder<ChannelChatContext>> registry) {
         registerSharedPlaceholders(registry);
 
-        registry.put("channel_name", context -> Component.text(context.channel().getName()));
+        // backwards compatibility
+        registry.put("ch", context -> withChannelJoinCommandClickEvent(Component.text(context.channelName()), context.channelName()));
+        registry.put("displayname", context -> withTellCommandClickEvent(context.senderContext().displayName(), context.sender().name()));
+        registry.put("username", context -> withTellCommandClickEvent(context.senderContext().displayName(), context.sender().name()));
+        registry.put("player", context -> withTellCommandClickEvent(Component.text(context.sender().name()), context.sender().name()));
     }
-*/
 
     public static void forPrivateChat(@NotNull Map<String, Placeholder<PrivateChatContext>> registry) {
         registerSharedPlaceholders(registry);
@@ -49,5 +55,13 @@ public class BuiltinPlaceholders {
 
     private static <C extends ChatContext> @NotNull Placeholder<C> createPlayerPlaceholder(@NotNull Function<C, ChatContext.SenderContext> toContext, @NotNull Function<ChatContext.SenderContext, Component> toComponent) {
         return context -> toComponent.apply(toContext.apply(context));
+    }
+
+    private static @NotNull Component withChannelJoinCommandClickEvent(@NotNull Component component, String channelName) {
+        return component.clickEvent(ClickEvent.suggestCommand("/ch join " + channelName));
+    }
+
+    private static @NotNull Component withTellCommandClickEvent(@NotNull Component component, String playerName) {
+        return component.clickEvent(ClickEvent.suggestCommand("/tell " + playerName));
     }
 }

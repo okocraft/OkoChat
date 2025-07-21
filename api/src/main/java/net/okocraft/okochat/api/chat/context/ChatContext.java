@@ -2,17 +2,18 @@ package net.okocraft.okochat.api.chat.context;
 
 import net.kyori.adventure.text.Component;
 import net.okocraft.okochat.api.sender.Sender;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 
 @NotNullByDefault
-public sealed interface ChatContext permits PrivateChatContext {
+public sealed interface ChatContext permits ChannelChatContext, PrivateChatContext {
 
     Sender sender();
 
-    @NotNull SenderContext senderContext();
+    SenderContext senderContext();
 
     String message();
+
+    Component formattedMessage();
 
     interface SenderContext {
 

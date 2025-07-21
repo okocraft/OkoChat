@@ -90,8 +90,8 @@ public final class ChatMessageFormatCompiler<C extends ChatContext> {
 
     private record StyleInheritingPlaceholder<C extends ChatContext>(@NotNull Placeholder<? super C> placeholder,
                                                                      @NotNull Style style) {
-        private void appendRendered(@NotNull TextComponent.Builder builder, @NotNull C context) {
-            builder.append(this.placeholder.apply(context).applyFallbackStyle(this.style));
+        private @NotNull Component render(@NotNull C context) {
+            return this.placeholder.apply(context).applyFallbackStyle(this.style);
         }
     }
 
@@ -104,7 +104,7 @@ public final class ChatMessageFormatCompiler<C extends ChatContext> {
             TextComponent.Builder builder = Component.text();
 
             for (int i = 0, size = this.placeholders.size(); i < size; i++) {
-                this.placeholders.get(i).appendRendered(builder, context);
+                builder.append(this.placeholders.get(i).render(context));
             }
 
             return builder.build();
