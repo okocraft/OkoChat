@@ -24,6 +24,7 @@ dependencies {
         exclude("com.google.guava", "guava")
     }
     compileOnly(libs.platform.velocity)
+    // implementation(libs.snakeyaml) // For MessageParser#main
 }
 
 bundler {
