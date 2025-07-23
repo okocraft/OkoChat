@@ -14,7 +14,6 @@ import com.github.ucchyocean.lc3.member.ChannelMember;
 import com.github.ucchyocean.lc3.util.ClickableFormat;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.okocraft.okochat.api.OkoChat;
 import org.jetbrains.annotations.Nullable;
 

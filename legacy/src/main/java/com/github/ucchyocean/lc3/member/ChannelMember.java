@@ -8,7 +8,6 @@ package com.github.ucchyocean.lc3.member;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -52,12 +51,6 @@ public abstract class ChannelMember implements Comparable<ChannelMember>, Identi
      * @param message 送るメッセージ
      */
     public abstract void sendMessage(String message);
-
-    /**
-     * メッセージを送る
-     * @param message 送るメッセージ
-     */
-    public abstract void sendMessage(BaseComponent[] message);
 
     /**
      * メッセージを送る

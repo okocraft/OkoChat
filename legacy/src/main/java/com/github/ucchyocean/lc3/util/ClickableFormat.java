@@ -6,9 +6,7 @@
 package com.github.ucchyocean.lc3.util;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,12 +19,6 @@ import com.github.ucchyocean.lc3.LunaChatAPI;
 import com.github.ucchyocean.lc3.Messages;
 import com.github.ucchyocean.lc3.channel.Channel;
 import com.github.ucchyocean.lc3.member.ChannelMember;
-
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * チャットのフォーマットを作成するユーティリティクラス
@@ -48,16 +40,6 @@ public class ClickableFormat {
 
     private ClickableFormat(KeywordReplacer message) {
         this.message = message;
-    }
-
-    /**
-     * チャットフォーマット内のキーワードを置き換えする
-     * @param format チャットフォーマット
-     * @param member 発言者
-     * @return 置き換え結果
-     */
-    public static ClickableFormat makeFormat(String format, @Nullable ChannelMember member) {
-        return makeFormat(format, member, null, true);
     }
 
     /**
@@ -168,80 +150,6 @@ public class ClickableFormat {
                 String.format(JOIN_COMMAND_TEMPLATE, stripped)));
 
         return new ClickableFormat(msg);
-    }
-
-    /**
-     * チャットフォーマット内のキーワードをBukkitの通常チャットイベント用に置き換えする
-     * @param format 置き換え元のチャットフォーマット
-     * @param member 発言者
-     * @return 置き換え結果
-     */
-    public static String replaceForNormalChatFormat(String format, ChannelMember member) {
-        format = format.replace("%displayName", "%1$s");
-        format = format.replace("%username", "%1$s");
-        format = format.replace("%msg", "%2$s");
-        return makeFormat(format, member, null, false).toLegacyText();
-    }
-
-    public BaseComponent[] makeTextComponent() {
-
-        message.translateColorCode();
-
-        List<BaseComponent> components = new ArrayList<>();
-        Matcher matcher = Pattern.compile(PLACEHOLDER_PATTERN).matcher(message.getStringBuilder());
-        int lastIndex = 0;
-
-        while ( matcher.find() ) {
-
-            // マッチする箇所までの文字列を取得する
-            if ( lastIndex < matcher.start() ) {
-                for ( BaseComponent c : TextComponent.fromLegacyText(message.substring(lastIndex, matcher.start())) ) {
-                    components.add(c);
-                }
-            }
-
-            // マッチした箇所の文字列を解析して追加する
-            String type = matcher.group(1);
-            String text = matcher.group(2);
-            String hover = matcher.group(3);
-            String command = matcher.group(4);
-            TextComponent tc = new TextComponent(TextComponent.fromLegacyText(text));
-            if ( !hover.isEmpty() ) {
-                @SuppressWarnings("deprecation")
-                HoverEvent event = new HoverEvent(
-                        HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(hover).create());
-                // bungeecord-chat v1.16-R0.3 style.
-//                HoverEvent event = new HoverEvent(
-//                        HoverEvent.Action.SHOW_TEXT, new Text(hover));
-                tc.setHoverEvent(event);
-            }
-            if ( type.equals("RUN_COMMAND") ) {
-                tc.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
-            } else { // type.equals("SUGGEST_COMMAND")
-                tc.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
-            }
-
-            // componentsの最後の要素のカラーコードを、TextComponentにも反映させる。 see issue #202
-            if ( components.size() > 0 ) {
-                BaseComponent last = components.get(components.size() - 1);
-                tc.setColor(last.getColor());
-            }
-
-            components.add(tc);
-
-            lastIndex = matcher.end();
-        }
-
-        if ( lastIndex < message.length() - 1 ) {
-            // 残りの部分の文字列を取得する
-            for ( BaseComponent c : TextComponent.fromLegacyText(message.substring(lastIndex)) ) {
-                components.add(c);
-            }
-        }
-
-        BaseComponent[] result = new BaseComponent[components.size()];
-        components.toArray(result);
-        return result;
     }
 
     public Component makeComponent() {

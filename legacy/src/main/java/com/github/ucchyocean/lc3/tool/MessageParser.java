@@ -144,11 +144,10 @@ public class MessageParser {
                 result.add("     * " + value);
                 result.add("     */");
                 result.add(String.format(
-                        "    public static BaseComponent[] %s(%s) {", key, arguments));
+                        "    public static Component %s(%s) {", key, arguments));
                 result.add(String.format(
                         "        String msg = resources.getString(\"%s\");", key));
-                result.add(String.format(
-                        "        if ( msg == null ) return new BaseComponent[0];", key));
+                result.add("        if ( msg == null ) return Component.empty();");
                 result.add("        ClickableFormat cf = ClickableFormat.makeChannelClickableMessage(msg, channel.toString());");
 
                 for ( String keyword : keywords ) {
@@ -156,7 +155,7 @@ public class MessageParser {
                     result.add(String.format(
                             "        cf.replace(\"%%%s%%\", %s.toString());", keyword, keyword));
                 }
-                result.add("        return cf.makeTextComponent();");
+                result.add("        return cf.makeComponent();");
                 result.add("    }");
 
             }

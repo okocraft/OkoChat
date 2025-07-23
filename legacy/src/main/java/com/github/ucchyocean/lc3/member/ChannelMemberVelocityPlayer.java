@@ -12,9 +12,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -146,20 +144,6 @@ public class ChannelMemberVelocityPlayer extends ChannelMemberVelocity {
             player.sendMessage(LegacyComponentSerializer.legacySection().deserialize(message));
         }
     }
-
-    /**
-     * メッセージを送る
-     * @param message 送るメッセージ
-     * @see ChannelMember#sendMessage(BaseComponent[])
-     */
-    public void sendMessage(BaseComponent[] message) {
-        if ( message == null || message.length == 0 ) return;
-        Player player = getPlayer();
-        if ( player != null ) {
-            player.sendMessage(BungeeComponentSerializer.get().deserialize(message));
-        }
-    }
-
 
     /**
      * メッセージを送る

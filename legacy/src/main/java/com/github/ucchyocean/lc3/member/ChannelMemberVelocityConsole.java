@@ -9,12 +9,10 @@ import com.github.ucchyocean.lc3.LunaChatVelocity;
 import com.velocitypowered.api.permission.Tristate;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -117,16 +115,6 @@ public class ChannelMemberVelocityConsole extends ChannelMemberVelocity {
     public void sendMessage(String message) {
         if ( message == null || message.isEmpty() ) return;
         sender.sendMessage(LegacyComponentSerializer.legacySection().deserialize(message));
-    }
-
-    /**
-     * メッセージを送る
-     * @param message 送るメッセージ
-     * @see ChannelMember#sendMessage(BaseComponent[])
-     */
-    public void sendMessage(BaseComponent[] message) {
-        if ( message == null || message.length == 0 ) return;
-        sender.sendMessage(BungeeComponentSerializer.get().deserialize(message));
     }
 
     /**

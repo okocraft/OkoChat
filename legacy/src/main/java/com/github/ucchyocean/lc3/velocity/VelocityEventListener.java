@@ -16,7 +16,6 @@ import com.github.ucchyocean.lc3.member.ChannelMember;
 import com.github.ucchyocean.lc3.member.ChannelMemberOther;
 import com.github.ucchyocean.lc3.util.BlockLocation;
 import com.github.ucchyocean.lc3.util.ChatColor;
-import com.github.ucchyocean.lc3.util.ClickableFormat;
 import com.github.ucchyocean.lc3.util.Utility;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
@@ -26,10 +25,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.okocraft.okochat.api.OkoChat;
 import net.okocraft.okochat.api.sender.ConsoleSender;
 import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
@@ -37,7 +33,6 @@ import net.okocraft.okochat.bridge.protocol.PlayerData;
 import net.okocraft.okochat.bridge.protocol.ServerChatMessageData;
 import net.okocraft.okochat.bridge.protocol.SyncPlayerRequestData;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -228,7 +223,7 @@ public class VelocityEventListener implements OkoChatProtocol.Listener {
 
                     if ( !channel.getMembers().contains(member) ) {
                         // 指定されたチャンネルに参加していないなら、エラーを表示して何も発言せずに終了する。
-                        member.sendMessage(TextComponent.fromLegacyText(Messages.errmsgNomember()));
+                        member.sendMessage(LegacyComponentSerializer.legacySection().deserialize(Messages.errmsgNomember()));
                         return;
                     }
 
@@ -413,7 +408,7 @@ public class VelocityEventListener implements OkoChatProtocol.Listener {
 
         int count = 0;
         ArrayList<Component> items = new ArrayList<>();
-        items.add(BungeeComponentSerializer.get().deserialize(TextComponent.fromLegacyText(Messages.motdFirstLine())));
+        items.add(LegacyComponentSerializer.legacySection().deserialize(Messages.motdFirstLine()));
         for ( Channel channel : channels ) {
 
             // BANされているチャンネルは表示しない
@@ -439,25 +434,16 @@ public class VelocityEventListener implements OkoChatProtocol.Listener {
             String desc = channel.getDescription();
             int onlineNum = channel.getOnlineNum();
             int memberNum = channel.getTotalNum();
-            items.add(BungeeComponentSerializer.get().deserialize(Messages.listFormat(disp, onlineNum, memberNum, desc)));
+            items.add(Messages.listFormat(disp, onlineNum, memberNum, desc));
             count++;
 
             if ( count > MAX_LIST_ITEMS ) {
                 break;
             }
         }
-        items.add(BungeeComponentSerializer.get().deserialize(TextComponent.fromLegacyText(Messages.listEndLine())));
+        items.add(LegacyComponentSerializer.legacySection().deserialize(Messages.listEndLine()));
 
         return items;
-    }
-
-    /**
-     * 指定した対象にメッセージを送信する
-     * @param reciever 送信先
-     * @param message メッセージ
-     */
-    private void sendMessage(Player reciever, BaseComponent[] message) {
-        reciever.sendMessage(BungeeComponentSerializer.get().deserialize(message));
     }
 
     /**

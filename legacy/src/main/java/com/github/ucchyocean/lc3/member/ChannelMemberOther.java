@@ -7,8 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.github.ucchyocean.lc3.util.BlockLocation;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-
 import java.util.UUID;
 
 /**
@@ -83,11 +81,6 @@ public class ChannelMemberOther extends ChannelMember {
 
     @Override
     public void sendMessage(String message) {
-        // do nothing.
-    }
-
-    @Override
-    public void sendMessage(BaseComponent[] message) {
         // do nothing.
     }
 
