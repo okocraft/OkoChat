@@ -33,6 +33,10 @@ public class BuiltinPlaceholders {
         registry.put("displayname", context -> withTellCommandClickEvent(context.senderContext().displayName(), context.sender().name()));
         registry.put("username", context -> withTellCommandClickEvent(context.senderContext().displayName(), context.sender().name()));
         registry.put("player", context -> withTellCommandClickEvent(Component.text(context.sender().name()), context.sender().name()));
+        registry.put("prefix", createPlayerPlaceholder(ChatContext::senderContext, ChatContext.SenderContext::prefix));
+        registry.put("suffix", createPlayerPlaceholder(ChatContext::senderContext, ChatContext.SenderContext::suffix));
+        registry.put("world", createPlayerPlaceholder(ChatContext::senderContext, sender -> Component.text(sender.worldName())));
+        registry.put("server", createPlayerPlaceholder(ChatContext::senderContext, sender -> Component.text(sender.serverName())));
     }
 
     public static void forPrivateChat(@NotNull Map<String, Placeholder<PrivateChatContext>> registry) {
