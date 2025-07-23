@@ -1,6 +1,7 @@
 package com.github.ucchyocean.lc3.member;
 
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,6 +88,11 @@ public class ChannelMemberOther extends ChannelMember {
 
     @Override
     public void sendMessage(BaseComponent[] message) {
+        // do nothing.
+    }
+
+    @Override
+    public void sendMessage(Component message) {
         // do nothing.
     }
 

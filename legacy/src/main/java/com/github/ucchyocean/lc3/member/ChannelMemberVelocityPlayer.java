@@ -11,6 +11,7 @@ import com.velocitypowered.api.permission.Tristate;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -156,6 +157,20 @@ public class ChannelMemberVelocityPlayer extends ChannelMemberVelocity {
         Player player = getPlayer();
         if ( player != null ) {
             player.sendMessage(BungeeComponentSerializer.get().deserialize(message));
+        }
+    }
+
+
+    /**
+     * メッセージを送る
+     * @param message 送るメッセージ
+     */
+    @Override
+    public void sendMessage(Component message) {
+        if ( message == null || !Component.IS_NOT_EMPTY.test(message) ) return;
+        Player player = getPlayer();
+        if ( player != null ) {
+            player.sendMessage(message);
         }
     }
 

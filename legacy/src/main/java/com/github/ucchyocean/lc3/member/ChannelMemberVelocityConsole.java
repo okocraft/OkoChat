@@ -8,6 +8,7 @@ package com.github.ucchyocean.lc3.member;
 import com.github.ucchyocean.lc3.LunaChatVelocity;
 import com.velocitypowered.api.permission.Tristate;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import com.velocitypowered.api.command.CommandSource;
@@ -126,6 +127,16 @@ public class ChannelMemberVelocityConsole extends ChannelMemberVelocity {
     public void sendMessage(BaseComponent[] message) {
         if ( message == null || message.length == 0 ) return;
         sender.sendMessage(BungeeComponentSerializer.get().deserialize(message));
+    }
+
+    /**
+     * メッセージを送る
+     * @param message 送るメッセージ
+     */
+    @Override
+    public void sendMessage(Component message) {
+        if ( message == null || !Component.IS_NOT_EMPTY.test(message) ) return;
+        sender.sendMessage(message);
     }
 
     /**

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.Nullable;
 
 import com.github.ucchyocean.lc3.LunaChat;
@@ -240,6 +242,47 @@ public class ClickableFormat {
         BaseComponent[] result = new BaseComponent[components.size()];
         components.toArray(result);
         return result;
+    }
+
+    public Component makeComponent() {
+        message.translateColorCode();
+
+        net.kyori.adventure.text.TextComponent.Builder builder = Component.text();
+        Matcher matcher = Pattern.compile(PLACEHOLDER_PATTERN).matcher(message.getStringBuilder());
+        int lastIndex = 0;
+
+        while ( matcher.find() ) {
+
+            // マッチする箇所までの文字列を取得する
+            if ( lastIndex < matcher.start() ) {
+                builder.append(LegacyComponentSerializer.legacySection().deserialize(message.substring(lastIndex, matcher.start())));
+            }
+
+            // マッチした箇所の文字列を解析して追加する
+            String type = matcher.group(1);
+            String text = matcher.group(2);
+            String hover = matcher.group(3);
+            String command = matcher.group(4);
+            Component tc = LegacyComponentSerializer.legacySection().deserialize(text);
+            if ( !hover.isEmpty() ) {
+                tc = tc.hoverEvent(Component.text(hover));
+            }
+            if ( type.equals("RUN_COMMAND") ) {
+                tc = tc.clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand(command));
+            } else { // type.equals("SUGGEST_COMMAND")
+                tc = tc.clickEvent(net.kyori.adventure.text.event.ClickEvent.suggestCommand(command));
+            }
+
+            lastIndex = matcher.end();
+            builder.append(tc);
+        }
+
+        if ( lastIndex < message.length() - 1 ) {
+            // 残りの部分の文字列を取得する
+            builder.append(LegacyComponentSerializer.legacySection().deserialize(message.substring(lastIndex)));
+        }
+
+        return builder.build();
     }
 
     public String toLegacyText() {
