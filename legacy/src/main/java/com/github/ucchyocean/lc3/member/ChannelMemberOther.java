@@ -1,12 +1,15 @@
 package com.github.ucchyocean.lc3.member;
 
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.TriState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.github.ucchyocean.lc3.util.BlockLocation;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -85,6 +88,11 @@ public class ChannelMemberOther extends ChannelMember {
     }
 
     @Override
+    public @NotNull Iterable<? extends Audience> audiences() {
+        return List.of();
+    }
+
+    @Override
     public void sendMessage(Component message) {
         // do nothing.
     }
@@ -117,8 +125,23 @@ public class ChannelMemberOther extends ChannelMember {
     }
 
     @Override
+    public UUID uuid() {
+        return this.identity().uuid();
+    }
+
+    @Override
+    public String name() {
+        return this.name;
+    }
+
+    @Override
     public boolean hasPermission(String node) {
         return true;
+    }
+
+    @Override
+    public TriState getPermissionValue(String permissionNode) {
+        return TriState.TRUE;
     }
 
     @Override

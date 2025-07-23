@@ -10,12 +10,15 @@ import com.github.ucchyocean.lc3.LunaChatVelocity;
 import com.velocitypowered.api.permission.Tristate;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.util.TriState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -145,6 +148,12 @@ public class ChannelMemberVelocityPlayer extends ChannelMemberVelocity {
         }
     }
 
+    @Override
+    public @NotNull Iterable<? extends Audience> audiences() {
+        Player player = this.getPlayer();
+        return player != null ? List.of(player) : List.of();
+    }
+
     /**
      * メッセージを送る
      * @param message 送るメッセージ
@@ -156,6 +165,16 @@ public class ChannelMemberVelocityPlayer extends ChannelMemberVelocity {
         if ( player != null ) {
             player.sendMessage(message);
         }
+    }
+
+    @Override
+    public UUID uuid() {
+        return this.id;
+    }
+
+    @Override
+    public String name() {
+        return this.getName();
     }
 
     /**
@@ -171,6 +190,16 @@ public class ChannelMemberVelocityPlayer extends ChannelMemberVelocity {
             return false;
         } else {
             return player.hasPermission(node);
+        }
+    }
+
+    @Override
+    public TriState getPermissionValue(String permissionNode) {
+        Player player = this.getPlayer();
+        if ( player == null ) {
+            return TriState.FALSE;
+        } else {
+            return player.getPermissionValue(permissionNode).toAdventureTriState();
         }
     }
 

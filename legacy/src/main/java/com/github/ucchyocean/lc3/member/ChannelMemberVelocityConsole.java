@@ -7,13 +7,18 @@ package com.github.ucchyocean.lc3.member;
 
 import com.github.ucchyocean.lc3.LunaChatVelocity;
 import com.velocitypowered.api.permission.Tristate;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
+import net.kyori.adventure.util.TriState;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.UUID;
 
 /**
  * ChannelMemberのVelocity-ConsoleCommandSource実装
@@ -117,6 +122,11 @@ public class ChannelMemberVelocityConsole extends ChannelMemberVelocity {
         sender.sendMessage(LegacyComponentSerializer.legacySection().deserialize(message));
     }
 
+    @Override
+    public @NotNull Iterable<? extends Audience> audiences() {
+        return List.of(this.sender);
+    }
+
     /**
      * メッセージを送る
      * @param message 送るメッセージ
@@ -125,6 +135,16 @@ public class ChannelMemberVelocityConsole extends ChannelMemberVelocity {
     public void sendMessage(Component message) {
         if ( message == null || !Component.IS_NOT_EMPTY.test(message) ) return;
         sender.sendMessage(message);
+    }
+
+    @Override
+    public UUID uuid() {
+        return Identity.nil().uuid();
+    }
+
+    @Override
+    public String name() {
+        return "";
     }
 
     /**
@@ -136,6 +156,11 @@ public class ChannelMemberVelocityConsole extends ChannelMemberVelocity {
     @Override
     public boolean hasPermission(String node) {
         return sender.hasPermission(node);
+    }
+
+    @Override
+    public TriState getPermissionValue(String permissionNode) {
+        return sender.getPermissionValue(permissionNode).toAdventureTriState();
     }
 
     /**
