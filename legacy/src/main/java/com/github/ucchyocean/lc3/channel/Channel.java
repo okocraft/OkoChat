@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +21,12 @@ import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.okocraft.lunachat.japanize.Japanizer;
+import net.okocraft.okochat.api.chat.context.ChannelChatContext;
+import net.okocraft.okochat.api.chat.format.ChatMessageFormat;
+import net.okocraft.okochat.api.chat.format.placeholder.Placeholder;
+import net.okocraft.okochat.core.chat.format.ChatMessageFormatCompiler;
+import net.okocraft.okochat.core.chat.format.placeholder.BuiltinPlaceholders;
 import org.jetbrains.annotations.Nullable;
 
 import com.github.ucchyocean.lc3.LunaChat;
@@ -42,6 +49,14 @@ import com.github.ucchyocean.lc3.util.YamlConfig;
  * @author ucchy
  */
 public abstract class Channel {
+
+    private static final ChatMessageFormatCompiler<ChannelChatContext> COMPILER;
+
+    static {
+        Map<String, Placeholder<ChannelChatContext>> registry = new HashMap<>();
+        BuiltinPlaceholders.forChannelChat(registry);
+        COMPILER = new ChatMessageFormatCompiler<>(registry);
+    }
 
     private static final String PERMISSION_SPEAK_PREFIX = "lunachat.speak";
 
@@ -110,6 +125,7 @@ public abstract class Channel {
      * %color - チャンネルのカラーコード
      * */
     private String format;
+    protected ChatMessageFormat<ChannelChatContext> compiledFormat;
 
     /** ブロードキャストチャンネルかどうか */
     private boolean broadcastChannel;
@@ -169,6 +185,7 @@ public abstract class Channel {
         } else {
             this.format = config.getDefaultFormat();
         }
+        this.compileFormat();
         this.japanizeType = config.getJapanizeType();
 
         logger = new LunaChatLogger(name.replace(">", "-").replace("*", "_"));
@@ -262,9 +279,6 @@ public abstract class Channel {
             }
         }
 
-        // キーワード置き換え
-        ClickableFormat cf = ClickableFormat.makeFormat(getFormat(), player, this, true);
-
         // カラーコード置き換え
         // チャンネルで許可されていて、発言者がパーミッションを持っている場合に置き換える
         if ( isAllowCC() && player.hasPermission("lunachat.allowcc") ) {
@@ -275,7 +289,7 @@ public abstract class Channel {
 
         // LunaChatChannelChatEvent イベントコール
         EventResult result = LunaChat.getEventSender().sendLunaChatChannelChatEvent(
-                getName(), player, message, maskedMessage, cf.toLegacyText());
+                getName(), player, message, maskedMessage, "");
         if ( result.isCancelled() ) {
             return;
         }
@@ -292,39 +306,21 @@ public abstract class Channel {
         }
 
         // Japanize変換タスクを作成する
-        boolean isIncludeSyncChat = true;
-        ChannelChatJapanizeTask delayedTask = null;
         JapanizeType japanizeType = (getJapanizeType() == null)
                 ? config.getJapanizeType() : getJapanizeType();
-
         if ( !skipJapanize &&
                 api.isPlayerJapanize(player.getName()) &&
                 japanizeType != JapanizeType.NONE ) {
-
-            int lineType = config.getJapanizeDisplayLine();
-            String jpFormat;
-            ClickableFormat messageFormat = null;
-            if ( lineType == 1 ) {
-                jpFormat = Utility.replaceColorCode(config.getJapanizeLine1Format());
-                messageFormat = cf;
-                isIncludeSyncChat = false;
-            } else {
-                jpFormat = Utility.replaceColorCode(config.getJapanizeLine2Format());
-            }
-
-            // タスクを作成しておく
-            delayedTask = new ChannelChatJapanizeTask(maskedMessage,
-                    japanizeType, this, player, jpFormat, messageFormat);
-        }
-
-        if ( isIncludeSyncChat ) {
+            String originalMessage = maskedMessage;
+            LunaChat.runAsyncTask(() -> {
+                var japanized = this.japanizeMessage(player, japanizeType, originalMessage, config.getJapanizeLine1Format());
+                if (!japanized.isEmpty()) {
+                    sendMessage(player, japanized);
+                }
+            });
+        } else {
             // メッセージの送信
-            sendMessage(player, maskedMessage, cf, true);
-        }
-
-        // 非同期実行タスクがある場合、追加で実行する
-        if ( delayedTask != null ) {
-            LunaChat.runAsyncTask(delayedTask);
+            sendMessage(player, maskedMessage);
         }
 
         // NGワード発言者に、NGワードアクションを実行する
@@ -368,6 +364,29 @@ public abstract class Channel {
         }
     }
 
+    private String japanizeMessage(ChannelMember player, JapanizeType type, String message, String lineFormat) {
+        String japanized = Japanizer.japanize(message, type, LunaChat.getAPI().getAllDictionary());
+        for (Pattern pattern : LunaChat.getConfig().getNgwordCompiled()) {
+            Matcher matcher = pattern.matcher(japanized);
+            if (matcher.find()) {
+                japanized = matcher.replaceAll(Utility.getAstariskString(matcher.group(0).length()));
+            }
+        }
+
+        // LunaChatPostJapanizeEvent イベントコール
+        EventResult event = LunaChat.getEventSender().sendLunaChatPostJapanizeEvent(
+                this.name, player, message, japanized);
+        if (event.isCancelled()) {
+            return "";
+        }
+
+        japanized = event.getJapanized();
+        if (japanized == null || japanized.isEmpty()) {
+            return message;
+        }
+        return Utility.replaceColorCode(lineFormat).replace("%japanize", japanized);
+    }
+
     /**
      * ほかの連携先などから、このチャットに発言する
      * @param player プレイヤー名
@@ -396,17 +415,13 @@ public abstract class Channel {
             }
         }
 
-        // キーワード置き換え
-        ClickableFormat msgFormat = ClickableFormat.makeFormat(getFormat(), new ChannelMemberOther(name), this, false);
-
         // カラーコード置き換え チャンネルで許可されている場合に置き換える。
         if ( isAllowCC() ) {
             maskedMessage = Utility.replaceColorCode(maskedMessage);
         }
 
         // メッセージの送信
-        boolean sendDynmap = source == null || !source.equals("web");
-        sendMessage(new ChannelMemberOther(name), maskedMessage, msgFormat, sendDynmap);
+        sendMessage(new ChannelMemberOther(name), maskedMessage);
     }
 
     /**
@@ -599,15 +614,7 @@ public abstract class Channel {
         save();
     }
 
-    /**
-     * メッセージを表示します。指定したプレイヤーの発言として処理されます。
-     * @param member 発言者（ワールドチャット、範囲チャットの場合は必須です）
-     * @param message メッセージ
-     * @param format フォーマット
-     * @param sendDynmap dynmapへ送信するかどうか
-     */
-    protected abstract void sendMessage(
-            ChannelMember member, String message, @Nullable ClickableFormat format, boolean sendDynmap);
+    protected abstract void sendMessage(ChannelMember member, String message);
 
     /**
      * ログを記録する
@@ -909,6 +916,7 @@ public abstract class Channel {
         channel.muteExpires = castToChannelMemberLongMap(data.get(KEY_MUTE_EXPIRES));
         channel.allowcc = castWithDefault(data.get(KEY_ALLOWCC), true);
         channel.japanizeType = JapanizeType.fromID(data.get(KEY_JAPANIZE) + "", null);
+        channel.compileFormat();
         return channel;
     }
 
@@ -990,6 +998,7 @@ public abstract class Channel {
      */
     public void setFormat(String format) {
         this.format = format;
+        this.compileFormat();
     }
 
     /**
@@ -1070,6 +1079,7 @@ public abstract class Channel {
      */
     public void setColorCode(String colorCode) {
         this.colorCode = colorCode;
+        this.compileFormat();
     }
 
     /**
@@ -1229,6 +1239,11 @@ public abstract class Channel {
 
         // ファイルを削除
         return file.delete();
+    }
+
+    private void compileFormat() {
+        var format = this.format.replace("%color", Objects.requireNonNullElse(this.colorCode, ""));
+        this.compiledFormat = COMPILER.compile(LegacyComponentSerializer.legacyAmpersand().deserialize(format));
     }
 
     /**

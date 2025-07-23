@@ -16,7 +16,6 @@ import com.github.ucchyocean.lc3.LunaChat;
 import com.github.ucchyocean.lc3.LunaChatAPI;
 import com.github.ucchyocean.lc3.Messages;
 import com.github.ucchyocean.lc3.event.EventResult;
-import com.github.ucchyocean.lc3.japanize.JapanizeType;
 import com.github.ucchyocean.lc3.member.ChannelMember;
 import com.github.ucchyocean.lc3.util.YamlConfig;
 
@@ -606,27 +605,6 @@ public class ChannelManager implements LunaChatAPI {
             }
             saveHidelist();
         }
-    }
-
-    /**
-     * Japanize変換を行う
-     * @param message 変換するメッセージ
-     * @param type 変換タイプ
-     * @return 変換後のメッセージ、ただしイベントでキャンセルされた場合はnullが返されるので注意
-     */
-    @Override
-    public String japanize(String message, JapanizeType type) {
-
-        if ( type == JapanizeType.NONE ) {
-            return message;
-        }
-
-        // Japanize変換
-        JapanizeConvertTask task = new JapanizeConvertTask(message, type, "%japanize", null, null);
-        if ( task.runSync() ) {
-            return task.getResult();
-        }
-        return null;
     }
 
     /**

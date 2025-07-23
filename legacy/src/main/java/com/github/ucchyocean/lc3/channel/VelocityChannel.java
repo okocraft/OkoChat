@@ -11,23 +11,32 @@ import com.github.ucchyocean.lc3.LunaChatConfig;
 import com.github.ucchyocean.lc3.LunaChatVelocity;
 import com.github.ucchyocean.lc3.event.EventResult;
 import com.github.ucchyocean.lc3.member.ChannelMember;
-import com.github.ucchyocean.lc3.util.ClickableFormat;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.okocraft.okochat.api.OkoChat;
-import org.jetbrains.annotations.Nullable;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * チャンネルのBungee実装クラス
+ *
  * @author ucchy
  */
 public class VelocityChannel extends Channel {
 
+    private static final Pattern DEFAULT_URL_PATTERN = Pattern.compile("(?:(https?)://)?([-\\w_.]+\\.\\w{2,})(/\\S*)?"); // copied from LegacyComponentSerializerImpl
+    private static final Pattern PATH_SPLITTER = Pattern.compile("/", Pattern.LITERAL);
+    private static final LegacyComponentSerializer WITH_URL_LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection().toBuilder().extractUrls().build();
+
     /**
      * コンストラクタ
+     *
      * @param name チャンネル名
      */
     protected VelocityChannel(String name) {
@@ -36,14 +45,14 @@ public class VelocityChannel extends Channel {
 
     /**
      * メッセージを表示します。指定したプレイヤーの発言として処理されます。
-     * @param player プレイヤー（ワールドチャット、範囲チャットの場合は必須です）
-     * @param message メッセージ
-     * @param format フォーマット
+     *
+     * @param player     プレイヤー（ワールドチャット、範囲チャットの場合は必須です）
+     * @param message    メッセージ
+     * @param format     フォーマット
      * @param sendDynmap dynmapへ送信するかどうか
      */
     @Override
-    protected void sendMessage(ChannelMember player, String message,
-            @Nullable ClickableFormat format, boolean sendDynmap) {
+    protected void sendMessage(ChannelMember player, String message) {
 
         LunaChatConfig config = LunaChat.getConfig();
 
@@ -52,15 +61,15 @@ public class VelocityChannel extends Channel {
         // 受信者を設定する
         List<ChannelMember> recipients = new ArrayList<ChannelMember>();
 
-        if ( isBroadcastChannel() ) {
+        if (isBroadcastChannel()) {
             // ブロードキャストチャンネル
 
             // NOTE: BungeeChannelは範囲チャットやワールドチャットをサポートしない
 
             // 通常ブロードキャスト（全員へ送信）
-            for ( Player p : LunaChatVelocity.getInstance().server.getAllPlayers() ) {
+            for (Player p : LunaChatVelocity.getInstance().server.getAllPlayers()) {
                 ChannelMember cp = ChannelMember.getChannelMember(p);
-                if ( !getHided().contains(cp) ) {
+                if (!getHided().contains(cp)) {
                     recipients.add(cp);
                 }
             }
@@ -68,8 +77,8 @@ public class VelocityChannel extends Channel {
         } else {
             // 通常チャンネル
 
-            for ( ChannelMember mem : getMembers() ) {
-                if ( mem != null && mem.isOnline() && !getHided().contains(mem) ) {
+            for (ChannelMember mem : getMembers()) {
+                if (mem != null && mem.isOnline() && !getHided().contains(mem)) {
                     recipients.add(mem);
                 }
             }
@@ -78,11 +87,11 @@ public class VelocityChannel extends Channel {
         // opListenAllChannel 設定がある場合は、
         // パーミッション lunachat-admin.listen-all-channels を持つプレイヤーを
         // 受信者に加える。
-        if ( config.isOpListenAllChannel() ) {
-            for ( Player p : LunaChatVelocity.getInstance().server.getAllPlayers() ) {
+        if (config.isOpListenAllChannel()) {
+            for (Player p : LunaChatVelocity.getInstance().server.getAllPlayers()) {
                 ChannelMember cp = ChannelMember.getChannelMember(p);
-                if ( cp.hasPermission("lunachat-admin.listen-all-channels")
-                        && !recipients.contains(cp) ) {
+                if (cp.hasPermission("lunachat-admin.listen-all-channels")
+                    && !recipients.contains(cp)) {
                     recipients.add(cp);
                 }
             }
@@ -90,8 +99,8 @@ public class VelocityChannel extends Channel {
 
         // hideされている場合は、受信対象者から抜く。
         LunaChatAPI api = LunaChat.getAPI();
-        for ( ChannelMember cp : api.getHidelist(player) )  {
-            if ( recipients.contains(cp) ) {
+        for (ChannelMember cp : api.getHidelist(player)) {
+            if (recipients.contains(cp)) {
                 recipients.remove(cp);
             }
         }
@@ -105,23 +114,59 @@ public class VelocityChannel extends Channel {
         message = result.getMessage();
         recipients = result.getRecipients();
 
-        // 送信する
-        if ( format != null ) {
-            format.replace("%msg", message);
-            Component comps = format.makeComponent();
-            for ( ChannelMember p : recipients ) {
-                p.sendMessage(comps);
+        message = DEFAULT_URL_PATTERN.matcher(message).replaceAll(matchResult -> {
+            String url = matchResult.group();
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                URI.create(matchResult.group());
+                return url;
+            } catch (IllegalArgumentException e) {
+                StringBuilder builder = new StringBuilder();
+
+                String protocol = matchResult.group(1);
+                if (protocol != null && !protocol.isEmpty()) {
+                    builder.append(protocol).append("://");
+                }
+
+                String domain = matchResult.group(2);
+                if (domain != null && !domain.isEmpty()) {
+                    builder.append(URLEncoder.encode(domain, StandardCharsets.UTF_8));
+                }
+
+                String path = matchResult.group(3);
+                if (path != null && !path.isEmpty()) {
+                    String[] split = PATH_SPLITTER.split(path);
+                    for (int i = 0, splitLength = split.length; i < splitLength; i++) {
+                        if (i > 0) {
+                            builder.append("/");
+                        }
+                        builder.append(URLEncoder.encode(split[i], StandardCharsets.UTF_8));
+                    }
+
+                    if (path.endsWith("/")) {
+                        builder.append("/");
+                    }
+                }
+
+                return builder.toString();
             }
-            message = format.toLegacyText();
-        } else {
-            for ( ChannelMember p : recipients ) {
-                p.sendMessage(message);
-            }
+        });
+
+        Component formattedMessage = this.compiledFormat.render(new LegacyChannelChatContext(
+                this.getName(),
+                player,
+                new LegacySenderContext(player),
+                message,
+                WITH_URL_LEGACY_SERIALIZER.deserialize(message)
+        ));
+
+        for (ChannelMember p : recipients) {
+            p.sendMessage(formattedMessage);
         }
 
         // 設定に応じて、コンソールに出力する
-        if ( config.isDisplayChatOnConsole() ) {
-            OkoChat.logger().info(message);
+        if (config.isDisplayChatOnConsole()) {
+            OkoChat.logger().info(WITH_URL_LEGACY_SERIALIZER.serialize(formattedMessage));
         }
 
         // ロギング
@@ -130,6 +175,7 @@ public class VelocityChannel extends Channel {
 
     /**
      * チャンネルのオンライン人数を返す
+     *
      * @return オンライン人数
      * @see Channel#getOnlineNum()
      */
@@ -137,7 +183,7 @@ public class VelocityChannel extends Channel {
     public int getOnlineNum() {
 
         // ブロードキャストチャンネルならサーバー接続人数を返す
-        if ( isBroadcastChannel() ) {
+        if (isBroadcastChannel()) {
             return LunaChatVelocity.getInstance().server.getPlayerCount();
         }
 
@@ -146,6 +192,7 @@ public class VelocityChannel extends Channel {
 
     /**
      * チャンネルの総参加人数を返す
+     *
      * @return 総参加人数
      * @see Channel#getTotalNum()
      */
@@ -153,7 +200,7 @@ public class VelocityChannel extends Channel {
     public int getTotalNum() {
 
         // ブロードキャストチャンネルならサーバー接続人数を返す
-        if ( isBroadcastChannel() ) {
+        if (isBroadcastChannel()) {
             return LunaChatVelocity.getInstance().server.getPlayerCount();
         }
 
@@ -162,6 +209,7 @@ public class VelocityChannel extends Channel {
 
     /**
      * チャンネルのメンバーを返す
+     *
      * @return チャンネルのメンバー
      * @see Channel#getMembers()
      */
@@ -170,9 +218,9 @@ public class VelocityChannel extends Channel {
 
         // ブロードキャストチャンネルなら、
         // 現在サーバーに接続している全プレイヤーをメンバーとして返す
-        if ( isBroadcastChannel() ) {
+        if (isBroadcastChannel()) {
             List<ChannelMember> mem = new ArrayList<ChannelMember>();
-            for ( Player p : LunaChatVelocity.getInstance().server.getAllPlayers() ) {
+            for (Player p : LunaChatVelocity.getInstance().server.getAllPlayers()) {
                 mem.add(ChannelMember.getChannelMember(p));
             }
             return mem;
@@ -183,7 +231,8 @@ public class VelocityChannel extends Channel {
 
     /**
      * ログを記録する
-     * @param name 発言者
+     *
+     * @param name    発言者
      * @param message 記録するメッセージ
      */
     @Override
@@ -191,7 +240,7 @@ public class VelocityChannel extends Channel {
 
         // LunaChatのチャットログへ記録
         LunaChatConfig config = LunaChat.getConfig();
-        if ( config.isLoggingChat() && logger != null ) {
+        if (config.isLoggingChat() && logger != null) {
             logger.log(message, name);
         }
 

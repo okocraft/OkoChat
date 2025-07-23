@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.ucchyocean.lc3.channel.Channel;
-import com.github.ucchyocean.lc3.japanize.JapanizeType;
 import com.github.ucchyocean.lc3.member.ChannelMember;
 
 /**
@@ -162,14 +161,6 @@ public interface LunaChatAPI {
      * @param hided hideされていた側のプレイヤー
      */
     public void removeHidelist(ChannelMember player, ChannelMember hided);
-
-    /**
-     * Japanize変換を行う
-     * @param message 変換するメッセージ
-     * @param type 変換タイプ
-     * @return 変換後のメッセージ、ただしイベントでキャンセルされた場合はnullが返されるので注意
-     */
-    public String japanize(String message, JapanizeType type);
 
     /**
      * 該当プレイヤーのJapanize変換をオン/オフする
