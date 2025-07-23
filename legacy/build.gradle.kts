@@ -15,7 +15,6 @@ dependencies {
     implementation(projects.okochatIntegrationLuckperms)
     implementation(projects.okochatPlatformVelocity)
     compileOnly(libs.platform.velocity)
-    // implementation(libs.snakeyaml) // For MessageParser#main
 }
 
 bundler {
