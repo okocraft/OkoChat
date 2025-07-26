@@ -282,7 +282,7 @@ public class LunaChatConfig {
 
             // コンソールに警告を表示する
             LunaChat.getPlugin().log(Level.WARNING, Messages.errmsgCannotUseForGlobal(globalChannel));
-            globalChannel = "";
+            globalChannel = "global";
         }
     }
 

@@ -118,42 +118,28 @@ public class LogCommand extends LunaChatSubCommand {
             return true;
         }
 
-        // ログの取得
-        ArrayList<String> logs;
 
-        if ( config.getGlobalChannel().equals("") &&
-                (cname == null || cname.equals(config.getGlobalMarker())) ) {
-
-            // グローバルチャンネル設定が無くて、指定チャンネルがマーカーの場合、
-            // 通常チャットのログを取得する
-            LunaChatLogger logger = LunaChat.getNormalChatLogger();
-            logs = logger.getLog(argsPlayer, argsFilter, argsDate, reverse);
-
-            cname = "GlobalChat";
-
-        } else {
-
-            // チャンネルが存在するかどうか確認する
-            Channel channel = api.getChannel(cname);
-            if ( channel == null ) {
-                sender.sendMessage(Messages.errmsgNotExist());
-                return true;
-            }
-
-            // BANされていないかどうか確認する
-            if ( channel.getBanned().contains(sender) ) {
-                sender.sendMessage(Messages.errmsgBanned());
-                return true;
-            }
-
-            // チャンネルのメンバーかどうかを確認する
-            if (!sender.hasPermission(PERMISSION_NODE + ".bypass-member-check") && !channel.getMembers().contains(sender)) { // okocraft - Add a permission to bypass member check
-                sender.sendMessage(Messages.errmsgNomember());
-                return true;
-            }
-
-            logs = channel.getLog(argsPlayer, argsFilter, argsDate, reverse);
+        // チャンネルが存在するかどうか確認する
+        Channel channel = api.getChannel(cname);
+        if (channel == null) {
+            sender.sendMessage(Messages.errmsgNotExist());
+            return true;
         }
+
+        // BANされていないかどうか確認する
+        if (channel.getBanned().contains(sender)) {
+            sender.sendMessage(Messages.errmsgBanned());
+            return true;
+        }
+
+        // チャンネルのメンバーかどうかを確認する
+        if (!sender.hasPermission(PERMISSION_NODE + ".bypass-member-check") && !channel.getMembers().contains(sender)) { // okocraft - Add a permission to bypass member check
+            sender.sendMessage(Messages.errmsgNomember());
+            return true;
+        }
+
+        // ログの取得
+        ArrayList<String> logs = channel.getLog(argsPlayer, argsFilter, argsDate, reverse);
 
         // 整形と表示
         sender.sendMessage(Messages.logDisplayFirstLine(cname));

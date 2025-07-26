@@ -77,10 +77,8 @@ public class VelocityEventListener implements OkoChatProtocol.Listener {
         // 強制参加チャンネル設定を確認し、参加させる
         forceJoinToForceJoinChannels(player);
 
-        // グローバルチャンネル設定がある場合
-        if ( !config.getGlobalChannel().equals("") ) {
-            tryJoinToGlobalChannel(player);
-        }
+        // グローバルチャンネルは強制参加
+        tryJoinToGlobalChannel(player);
 
         // チャンネルチャット情報を表示する
         if ( config.isShowListOnJoin() ) {
@@ -229,28 +227,22 @@ public class VelocityEventListener implements OkoChatProtocol.Listener {
 
     private void chatGlobal(ChannelMember member, String message) {
         LunaChatConfig config = LunaChat.getConfig();
+        // グローバルチャンネル設定がある場合
 
-        if ( !config.getGlobalChannel().equals("") ) {
-            // グローバルチャンネル設定がある場合
-
-            // グローバルチャンネルの取得、無ければ作成
-            Channel global = api.getChannel(config.getGlobalChannel());
-            if ( global == null ) {
-                global = api.createChannel(config.getGlobalChannel(), member);
-            }
-
-            // デフォルト発言先が無いなら、グローバルチャンネルに設定する
-            Channel dchannel = api.getDefaultChannel(member.getName());
-            if ( dchannel == null ) {
-                api.setDefaultChannel(member.getName(), global.getName());
-            }
-
-            // チャンネルチャット発言
-            chatToChannelWithEvent(member, global, message);
-
-            return;
-
+        // グローバルチャンネルの取得、無ければ作成
+        Channel global = api.getChannel(config.getGlobalChannel());
+        if (global == null) {
+            global = api.createChannel(config.getGlobalChannel(), member);
         }
+
+        // デフォルト発言先が無いなら、グローバルチャンネルに設定する
+        Channel dchannel = api.getDefaultChannel(member.getName());
+        if (dchannel == null) {
+            api.setDefaultChannel(member.getName(), global.getName());
+        }
+
+        // チャンネルチャット発言
+        chatToChannelWithEvent(member, global, message);
     }
 
     /**

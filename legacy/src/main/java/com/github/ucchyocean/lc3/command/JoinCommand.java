@@ -100,23 +100,6 @@ public class JoinCommand extends LunaChatSubCommand {
 
         // チャンネルが存在するかどうかをチェックする
         if ( channel == null ) {
-            if ( config.getGlobalChannel().equals("") &&
-                    channelName.equals(config.getGlobalMarker()) ) {
-                // グローバルチャンネル設定が無くて、指定チャンネルがマーカーの場合、
-                // 発言先を削除して、グローバルチャンネルにする
-
-                if ( api.getDefaultChannel(sender.getName()) != null ) {
-                    api.removeDefaultChannel(sender.getName());
-                    sender.sendMessage(Messages.cmdmsgSet("Global"));
-                }
-
-                // 何かメッセージがあるなら、そのままチャット送信する
-                // TODO 要テスト
-                sender.chat(message.toString());
-
-                return true;
-            }
-
             if (config.isCreateChannelOnJoinCommand()) {
                 // 存在しないチャットには、チャンネルを作って入る設定の場合
 
