@@ -239,6 +239,7 @@ public class VelocityEventListener implements OkoChatProtocol.Listener {
         Channel dchannel = api.getDefaultChannel(member.getName());
         if (dchannel == null) {
             api.setDefaultChannel(member.getName(), global.getName());
+            LunaChatVelocity.getInstance().getCore().platform().pluginMessageService().send(member, OkoChatProtocol.SYNC_PLAYER_DATA, new PlayerData(member.uuid(), global.getName()));
         }
 
         // チャンネルチャット発言

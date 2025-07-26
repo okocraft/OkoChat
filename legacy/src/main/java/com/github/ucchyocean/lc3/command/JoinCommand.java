@@ -5,9 +5,12 @@
  */
 package com.github.ucchyocean.lc3.command;
 
+import com.github.ucchyocean.lc3.LunaChatVelocity;
 import com.github.ucchyocean.lc3.Messages;
 import com.github.ucchyocean.lc3.channel.Channel;
 import com.github.ucchyocean.lc3.member.ChannelMember;
+import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
+import net.okocraft.okochat.bridge.protocol.PlayerData;
 
 /**
  * joinコマンドの実行クラス
@@ -172,6 +175,7 @@ public class JoinCommand extends LunaChatSubCommand {
             if ( api.getDefaultChannel(sender.getName()) == null ||
                     !api.getDefaultChannel(sender.getName()).getName().equals(channelName) ) {
                 api.setDefaultChannel(sender.getName(), channelName);
+                LunaChatVelocity.getInstance().getCore().platform().pluginMessageService().send(sender, OkoChatProtocol.SYNC_PLAYER_DATA, new PlayerData(sender.uuid(), channelName));
                 sender.sendMessage(Messages.cmdmsgSet(channelName));
             }
 
@@ -211,6 +215,7 @@ public class JoinCommand extends LunaChatSubCommand {
             if ( api.getDefaultChannel(sender.getName()) == null ||
                     !api.getDefaultChannel(sender.getName()).getName().equals(channelName) ) {
                 api.setDefaultChannel(sender.getName(), channelName);
+                LunaChatVelocity.getInstance().getCore().platform().pluginMessageService().send(sender, OkoChatProtocol.SYNC_PLAYER_DATA, new PlayerData(sender.uuid(), channelName));
                 sender.sendMessage(Messages.cmdmsgSet(channelName));
             }
         }

@@ -5,9 +5,12 @@
  */
 package com.github.ucchyocean.lc3.command;
 
+import com.github.ucchyocean.lc3.LunaChatVelocity;
 import com.github.ucchyocean.lc3.Messages;
 import com.github.ucchyocean.lc3.channel.Channel;
 import com.github.ucchyocean.lc3.member.ChannelMember;
+import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
+import net.okocraft.okochat.bridge.protocol.PlayerData;
 
 /**
  * acceptコマンドの実行クラス
@@ -115,6 +118,7 @@ public class AcceptCommand extends LunaChatSubCommand {
 
         // デフォルトの発言先に設定する
         api.setDefaultChannel(sender.getName(), channelName);
+        LunaChatVelocity.getInstance().getCore().platform().pluginMessageService().send(sender, OkoChatProtocol.SYNC_PLAYER_DATA, new PlayerData(sender.uuid(), channelName));
         sender.sendMessage(Messages.cmdmsgSet(channel.getName()));
 
         return true;

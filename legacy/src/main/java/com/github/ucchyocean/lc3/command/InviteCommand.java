@@ -5,9 +5,12 @@
  */
 package com.github.ucchyocean.lc3.command;
 
+import com.github.ucchyocean.lc3.LunaChatVelocity;
 import com.github.ucchyocean.lc3.Messages;
 import com.github.ucchyocean.lc3.channel.Channel;
 import com.github.ucchyocean.lc3.member.ChannelMember;
+import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
+import net.okocraft.okochat.bridge.protocol.PlayerData;
 
 /**
  * inviteコマンドの実行クラス
@@ -189,6 +192,7 @@ public class InviteCommand extends LunaChatSubCommand {
         // 参加する
         channel.addMember(invited);
         api.setDefaultChannel(invitedName, cname);
+        LunaChatVelocity.getInstance().getCore().platform().pluginMessageService().send(sender, OkoChatProtocol.SYNC_PLAYER_DATA, new PlayerData(sender.uuid(), cname));
         sender.sendMessage(Messages.cmdmsgInvite(invitedName, channel.getName()));
         invited.sendMessage(Messages.cmdmsgJoin(channel.getName()));
 

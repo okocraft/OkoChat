@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.ucchyocean.lc3.LunaChatVelocity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -25,6 +26,8 @@ import net.okocraft.lunachat.japanize.Japanizer;
 import net.okocraft.okochat.api.chat.context.ChannelChatContext;
 import net.okocraft.okochat.api.chat.format.ChatMessageFormat;
 import net.okocraft.okochat.api.chat.format.placeholder.Placeholder;
+import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
+import net.okocraft.okochat.bridge.protocol.PlayerData;
 import net.okocraft.okochat.core.chat.format.ChatMessageFormatCompiler;
 import net.okocraft.okochat.core.chat.format.placeholder.BuiltinPlaceholders;
 import org.jetbrains.annotations.Nullable;
@@ -541,6 +544,7 @@ public abstract class Channel {
         Channel def = api.getDefaultChannel(player.getName());
         if ( def != null && def.getName().equals(getName()) ) {
             api.removeDefaultChannel(player.getName());
+            LunaChatVelocity.getInstance().getCore().platform().pluginMessageService().send(player, OkoChatProtocol.SYNC_PLAYER_DATA, new PlayerData(player.uuid(), LunaChatVelocity.getInstance().getConfig().getGlobalChannel()));
         }
 
         // 実際にメンバーから削除する
