@@ -18,6 +18,8 @@ public interface Platform {
 
     RecipientProvider recipientProvider();
 
+    PluginMessageService pluginMessageService();
+
     LegacyChannelMemberResolver legacyChannelMemberResolver();
 
 }

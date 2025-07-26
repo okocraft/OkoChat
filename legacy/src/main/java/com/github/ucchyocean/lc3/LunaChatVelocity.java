@@ -19,16 +19,12 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
-import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.okocraft.okochat.api.OkoChat;
-import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
 import net.okocraft.okochat.core.OkoChatCore;
 import net.okocraft.okochat.integration.AffixProvider;
 import net.okocraft.okochat.integration.luckperms.LuckPermsIntegration;
 import net.okocraft.okochat.platform.velocity.VelocityPlatform;
-import net.okocraft.okochat.platform.velocity.VelocityScheduler;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -50,7 +46,6 @@ public class LunaChatVelocity implements PluginInterface {
 
     public final ProxyServer server;
     private final OkoChatCore core;
-    public final ChannelIdentifier channelIdentifier = MinecraftChannelIdentifier.from(OkoChatProtocol.CHANNEL);
 
     private HashMap<String, String> history;
     private LunaChatConfig config;
@@ -66,7 +61,7 @@ public class LunaChatVelocity implements PluginInterface {
                             @DataDirectory Path dataDirectory) {
         instance = this;
         this.server = server;
-        this.core = new OkoChatCore(VelocityPlatform.initialize(server, logger, dataDirectory, new VelocityScheduler(this, server)));
+        this.core = new OkoChatCore(VelocityPlatform.initialize(this, server, logger, dataDirectory));
     }
 
     @Subscribe
@@ -112,13 +107,12 @@ public class LunaChatVelocity implements PluginInterface {
         );
 
         // リスナー登録
-        this.server.getEventManager().register(this, new VelocityEventListener(this));
+        VelocityEventListener listener = new VelocityEventListener(this);
+        this.server.getEventManager().register(this, listener);
+        this.core.platform().pluginMessageService().registerListener(listener);
 
         // イベント実行クラスの登録
         LunaChat.setEventSender(new VelocityEventSender(this.server));
-
-        // プラグインチャンネル登録
-        this.server.getChannelRegistrar().register(this.channelIdentifier);
 
         this.expireCheckTask = this.server.getScheduler().buildTask(this, new ExpireCheckTask()).delay(Duration.ofSeconds(5)).repeat(Duration.ofSeconds(30)).schedule();
 
@@ -263,6 +257,10 @@ public class LunaChatVelocity implements PluginInterface {
     @Override
     public void runAsyncTask(Runnable task) {
         this.server.getScheduler().buildTask(this, task).schedule();
+    }
+
+    public OkoChatCore getCore() {
+        return this.core;
     }
 
     public AffixProvider<Player> getAffixProvider() {

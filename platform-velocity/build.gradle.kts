@@ -9,6 +9,7 @@ jcommon {
 dependencies {
     implementation(projects.okochatApi)
     implementation(projects.okochatCore)
+    implementation(projects.okochatBridgeProtocol)
 
     compileOnly(libs.platform.velocity)
 }

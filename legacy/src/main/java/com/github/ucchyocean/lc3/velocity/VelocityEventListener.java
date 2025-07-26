@@ -19,15 +19,12 @@ import com.github.ucchyocean.lc3.util.ChatColor;
 import com.github.ucchyocean.lc3.util.Utility;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
-import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.okocraft.okochat.api.OkoChat;
-import net.okocraft.okochat.api.sender.ConsoleSender;
 import net.okocraft.okochat.bridge.protocol.OkoChatProtocol;
 import net.okocraft.okochat.bridge.protocol.PlayerData;
 import net.okocraft.okochat.bridge.protocol.ServerChatMessageData;
@@ -127,23 +124,6 @@ public class VelocityEventListener implements OkoChatProtocol.Listener {
         }
     }
 
-    @Subscribe
-    public void onPluginMessageReceived(PluginMessageEvent event) {
-        if (!event.getIdentifier().equals(this.parent.channelIdentifier)) {
-            return;
-        }
-
-        event.setResult(PluginMessageEvent.ForwardResult.handled()); // For discarding messages from clients
-
-        if (event.getSource() instanceof ServerConnection) {
-            this.processPluginMessage(
-                    event.getTarget() instanceof Player receiver ? receiver.getUniqueId() : ConsoleSender.CONSOLE_UUID,
-                    event.getData(),
-                    OkoChat.logger()
-            );
-        }
-    }
-
     @Override
     public void onServerChatMessageData(UUID receiver, ServerChatMessageData data) {
         var sender = data.senderData();
@@ -184,12 +164,7 @@ public class VelocityEventListener implements OkoChatProtocol.Listener {
                 defaultChannel != null ? defaultChannel.getName() : this.parent.getLunaChatAPI().getChannel(this.config.getGlobalChannel()).getName()
         );
 
-        try {
-            byte[] encoded = OkoChatProtocol.encodeData(OkoChatProtocol.SYNC_PLAYER_DATA, res);
-            player.sendPluginMessage(this.parent.channelIdentifier, encoded);
-        } catch (Exception e) {
-            OkoChat.logger().error("Failed to send plugin message: {}", data, e);
-        }
+        LunaChatVelocity.getInstance().getCore().platform().pluginMessageService().send(player, OkoChatProtocol.SYNC_PLAYER_DATA, res);
     }
 
     private void processChat(ChannelMember member, String message) {
