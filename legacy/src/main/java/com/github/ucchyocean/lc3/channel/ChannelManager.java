@@ -29,19 +29,16 @@ public class ChannelManager implements LunaChatAPI {
     private static final String FILE_NAME_TEMPLATES = "templates.yml";
     private static final String FILE_NAME_JAPANIZE = "japanize.yml";
     private static final String FILE_NAME_DICTIONARY = "dictionary.yml";
-    private static final String FILE_NAME_HIDELIST = "hidelist.yml";
 
     private File fileDefaults;
     private File fileTemplates;
     private File fileJapanize;
     private File fileDictionary;
-    private File fileHidelist;
     private HashMap<String, Channel> channels;
     private HashMap<String, String> defaultChannels;
     private HashMap<String, String> templates;
     private HashMap<String, Boolean> japanize;
     private java.util.LinkedHashMap<String, String> dictionary; // okocraft - Ensure that longer words are replaced first
-    private HashMap<String, List<ChannelMember>> hidelist;
 
     /**
      * コンストラクタ
@@ -115,23 +112,6 @@ public class ChannelManager implements LunaChatAPI {
             dictionary.put(key, configDictionary.getString(key));
         }
         net.okocraft.lunachat.japanize.Japanizer.sortDictionary(dictionary); // okocraft - Ensure that longer words are replaced first
-
-        // hideリストのロード
-        fileHidelist = new File(LunaChat.getDataFolder(), FILE_NAME_HIDELIST);
-
-        if ( !fileHidelist.exists() ) {
-            makeEmptyFile(fileHidelist);
-        }
-
-        YamlConfig configHidelist = YamlConfig.load(fileHidelist);
-
-        hidelist = new HashMap<String, List<ChannelMember>>();
-        for ( String key : configHidelist.getKeys(false) ) {
-            hidelist.put(key, new ArrayList<ChannelMember>());
-            for ( String id : configHidelist.getStringList(key) ) {
-                hidelist.get(key).add(ChannelMember.getChannelMember(id));
-            }
-        }
 
         // チャンネル設定のロード
         channels = Channel.loadAllChannels();
@@ -222,30 +202,6 @@ public class ChannelManager implements LunaChatAPI {
         // okocraft end
         try {
             net.okocraft.lunachat.DataFiles.saveStringMap(fileDictionary.toPath(), java.util.Map.copyOf(dictionary)); // okocraft - Make file saving async
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * Hidelist設定を保存する
-     * @return 保存したかどうか
-     */
-    private boolean saveHidelist() {
-        // okocraft start - Make file saving async
-        LunaChat.runAsyncTask(this::saveHidelist0);
-        return true;
-    }
-    private boolean saveHidelist0() {
-        // okocraft end
-        try {
-            // okocraft start - Make file saving async
-            var data = new HashMap<String, List<String>>(hidelist.size(), 2.0f);
-            hidelist.forEach((key, value) -> data.put(key, getIdList(value)));
-            net.okocraft.lunachat.DataFiles.saveHideList(fileHidelist.toPath(), data);
-            // okocraft end
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -537,74 +493,6 @@ public class ChannelManager implements LunaChatAPI {
         dictionary.remove(key);
         net.okocraft.lunachat.japanize.Japanizer.sortDictionary(dictionary); // okocraft - Ensure that longer words are replaced first
         saveDictionary();
-    }
-
-    /**
-     * 該当のプレイヤーに関連するhidelistを取得する。
-     * @param key プレイヤー
-     * @return 指定されたプレイヤーをhideしているプレイヤー(非null)
-     */
-    public List<ChannelMember> getHidelist(ChannelMember key) {
-        if ( key == null ) {
-            return new ArrayList<ChannelMember>();
-        }
-        if ( hidelist.containsKey(key.toString()) ) {
-            return hidelist.get(key.toString());
-        }
-        return new ArrayList<ChannelMember>();
-    }
-
-    /**
-     * 該当のプレイヤーがhideしているプレイヤーのリストを返す。
-     * @param player プレイヤー
-     * @return 指定したプレイヤーがhideしているプレイヤーのリスト(非null)
-     */
-    public ArrayList<ChannelMember> getHideinfo(ChannelMember player) {
-        if ( player == null ) {
-            return new ArrayList<ChannelMember>();
-        }
-        ArrayList<ChannelMember> info = new ArrayList<ChannelMember>();
-        for ( String key : hidelist.keySet() ) {
-            if ( hidelist.get(key).contains(player) ) {
-                info.add(ChannelMember.getChannelMember(key));
-            }
-        }
-        return info;
-    }
-
-    /**
-     * 指定されたプレイヤーが、指定されたプレイヤーをhideするように設定する。
-     * @param player hideする側のプレイヤー
-     * @param hided hideされる側のプレイヤー
-     */
-    public void addHidelist(ChannelMember player, ChannelMember hided) {
-        String hidedId = hided.toString();
-        if ( !hidelist.containsKey(hidedId) ) {
-            hidelist.put(hidedId, new ArrayList<ChannelMember>());
-        }
-        if ( !hidelist.get(hidedId).contains(player) ) {
-            hidelist.get(hidedId).add(player);
-            saveHidelist();
-        }
-    }
-
-    /**
-     * 指定されたプレイヤーが、指定されたプレイヤーのhideを解除するように設定する。
-     * @param player hideしていた側のプレイヤー
-     * @param hided hideされていた側のプレイヤー
-     */
-    public void removeHidelist(ChannelMember player, ChannelMember hided) {
-        String hidedId = hided.toString();
-        if ( !hidelist.containsKey(hidedId) ) {
-            return;
-        }
-        if ( hidelist.get(hidedId).contains(player) ) {
-            hidelist.get(hidedId).remove(player);
-            if ( hidelist.get(hidedId).size() <= 0 ) {
-                hidelist.remove(hidedId);
-            }
-            saveHidelist();
-        }
     }
 
     /**

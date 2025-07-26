@@ -31,7 +31,7 @@ public final class OkoChatCore {
 
     public void enable() {
         HideListHolder hideListHolder = this.fileList.initializeHideListHolder();
-        // this.fileList.migrateLegacyHideListIfExists(hideListHolder, this.platform.legacyChannelMemberResolver());
+        this.fileList.migrateLegacyHideListIfExists(hideListHolder, this.platform.legacyChannelMemberResolver());
 
         this.fileList.scheduleAutoSave(this.platform.scheduler());
 

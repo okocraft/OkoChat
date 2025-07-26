@@ -6,7 +6,6 @@
 package com.github.ucchyocean.lc3;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import com.github.ucchyocean.lc3.channel.Channel;
@@ -133,34 +132,6 @@ public interface LunaChatAPI {
      * @param key キー
      */
     public void removeDictionary(String key);
-
-    /**
-     * 該当のプレイヤーに関連するhidelistを取得する。
-     * @param key プレイヤー
-     * @return 指定されたプレイヤーをhideしているプレイヤー(非null)
-     */
-    public List<ChannelMember> getHidelist(ChannelMember key);
-
-    /**
-     * 該当のプレイヤーがhideしているプレイヤーのリストを返す。
-     * @param player プレイヤー
-     * @return 指定したプレイヤーがhideしているプレイヤーのリスト
-     */
-    public List<ChannelMember> getHideinfo(ChannelMember player);
-
-    /**
-     * 指定されたプレイヤーが、指定されたプレイヤーをhideするように設定する。
-     * @param player hideする側のプレイヤー
-     * @param hided hideされる側のプレイヤー
-     */
-    public void addHidelist(ChannelMember player, ChannelMember hided);
-
-    /**
-     * 指定されたプレイヤーが、指定されたプレイヤーのhideを解除するように設定する。
-     * @param player hideしていた側のプレイヤー
-     * @param hided hideされていた側のプレイヤー
-     */
-    public void removeHidelist(ChannelMember player, ChannelMember hided);
 
     /**
      * 該当プレイヤーのJapanize変換をオン/オフする

@@ -9,6 +9,8 @@ import com.github.ucchyocean.lc3.Messages;
 import com.github.ucchyocean.lc3.channel.Channel;
 import com.github.ucchyocean.lc3.member.ChannelMember;
 import com.github.ucchyocean.lc3.util.Utility;
+import net.okocraft.okochat.api.OkoChat;
+import net.okocraft.okochat.api.chat.hide.HideList;
 
 /**
  * unhideコマンドの実行クラス
@@ -130,15 +132,17 @@ public class UnhideCommand extends LunaChatSubCommand {
         } else {
             // プレイヤーが対象の場合の処理
 
-            // 既に表示になっていないかどうかをチェックする
+            HideList hideList = OkoChat.api().hideListProvider().getByUUID( sender.identity().uuid());
+
             ChannelMember hided = ChannelMember.getChannelMember(cname);
-            if ( !api.getHidelist(hided).contains(sender) ) {
+            // 既に表示になっていないかどうかをチェックする
+            if (!hideList.isHidden(hided)) {
                 sender.sendMessage(Messages.errmsgAlreadyUnhidedPlayer());
                 return true;
             }
 
             // 設定する
-            api.removeHidelist(sender, hided);
+            hideList.unhide(hided);
             sender.sendMessage(Messages.cmdmsgUnhidedPlayer(hided.getDisplayName()));
 
             return true;

@@ -6,7 +6,6 @@
 package com.github.ucchyocean.lc3.channel;
 
 import com.github.ucchyocean.lc3.LunaChat;
-import com.github.ucchyocean.lc3.LunaChatAPI;
 import com.github.ucchyocean.lc3.LunaChatConfig;
 import com.github.ucchyocean.lc3.LunaChatVelocity;
 import com.github.ucchyocean.lc3.event.EventResult;
@@ -22,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.Objects;
 
 /**
  * チャンネルのBungee実装クラス
@@ -98,12 +98,11 @@ public class VelocityChannel extends Channel {
         }
 
         // hideされている場合は、受信対象者から抜く。
-        LunaChatAPI api = LunaChat.getAPI();
-        for (ChannelMember cp : api.getHidelist(player)) {
-            if (recipients.contains(cp)) {
-                recipients.remove(cp);
-            }
-        }
+        recipients.stream()
+                .filter(Objects::nonNull)
+                .filter(recipient -> OkoChat.api().hideListProvider().getByUUID(recipient.identity().uuid()).isHidden(player))
+                .toList()
+                .forEach(recipients::remove);
 
         // フォーマットがある場合は置き換える
 

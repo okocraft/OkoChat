@@ -6,11 +6,16 @@
 package com.github.ucchyocean.lc3.command;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import com.github.ucchyocean.lc3.Messages;
 import com.github.ucchyocean.lc3.channel.Channel;
 import com.github.ucchyocean.lc3.member.ChannelMember;
+import com.github.ucchyocean.lc3.member.ChannelMemberVelocityPlayer;
 import com.github.ucchyocean.lc3.util.Utility;
+import net.kyori.adventure.identity.Identity;
+import net.okocraft.okochat.api.OkoChat;
+import net.okocraft.okochat.api.chat.hide.HideList;
 
 /**
  * hideコマンドの実行クラス
@@ -146,9 +151,11 @@ public class HideCommand extends LunaChatSubCommand {
         } else {
             // プレイヤーが対象の場合の処理
 
-            // 既に非表示になっていないかどうかをチェックする
+            HideList hideList = OkoChat.api().hideListProvider().getByIdentified(sender);
+
             ChannelMember hided = ChannelMember.getChannelMember(cname);
-            if ( api.getHidelist(hided).contains(sender) ) {
+            // 既に非表示になっていないかどうかをチェックする
+            if (hideList.isHidden(hided)) {
                 sender.sendMessage(Messages.errmsgAlreadyHidedPlayer());
                 return true;
             }
@@ -160,7 +167,7 @@ public class HideCommand extends LunaChatSubCommand {
             }
 
             // 設定する
-            api.addHidelist(sender, hided);
+            hideList.hide(hided);
             sender.sendMessage(Messages.cmdmsgHidedPlayer(hided.getDisplayName()));
 
             return true;
@@ -180,9 +187,14 @@ public class HideCommand extends LunaChatSubCommand {
             items.add(Messages.listPlainPrefix() + channel);
         }
         items.add(Messages.hidePlayerFirstLine());
-        for ( ChannelMember p : api.getHideinfo(player) ) {
-            items.add(Messages.listPlainPrefix() + p.getDisplayName());
-        }
+
+        OkoChat.api().hideListProvider().getByIdentified(player).stream()
+                .map(Identity::uuid)
+                .map(ChannelMemberVelocityPlayer::new)
+                .sorted(Comparator.comparing(ChannelMemberVelocityPlayer::getName))
+                .map(ChannelMemberVelocityPlayer::getDisplayName)
+                .forEach(name -> items.add(Messages.listPlainPrefix() + name));
+
         items.add(Messages.listEndLine());
 
         return items;
