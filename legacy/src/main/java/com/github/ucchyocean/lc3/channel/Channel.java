@@ -1119,6 +1119,8 @@ public abstract class Channel {
      * @param to 会話の相手のプレイヤー名
      */
     public void setPrivateMessageTo(ChannelMember to) {
+        this.format = this.format.replace("%to", to.getName());
+        this.compileFormat();
         this.privateMessageTo = to;
     }
 
