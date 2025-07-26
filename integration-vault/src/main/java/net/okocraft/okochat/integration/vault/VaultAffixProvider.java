@@ -19,6 +19,11 @@ class VaultAffixProvider implements AffixProvider<Player> {
     }
 
     @Override
+    public String getProviderName() {
+        return "Vault";
+    }
+
+    @Override
     public String getPrefix(Player player) {
         return Objects.requireNonNullElse(this.chat.getPlayerPrefix(player), "");
     }

@@ -10,6 +10,11 @@ public interface AffixProvider<P> {
     static <P> AffixProvider<P> createVoid() {
         return new AffixProvider<>() {
             @Override
+            public String getProviderName() {
+                return "";
+            }
+
+            @Override
             public String getPrefix(P player) {
                 return "";
             }
@@ -30,6 +35,8 @@ public interface AffixProvider<P> {
             }
         };
     }
+
+    String getProviderName();
 
     String getPrefix(P player);
 

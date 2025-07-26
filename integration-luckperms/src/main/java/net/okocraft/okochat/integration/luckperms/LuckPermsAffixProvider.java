@@ -21,6 +21,11 @@ class LuckPermsAffixProvider<P> implements AffixProvider<P> {
     }
 
     @Override
+    public String getProviderName() {
+        return "LuckPerms";
+    }
+
+    @Override
     public String getPrefix(P player) {
         return this.getPrefix(this.uuidFunction.apply(player));
     }
