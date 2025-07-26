@@ -31,14 +31,9 @@ class OkoChatPlaceholder extends PlaceholderExpansion implements RegisteredPlace
 
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
-        int idx = params.indexOf("_");
-        String type = idx == -1 ? params : params.substring(0, idx);
-
-        return switch (type) {
+        return switch (params) {
             case "default_channel" -> {
-                if (idx != -1) {
-                    yield this.provider.getDefaultChannelByPlayerName(params.substring(idx + 1));
-                } else if (player != null) {
+                if (player != null) {
                     yield this.provider.getDefaultChannelByPlayer(player.getUniqueId());
                 }
                 yield "";

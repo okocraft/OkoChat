@@ -40,10 +40,10 @@ public class VelocityPluginMessageService implements PluginMessageService {
     @Override
     public <T> void send(Identified sender, OkoChatProtocol.MessageType<T> type, T data) {
         UUID uuid = sender.identity().uuid();
-        this.server.getPlayer(uuid).ifPresentOrElse(
-                player -> {
+        this.server.getPlayer(uuid).flatMap(Player::getCurrentServer).ifPresentOrElse(
+                server -> {
                     try {
-                        player.sendPluginMessage(CHANNEL_IDENTIFIER, OkoChatProtocol.encodeData(type, data));
+                        server.sendPluginMessage(CHANNEL_IDENTIFIER, OkoChatProtocol.encodeData(type, data));
                     } catch (Exception e) {
                         logger().warn("Failed to send plugin message: {}", data, e);
                     }

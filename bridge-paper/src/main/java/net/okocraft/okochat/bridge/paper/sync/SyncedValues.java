@@ -1,7 +1,6 @@
 package net.okocraft.okochat.bridge.paper.sync;
 
 import net.okocraft.okochat.integration.placeholderapi.PlaceholderValueProvider;
-import org.bukkit.Bukkit;
 
 import java.util.Map;
 import java.util.UUID;
@@ -16,16 +15,11 @@ public class SyncedValues implements PlaceholderValueProvider {
         return this.defaultChannelNameMap.getOrDefault(uuid, "");
     }
 
-    @Override
-    public String getDefaultChannelByPlayerName(String name) {
-        UUID uuid = Bukkit.getPlayerUniqueId(name);
-        if (uuid == null) {
-            return "";
-        }
-        return this.defaultChannelNameMap.getOrDefault(uuid, "");
-    }
-
     public void updateDefaultChannelName(UUID uuid, String channelName) {
         this.defaultChannelNameMap.put(uuid, channelName);
+    }
+
+    public void removeValuesByPlayer(UUID uuid) {
+        this.defaultChannelNameMap.remove(uuid);
     }
 }

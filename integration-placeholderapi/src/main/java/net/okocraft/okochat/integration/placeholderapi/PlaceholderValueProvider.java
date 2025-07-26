@@ -6,6 +6,4 @@ public interface PlaceholderValueProvider {
 
     String getDefaultChannelByPlayer(UUID uuid);
 
-    String getDefaultChannelByPlayerName(String name);
-
 }

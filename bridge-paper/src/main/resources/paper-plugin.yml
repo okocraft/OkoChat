@@ -12,3 +12,4 @@ dependencies:
       required: false
     PlaceholderAPI:
       required: false
+      load: BEFORE

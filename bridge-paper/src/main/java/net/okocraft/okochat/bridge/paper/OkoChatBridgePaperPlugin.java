@@ -1,6 +1,7 @@
 package net.okocraft.okochat.bridge.paper;
 
 import net.okocraft.okochat.bridge.paper.listener.ChatListener;
+import net.okocraft.okochat.bridge.paper.listener.ConnectionListener;
 import net.okocraft.okochat.bridge.paper.messaging.PluginMessageReceiver;
 import net.okocraft.okochat.bridge.paper.messaging.PluginMessageSender;
 import net.okocraft.okochat.bridge.paper.sync.SyncedValues;
@@ -11,7 +12,6 @@ import net.okocraft.okochat.integration.placeholderapi.PlaceholderAPIIntegration
 import net.okocraft.okochat.integration.placeholderapi.RegisteredPlaceholders;
 import net.okocraft.okochat.integration.vault.VaultIntegration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.jetbrains.annotations.Nullable;
@@ -19,20 +19,23 @@ import org.jetbrains.annotations.Nullable;
 @NotNullByDefault
 public class OkoChatBridgePaperPlugin extends JavaPlugin {
 
-    private final SyncedValues syncedValues = new SyncedValues();
     private @Nullable RegisteredPlaceholders registeredPlaceholders = null;
 
     @Override
     public void onEnable() {
-        this.setup();
+        SyncedValues syncedValues = new SyncedValues();
+        PluginMessageSender pluginMessageSender = new PluginMessageSender(this, OkoChatProtocol.CHANNEL);
+        PluginMessageReceiver pluginMessageReceiver = new PluginMessageReceiver(OkoChatProtocol.CHANNEL, this.getSLF4JLogger(), syncedValues);
 
-        this.getServer().getMessenger().registerIncomingPluginChannel(this, OkoChatProtocol.CHANNEL, new PluginMessageReceiver(OkoChatProtocol.CHANNEL, this.getSLF4JLogger(), this.syncedValues));
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, OkoChatProtocol.CHANNEL);
+        this.setupChatBridge(pluginMessageSender);
 
-        if (false && PlaceholderAPIIntegration.canIntegrate()) {
-            this.registeredPlaceholders = PlaceholderAPIIntegration.registerPlaceholders(
-                    this.getPluginMeta().getVersion(),
-                    this.syncedValues
-            );
+        boolean needSyncValues;
+        needSyncValues = this.setupPlaceholderAPIIntegration(syncedValues);
+
+        if (needSyncValues) {
+            this.getServer().getPluginManager().registerEvents(new ConnectionListener(pluginMessageSender, syncedValues), this);
+            this.getServer().getMessenger().registerIncomingPluginChannel(this, OkoChatProtocol.CHANNEL, pluginMessageReceiver);
         }
     }
 
@@ -43,9 +46,7 @@ public class OkoChatBridgePaperPlugin extends JavaPlugin {
         }
     }
 
-    private void setup() {
-        HandlerList.unregisterAll(this);
-
+    private void setupChatBridge(PluginMessageSender pluginMessageSender) {
         AffixProvider<Player> affixProvider;
 
         if (VaultIntegration.canIntegrate()) {
@@ -56,8 +57,23 @@ public class OkoChatBridgePaperPlugin extends JavaPlugin {
             affixProvider = AffixProvider.createVoid();
         }
 
-        this.getServer().getMessenger().registerOutgoingPluginChannel(this, OkoChatProtocol.CHANNEL);
-        PluginMessageSender pluginMessageSender = new PluginMessageSender(this, OkoChatProtocol.CHANNEL);
         this.getServer().getPluginManager().registerEvents(new ChatListener(affixProvider, pluginMessageSender, this.getSLF4JLogger()), this);
+
+        if (affixProvider.getProviderName().isEmpty()) {
+            this.getSLF4JLogger().info("Enabled OkoChat bridge");
+        } else {
+            this.getSLF4JLogger().info("Enabled OkoChat bridge with {} integration", affixProvider.getProviderName());
+        }
+    }
+
+    private boolean setupPlaceholderAPIIntegration(SyncedValues syncedValues) {
+        if (!PlaceholderAPIIntegration.canIntegrate()) {
+            return false;
+        }
+
+        this.registeredPlaceholders = PlaceholderAPIIntegration.registerPlaceholders(this.getPluginMeta().getVersion(), syncedValues);
+
+        this.getSLF4JLogger().info("Enabled PlaceholderAPI integration");
+        return true;
     }
 }
