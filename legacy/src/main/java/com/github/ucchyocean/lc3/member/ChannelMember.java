@@ -5,7 +5,6 @@
  */
 package com.github.ucchyocean.lc3.member;
 
-import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.okocraft.okochat.api.sender.Sender;
@@ -15,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * チャンネルメンバーの抽象クラス
  * @author ucchy
  */
-public abstract class ChannelMember implements Comparable<ChannelMember>, Identified, Sender {
+public abstract class ChannelMember implements Comparable<ChannelMember>, Sender {
 
     /**
      * オンラインかどうか
