@@ -6,6 +6,7 @@ import dev.siroshun.event4j.api.priority.Priority;
 import dev.siroshun.event4j.tree.TreeEventService;
 import net.kyori.adventure.key.Key;
 import net.okocraft.okochat.api.OkoChat;
+import net.okocraft.okochat.api.chat.hide.HideListProvider;
 import net.okocraft.okochat.api.event.OkoChatEvent;
 import net.okocraft.okochat.api.chat.recipient.RecipientProvider;
 import org.jetbrains.annotations.NotNullByDefault;
@@ -13,7 +14,8 @@ import org.jetbrains.annotations.NotNullByDefault;
 @NotNullByDefault
 public record OkoChatAPI(
         TreeEventService<Key, OkoChatEvent, Priority> eventService,
-        RecipientProvider recipientProvider
+        RecipientProvider recipientProvider,
+        HideListProvider hideListProvider
 ) implements OkoChat {
 
     @Override

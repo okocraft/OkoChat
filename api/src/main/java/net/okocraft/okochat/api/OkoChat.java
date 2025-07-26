@@ -4,6 +4,7 @@ import dev.siroshun.event4j.api.caller.EventCaller;
 import dev.siroshun.event4j.api.listener.ListenerSubscriber;
 import dev.siroshun.event4j.api.priority.Priority;
 import net.kyori.adventure.key.Key;
+import net.okocraft.okochat.api.chat.hide.HideListProvider;
 import net.okocraft.okochat.api.event.OkoChatEvent;
 import net.okocraft.okochat.api.chat.recipient.RecipientProvider;
 import org.jetbrains.annotations.ApiStatus;
@@ -60,4 +61,11 @@ public interface OkoChat {
      * @return the {@link RecipientProvider}
      */
     RecipientProvider recipientProvider();
+
+    /**
+     * Gets the {@link HideListProvider}.
+     *
+     * @return the {@link HideListProvider}
+     */
+    HideListProvider hideListProvider();
 }
