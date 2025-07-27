@@ -298,33 +298,6 @@ public class OptionCommand extends LunaChatSubCommand {
             }
         }
 
-        if ( options.containsKey("japanize") ) {
-            // Japanize変換設定
-
-            String pnode = PERMISSION_NODE + ".japanize";
-            if ( !sender.hasPermission(pnode) ) {
-                sender.sendMessage(Messages.errmsgNotPermission(pnode));
-            } else {
-
-                String value = options.get("japanize");
-
-                if ( value.equals("") ) {
-                    channel.setJapanizeType(null);
-                    sender.sendMessage(Messages.cmdmsgOption("japanize", "default"));
-                    setOption = true;
-                } else {
-                    JapanizeType type = JapanizeType.fromID(value, null);
-                    if ( type == null ) {
-                        sender.sendMessage(Messages.errmsgCommand());
-                    } else {
-                        channel.setJapanizeType(type);
-                        sender.sendMessage(Messages.cmdmsgOption("japanize", type.toString()));
-                        setOption = true;
-                    }
-                }
-            }
-        }
-
         if ( !channel.isGlobalChannel() ) {
 
             if ( options.containsKey("password") ) {

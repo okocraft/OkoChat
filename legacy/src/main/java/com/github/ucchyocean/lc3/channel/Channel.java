@@ -151,10 +151,6 @@ public abstract class Channel {
     /** カラーコードの使用可否 */
     private boolean allowcc;
 
-    /** チャンネルごとのjapanize変換設定 */
-    private JapanizeType japanizeType;
-
-
     protected LunaChatLogger logger;
 
     /**
@@ -189,7 +185,6 @@ public abstract class Channel {
             this.format = config.getDefaultFormat();
         }
         this.compileFormat();
-        this.japanizeType = config.getJapanizeType();
 
         logger = new LunaChatLogger(name.replace(">", "-").replace("*", "_"));
     }
@@ -309,8 +304,7 @@ public abstract class Channel {
         }
 
         // Japanize変換タスクを作成する
-        JapanizeType japanizeType = (getJapanizeType() == null)
-                ? config.getJapanizeType() : getJapanizeType();
+        JapanizeType japanizeType = config.getJapanizeType();
         if ( !skipJapanize &&
                 api.isPlayerJapanize(player.getName()) &&
                 japanizeType != JapanizeType.NONE ) {
@@ -883,7 +877,6 @@ public abstract class Channel {
         map.put(KEY_BAN_EXPIRES, getStringLongMap(banExpires));
         map.put(KEY_MUTE_EXPIRES, getStringLongMap(muteExpires));
         map.put(KEY_ALLOWCC, allowcc);
-        map.put(KEY_JAPANIZE, japanizeType == null ? null : japanizeType.toString());
         return map;
     }
 
@@ -919,7 +912,6 @@ public abstract class Channel {
         channel.banExpires = castToChannelMemberLongMap(data.get(KEY_BAN_EXPIRES));
         channel.muteExpires = castToChannelMemberLongMap(data.get(KEY_MUTE_EXPIRES));
         channel.allowcc = castWithDefault(data.get(KEY_ALLOWCC), true);
-        channel.japanizeType = JapanizeType.fromID(data.get(KEY_JAPANIZE) + "", null);
         channel.compileFormat();
         return channel;
     }
@@ -1158,22 +1150,6 @@ public abstract class Channel {
      */
     public void setAllowCC(boolean allowcc) {
         this.allowcc = allowcc;
-    }
-
-    /**
-     * Japanize変換設定を取得する
-     * @return japanize
-     */
-    public JapanizeType getJapanizeType() {
-        return japanizeType;
-    }
-
-    /**
-     * Japanize変換設定を再設定する
-     * @param japanize japanize
-     */
-    public void setJapanizeType(JapanizeType japanize) {
-        this.japanizeType = japanize;
     }
 
     /**
