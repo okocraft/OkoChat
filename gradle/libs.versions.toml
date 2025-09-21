@@ -12,7 +12,7 @@ junit = "5.12.2"
 mockito = "5.10.0"
 
 # gradle plugins
-gradle-plugins = "1.5.1"
+gradle-plugins = "1.6.0"
 run-task = "3.0.0"
 
 # platform api
