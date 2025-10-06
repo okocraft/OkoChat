@@ -20,7 +20,7 @@ paper = "1.21.8-R0.1-SNAPSHOT"
 velocity = "3.4.0-SNAPSHOT"
 
 # other plugins
-luckperms = "5.4"
+luckperms = "5.5"
 placeholderapi = "2.11.6"
 vault = "1.7.1"
 
