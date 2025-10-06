@@ -8,6 +8,10 @@ val isReleaseVersion = !project.version.toString().endsWith("-SNAPSHOT")
 jcommon {
     javaVersion = JavaVersion.VERSION_21
 
+    repositories {
+        mavenCentral()
+    }
+
     commonDependencies {
         compileOnlyApi(libs.annotations)
         compileOnlyApi(libs.adventure)
