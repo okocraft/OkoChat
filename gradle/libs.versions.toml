@@ -1,14 +1,14 @@
 [versions]
 # common libraries
-adventure = "4.23.0"
-annotations = "26.0.2"
+adventure = "4.25.0"
+annotations = "26.0.2-1"
 codec4j = "0.2.0-beta.4"
-event4j = "4.0.2"
+event4j = "4.1.0"
 jfun = "1.0.0-beta.3"
 slf4j = "2.0.17"
 
 # for testing
-junit = "5.12.2"
+junit = "6.0.0"
 mockito = "5.10.0"
 
 # gradle plugins
@@ -16,7 +16,7 @@ gradle-plugins = "1.6.0"
 run-task = "3.0.1"
 
 # platform api
-paper = "1.21.8-R0.1-SNAPSHOT"
+paper = "1.21.9-R0.1-SNAPSHOT"
 velocity = "3.4.0-SNAPSHOT"
 
 # other plugins
