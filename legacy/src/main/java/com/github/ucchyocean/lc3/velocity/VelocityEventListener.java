@@ -222,6 +222,12 @@ public class VelocityEventListener implements OkoChatProtocol.Listener {
             }
         }
 
+        if ( !channel.getMembers().contains(member) ) {
+            // 指定されたチャンネルに参加していないなら、エラーを表示して何も発言せずに終了する。
+            member.sendMessage(LegacyComponentSerializer.legacySection().deserialize(Messages.errmsgNomember()));
+            return;
+        }
+
         chatToChannelWithEvent(member, channel, message);
     }
 
