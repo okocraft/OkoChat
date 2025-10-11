@@ -13,7 +13,7 @@ mockito = "5.10.0"
 
 # gradle plugins
 gradle-plugins = "1.6.0"
-run-task = "3.0.1"
+run-task = "3.0.2"
 
 # platform api
 paper = "1.21.8-R0.1-SNAPSHOT"
