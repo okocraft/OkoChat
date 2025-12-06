@@ -6,7 +6,7 @@ plugins {
 val isReleaseVersion = !project.version.toString().endsWith("-SNAPSHOT")
 
 jcommon {
-    javaVersion = JavaVersion.VERSION_21
+    javaVersion = JavaVersion.VERSION_25
 
     repositories {
         mavenCentral()
