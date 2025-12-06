@@ -4,7 +4,6 @@ import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.okocraft.okochat.api.sender.ConsoleSender;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
 public record VelocityConsoleSender(ConsoleCommandSource console) implements ConsoleSender {
 
     @Override
-    public @NotNull Iterable<? extends Audience> audiences() {
+    public Iterable<? extends Audience> audiences() {
         return List.of(this.console);
     }
 

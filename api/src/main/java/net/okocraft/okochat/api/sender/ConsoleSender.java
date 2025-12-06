@@ -3,7 +3,6 @@ package net.okocraft.okochat.api.sender;
 
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.util.TriState;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 
 import java.util.UUID;
@@ -38,7 +37,7 @@ public interface ConsoleSender extends Sender {
     }
 
     @Override
-    default @NotNull Identity identity() {
+    default Identity identity() {
         return CONSOLE_IDENTITY;
     }
 }

@@ -7,8 +7,6 @@ package com.github.ucchyocean.lc3.command;
 
 import java.util.ArrayList;
 
-import com.github.ucchyocean.lc3.LunaChat;
-import com.github.ucchyocean.lc3.LunaChatLogger;
 import com.github.ucchyocean.lc3.Messages;
 import com.github.ucchyocean.lc3.channel.Channel;
 import com.github.ucchyocean.lc3.member.ChannelMember;

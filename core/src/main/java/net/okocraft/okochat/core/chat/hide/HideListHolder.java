@@ -6,7 +6,6 @@ import net.okocraft.okochat.api.chat.hide.HideList;
 import net.okocraft.okochat.api.chat.hide.HideListProvider;
 import net.okocraft.okochat.core.data.hide.HideEntry;
 import net.okocraft.okochat.core.data.hide.HideListData;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public class HideListHolder implements HideListProvider {
     private final AtomicBoolean dirty = new AtomicBoolean(false);
 
     @Override
-    public @NotNull HideList getByUUID(@NotNull UUID uuid) {
+    public HideList getByUUID(UUID uuid) {
         Objects.requireNonNull(uuid);
         return new ReferenceHideList(uuid);
     }

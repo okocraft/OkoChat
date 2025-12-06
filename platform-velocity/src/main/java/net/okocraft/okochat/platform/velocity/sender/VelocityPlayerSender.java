@@ -6,7 +6,6 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.TriState;
 import net.okocraft.okochat.api.sender.PlayerSender;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 
 import java.util.List;
@@ -36,7 +35,7 @@ public record VelocityPlayerSender(Player player) implements PlayerSender {
     }
 
     @Override
-    public @NotNull Iterable<? extends Audience> audiences() {
+    public Iterable<? extends Audience> audiences() {
         return List.of(this.player);
     }
 
@@ -46,7 +45,7 @@ public record VelocityPlayerSender(Player player) implements PlayerSender {
     }
 
     @Override
-    public @NotNull Identity identity() {
+    public Identity identity() {
         return this.player.identity();
     }
 }
