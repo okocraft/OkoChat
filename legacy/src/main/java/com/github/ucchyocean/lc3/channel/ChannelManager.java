@@ -27,15 +27,12 @@ public class ChannelManager implements LunaChatAPI {
 
     private static final String FILE_NAME_DCHANNELS = "defaults.yml";
     private static final String FILE_NAME_JAPANIZE = "japanize.yml";
-    private static final String FILE_NAME_DICTIONARY = "dictionary.yml";
 
     private File fileDefaults;
     private File fileJapanize;
-    private File fileDictionary;
     private HashMap<String, Channel> channels;
     private HashMap<String, String> defaultChannels;
     private HashMap<String, Boolean> japanize;
-    private java.util.LinkedHashMap<String, String> dictionary; // okocraft - Ensure that longer words are replaced first
 
     /**
      * コンストラクタ
@@ -80,21 +77,6 @@ public class ChannelManager implements LunaChatAPI {
         for ( String key : configJapanize.getKeys(false) ) {
             japanize.put(key, configJapanize.getBoolean(key));
         }
-
-        // dictionaryのロード
-        fileDictionary = new File(LunaChat.getDataFolder(), FILE_NAME_DICTIONARY);
-
-        if ( !fileDictionary.exists() ) {
-            makeEmptyFile(fileDictionary);
-        }
-
-        YamlConfig configDictionary = YamlConfig.load(fileDictionary);
-
-        dictionary = new java.util.LinkedHashMap<>(); // okocraft - Ensure that longer words are replaced first
-        for ( String key : configDictionary.getKeys(false) ) {
-            dictionary.put(key, configDictionary.getString(key));
-        }
-        net.okocraft.lunachat.japanize.Japanizer.sortDictionary(dictionary); // okocraft - Ensure that longer words are replaced first
 
         // チャンネル設定のロード
         channels = Channel.loadAllChannels();
@@ -145,26 +127,6 @@ public class ChannelManager implements LunaChatAPI {
         // okocraft end
         try {
             net.okocraft.lunachat.DataFiles.saveStringMap(fileJapanize.toPath(), com.google.common.collect.Maps.transformValues(java.util.Map.copyOf(japanize), bool -> Boolean.toString(bool))); // okocraft - Make file saving async
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * Dictionary設定を保存する
-     * @return 保存したかどうか
-     */
-    private boolean saveDictionary() {
-        // okocraft start - Make file saving async
-        LunaChat.runAsyncTask(this::saveDictionary0);
-        return true;
-    }
-    private boolean saveDictionary0() {
-        // okocraft end
-        try {
-            net.okocraft.lunachat.DataFiles.saveStringMap(fileDictionary.toPath(), java.util.Map.copyOf(dictionary)); // okocraft - Make file saving async
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -393,35 +355,6 @@ public class ChannelManager implements LunaChatAPI {
         }
 
         return true;
-    }
-
-    /**
-     * 辞書データを全て取得する
-     * @return 辞書データ
-     */
-    public HashMap<String, String> getAllDictionary() {
-        return dictionary;
-    }
-
-    /**
-     * 新しい辞書データを追加する
-     * @param key キー
-     * @param value 値
-     */
-    public void setDictionary(String key, String value) {
-        dictionary.put(key, value);
-        net.okocraft.lunachat.japanize.Japanizer.sortDictionary(dictionary); // okocraft - Ensure that longer words are replaced first
-        saveDictionary();
-    }
-
-    /**
-     * 指定したキーの辞書データを削除する
-     * @param key キー
-     */
-    public void removeDictionary(String key) {
-        dictionary.remove(key);
-        net.okocraft.lunachat.japanize.Japanizer.sortDictionary(dictionary); // okocraft - Ensure that longer words are replaced first
-        saveDictionary();
     }
 
     /**

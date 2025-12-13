@@ -362,7 +362,7 @@ public abstract class Channel {
     }
 
     private String japanizeMessage(ChannelMember player, JapanizeType type, String message, String lineFormat) {
-        String japanized = Japanizer.japanize(message, type, LunaChat.getAPI().getAllDictionary());
+        String japanized = Japanizer.japanize(message, type, Map.of()); // TODO: readd enhanced dictionary
         for (Pattern pattern : LunaChat.getConfig().getNgwordCompiled()) {
             Matcher matcher = pattern.matcher(japanized);
             if (matcher.find()) {

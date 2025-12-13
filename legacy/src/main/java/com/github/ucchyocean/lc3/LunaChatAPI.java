@@ -95,25 +95,6 @@ public interface LunaChatAPI {
     public boolean removeChannel(String channelName, ChannelMember member);
 
     /**
-     * 辞書データを全て取得する
-     * @return 辞書データ
-     */
-    public Map<String, String> getAllDictionary();
-
-    /**
-     * 新しい辞書データを追加する
-     * @param key キー
-     * @param value 値
-     */
-    public void setDictionary(String key, String value);
-
-    /**
-     * 指定したキーの辞書データを削除する
-     * @param key キー
-     */
-    public void removeDictionary(String key);
-
-    /**
      * 該当プレイヤーのJapanize変換をオン/オフする
      * @param playerName 設定するプレイヤー名
      * @param doJapanize Japanize変換するかどうか
