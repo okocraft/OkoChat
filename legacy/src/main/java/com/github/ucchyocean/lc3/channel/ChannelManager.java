@@ -26,17 +26,14 @@ import com.github.ucchyocean.lc3.util.YamlConfig;
 public class ChannelManager implements LunaChatAPI {
 
     private static final String FILE_NAME_DCHANNELS = "defaults.yml";
-    private static final String FILE_NAME_TEMPLATES = "templates.yml";
     private static final String FILE_NAME_JAPANIZE = "japanize.yml";
     private static final String FILE_NAME_DICTIONARY = "dictionary.yml";
 
     private File fileDefaults;
-    private File fileTemplates;
     private File fileJapanize;
     private File fileDictionary;
     private HashMap<String, Channel> channels;
     private HashMap<String, String> defaultChannels;
-    private HashMap<String, String> templates;
     private HashMap<String, Boolean> japanize;
     private java.util.LinkedHashMap<String, String> dictionary; // okocraft - Ensure that longer words are replaced first
 
@@ -68,20 +65,6 @@ public class ChannelManager implements LunaChatAPI {
             if ( value != null) {
                 defaultChannels.put(key, value.toLowerCase());
             }
-        }
-
-        // テンプレート設定のロード
-        fileTemplates = new File(LunaChat.getDataFolder(), FILE_NAME_TEMPLATES);
-
-        if ( !fileTemplates.exists() ) {
-            makeEmptyFile(fileTemplates);
-        }
-
-        YamlConfig configTemplates = YamlConfig.load(fileTemplates);
-
-        templates = new HashMap<String, String>();
-        for ( String key : configTemplates.getKeys(false) ) {
-            templates.put(key, configTemplates.getString(key));
         }
 
         // Japanize設定のロード
@@ -142,26 +125,6 @@ public class ChannelManager implements LunaChatAPI {
         // okocraft end
         try {
             net.okocraft.lunachat.DataFiles.saveStringMap(fileDefaults.toPath(), java.util.Map.copyOf(defaultChannels)); // okocraft - Make file saving async
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * テンプレート設定を保存する
-     * @return 保存したかどうか
-     */
-    private boolean saveTemplates() {
-        // okocraft start - Make file saving async
-        LunaChat.runAsyncTask(this::saveTemplates0);
-        return true;
-    }
-    private boolean saveTemplates0() {
-        // okocraft end
-        try {
-            net.okocraft.lunachat.DataFiles.saveStringMap(fileTemplates.toPath(), java.util.Map.copyOf(templates)); // okocraft - Make file saving async
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -430,40 +393,6 @@ public class ChannelManager implements LunaChatAPI {
         }
 
         return true;
-    }
-
-    /**
-     * テンプレートを取得する
-     * @param id テンプレートID
-     * @return テンプレート
-     * @see LunaChatAPI#getTemplate(String)
-     */
-    @Override
-    public String getTemplate(String id) {
-        return templates.get(id);
-    }
-
-    /**
-     * テンプレートを登録する
-     * @param id テンプレートID
-     * @param template テンプレート
-     * @see LunaChatAPI#setTemplate(String, String)
-     */
-    @Override
-    public void setTemplate(String id, String template) {
-        templates.put(id, template);
-        saveTemplates();
-    }
-
-    /**
-     * テンプレートを削除する
-     * @param id テンプレートID
-     * @see LunaChatAPI#removeTemplate(String)
-     */
-    @Override
-    public void removeTemplate(String id) {
-        templates.remove(id);
-        saveTemplates();
     }
 
     /**

@@ -113,13 +113,6 @@ public class FormatCommand extends LunaChatSubCommand {
         // 制約キーワードを確認する
         List<String> constraints = config.getFormatConstraint();
         String tempFormat = new String(format);
-        for ( int i=0; i<=9; i++ ) {
-            String key = "%" + i;
-            if ( tempFormat.contains(key) && api.getTemplate(i + "") != null ) {
-                tempFormat = tempFormat.replace(key, api.getTemplate("" + i));
-                break;
-            }
-        }
         for ( String constraint : constraints ) {
             if ( !tempFormat.contains(constraint) ) {
                 sender.sendMessage(Messages.errmsgFormatConstraint(constraint));

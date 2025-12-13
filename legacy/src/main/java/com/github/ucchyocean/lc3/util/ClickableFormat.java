@@ -14,8 +14,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.Nullable;
 
-import com.github.ucchyocean.lc3.LunaChat;
-import com.github.ucchyocean.lc3.LunaChatAPI;
 import com.github.ucchyocean.lc3.Messages;
 import com.github.ucchyocean.lc3.channel.Channel;
 import com.github.ucchyocean.lc3.member.ChannelMember;
@@ -56,25 +54,11 @@ public class ClickableFormat {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
-        LunaChatAPI api = LunaChat.getAPI();
-
         KeywordReplacer msg = new KeywordReplacer(format);
 
         //msg.replace("%msg", message);
 
         if ( channel != null ) {
-
-            // テンプレートのキーワードを、まず最初に置き換える
-            for ( int i=0; i<=9; i++ ) {
-                String key = "%" + i;
-                if ( msg.contains(key) ) {
-                    if ( api.getTemplate("" + i) != null ) {
-                        msg.replace(key, api.getTemplate("" + i));
-                        break;
-                    }
-                }
-            }
-
             // チャンネル関連のキーワード置き換え
             msg.replace("%ch", String.format(
                     PLACEHOLDER_RUN_COMMAND,
@@ -191,19 +175,6 @@ public class ClickableFormat {
         }
 
         return builder.build();
-    }
-
-    public String toLegacyText() {
-
-        StringBuilder msg = new StringBuilder(message.toString());
-        Matcher matcher = Pattern.compile(PLACEHOLDER_PATTERN).matcher(msg);
-
-        while ( matcher.find(0) ) {
-            String text = matcher.group(2);
-            msg.replace(matcher.start(), matcher.end(), text);
-        }
-
-        return msg.toString();
     }
 
     @Override

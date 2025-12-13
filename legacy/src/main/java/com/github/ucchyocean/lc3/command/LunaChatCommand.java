@@ -50,7 +50,6 @@ public class LunaChatCommand {
         commands.add(new ModeratorCommand());
         commands.add(new ModCommand());
         commands.add(new OptionCommand());
-        commands.add(new TemplateCommand());
         commands.add(new SetCommand());
         helpCommand = new HelpCommand(commands);
         commands.add(helpCommand);
