@@ -1,6 +1,8 @@
 package net.okocraft.okochat.core.data.legacy;
 
 import dev.siroshun.codec4j.api.decoder.Decoder;
+import dev.siroshun.codec4j.api.decoder.collection.ListDecoder;
+import dev.siroshun.codec4j.api.decoder.collection.MapDecoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.io.yaml.YamlIO;
 import dev.siroshun.jfun.result.Result;
@@ -19,7 +21,7 @@ import java.util.function.Consumer;
 public class LegacyHideList {
 
     public static final Decoder<LegacyHideList> DECODER =
-            LegacyChannelMember.CODEC.toMapCodecAsKey(LegacyChannelMember.CODEC.toListCodec())
+            MapDecoder.create(LegacyChannelMember.CODEC, ListDecoder.create(LegacyChannelMember.CODEC))
                     .map(LegacyHideList::new);
 
     public static Path getFilepath(Path dataDirectory) {
