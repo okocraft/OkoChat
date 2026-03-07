@@ -1,18 +1,18 @@
 [versions]
 # common libraries
 adventure = "4.26.1"
-annotations = "26.0.2-1"
+annotations = "26.1.0"
 codec4j = "0.2.0-beta.6"
 event4j = "4.1.0"
 jfun = "1.0.0-beta.3"
 slf4j = "2.0.17"
 
 # for testing
-junit = "6.0.2"
+junit = "6.0.3"
 mockito = "5.10.0"
 
 # gradle plugins
-gradle-plugins = "1.6.1"
+gradle-plugins = "1.7.0"
 run-task = "3.0.2"
 
 # platform api
@@ -21,7 +21,7 @@ velocity = "3.4.0-SNAPSHOT"
 
 # other plugins
 luckperms = "5.5"
-placeholderapi = "2.12.1"
+placeholderapi = "2.12.2"
 vault = "1.7.1"
 
 [libraries]
