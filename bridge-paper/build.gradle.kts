@@ -22,8 +22,10 @@ bundler {
     replacePluginVersionForPaper(project.version)
 }
 
+val mcVersion = libs.versions.paper.get().replaceAfter(".build", "").removeSuffix(".build")
+
 tasks {
     runServer {
-        minecraftVersion(libs.versions.paper.get().removeSuffix("-R0.1-SNAPSHOT"))
+        minecraftVersion(mcVersion)
     }
 }
