@@ -1,11 +1,11 @@
 [versions]
 # common libraries
-adventure = "5.1.0"
+adventure = "5.1.1"
 annotations = "26.1.0"
 codec4j = "0.2.0-beta.6"
 event4j = "4.1.0"
 jfun = "1.0.0-beta.3"
-slf4j = "2.0.17"
+slf4j = "2.0.18"
 
 # for testing
 junit = "6.0.3"
