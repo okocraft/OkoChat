@@ -8,7 +8,7 @@ jfun = "1.0.0-beta.3"
 slf4j = "2.0.18"
 
 # for testing
-junit = "6.0.3"
+junit = "6.1.0"
 mockito = "5.10.0"
 
 # gradle plugins
