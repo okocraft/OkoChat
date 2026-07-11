@@ -21,7 +21,7 @@ velocity = "3.4.0-SNAPSHOT"
 
 # other plugins
 luckperms = "5.5"
-placeholderapi = "2.12.2"
+placeholderapi = "2.12.3"
 vault = "1.7.1"
 
 [libraries]
