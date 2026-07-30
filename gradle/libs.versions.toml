@@ -17,7 +17,7 @@ run-task = "3.0.2"
 
 # platform api
 paper = "26.1.2.build.74-stable"
-velocity = "3.4.0-SNAPSHOT"
+velocity = "4.1.0-SNAPSHOT"
 
 # other plugins
 luckperms = "5.5"
