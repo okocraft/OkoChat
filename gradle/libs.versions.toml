@@ -16,8 +16,8 @@ gradle-plugins = "1.8.5"
 run-task = "3.1.0"
 
 # platform api
-paper = "26.2.build.115-stable"
-velocity = "4.1.0-SNAPSHOT"
+paper = "26.2.build.117-stable"
+velocity = "4.1.0"
 
 # other plugins
 luckperms = "5.5"
