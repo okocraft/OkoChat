@@ -3,7 +3,7 @@ jcommon {
 }
 
 repositories {
-    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    maven("https://repo.extendedclip.com/releases/")
 }
 
 dependencies {
